@@ -1,0 +1,71 @@
+..
+    Copyright 2019 RoadrunnerWMC
+
+    This file is part of ndspy.
+
+    ndspy is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    ndspy is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with ndspy.  If not, see <https://www.gnu.org/licenses/>.
+
+``ndspy.lz10``: LZ10 Compression
+================================
+
+.. py:module:: ndspy.lz10
+
+``ndspy.lz10`` provides functions for compression and decompression in the
+*LZ10* compression format used in some games.
+
+
+.. py:function:: compress(data)
+
+    Compress data in *LZ10* format. This is the inverse of
+    :py:func:`decompress`.
+
+    :param bytes data: The data to compress.
+
+    :returns: The compressed data.
+    :rtype: :py:class:`bytes`
+
+
+.. py:function:: compressToFile(data, filePath)
+
+    Compress data in *LZ10* format, and save it to a filesystem file. This is
+    the inverse of :py:func:`decompressFromFile`, and is a convenience
+    function.
+
+    :param bytes data: The data to compress.
+
+    :param filePath: The path to the compressed file to save to.
+    :type filePath: :py:class:`str` or other path-like object
+
+
+.. py:function:: decompress(data)
+
+    Decompress data that was compressed using *LZ10*. This is the inverse of
+    :py:func:`compress`.
+
+    :param bytes data: The compressed data.
+
+    :returns: The decompressed data.
+    :rtype: :py:class:`bytes`
+
+
+.. py:function:: decompressFromFile(filePath)
+
+    Load a *LZ10*-compressed filesystem file, and decompress it. This is the
+    inverse of :py:func:`compressToFile`, and is a convenience function.
+
+    :param filePath: The path to the compressed file to open.
+    :type filePath: :py:class:`str` or other path-like object
+
+    :returns: The decompressed data.
+    :rtype: :py:class:`bytes`
