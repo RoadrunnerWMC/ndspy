@@ -37,54 +37,62 @@ A few examples of ndspy in action
 
 Create a *BMG* file containing message strings:
 
-    >>> import ndspy.bmg
-    >>> message1 = ndspy.bmg.Message(0, ['Open your eyes...'])
-    >>> message2 = ndspy.bmg.Message(0, ['Wake up, Link...'])
-    >>> bmg = ndspy.bmg.BMG.fromMessages([message1, message2])
-    >>> bmg.save()
-    b'MESGbmg1\xa0\x00\x00\x00\x02\x00\x00\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00INF1 \x00\x00\x00\x02\x00\x08\x00\x00\x00\x00\x00\x02\x00\x00\x00\x00\x00\x00\x00&\x00\x00\x00\x00\x00\x00\x00DAT1`\x00\x00\x00\x00\x00O\x00p\x00e\x00n\x00 \x00y\x00o\x00u\x00r\x00 \x00e\x00y\x00e\x00s\x00.\x00.\x00.\x00\x00\x00W\x00a\x00k\x00e\x00 \x00u\x00p\x00,\x00 \x00L\x00i\x00n\x00k\x00.\x00.\x00.\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
-    >>>
+```python
+>>> import ndspy.bmg
+>>> message1 = ndspy.bmg.Message(0, ['Open your eyes...'])
+>>> message2 = ndspy.bmg.Message(0, ['Wake up, Link...'])
+>>> bmg = ndspy.bmg.BMG.fromMessages([message1, message2])
+>>> bmg.save()
+b'MESGbmg1\xa0\x00\x00\x00\x02\x00\x00\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00INF1 \x00\x00\x00\x02\x00\x08\x00\x00\x00\x00\x00\x02\x00\x00\x00\x00\x00\x00\x00&\x00\x00\x00\x00\x00\x00\x00DAT1`\x00\x00\x00\x00\x00O\x00p\x00e\x00n\x00 \x00y\x00o\x00u\x00r\x00 \x00e\x00y\x00e\x00s\x00.\x00.\x00.\x00\x00\x00W\x00a\x00k\x00e\x00 \x00u\x00p\x00,\x00 \x00L\x00i\x00n\x00k\x00.\x00.\x00.\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+>>>
+```
 
 Change all notes in a *SSEQ* sequenced music file to middle C, similar to [this
 song](https://youtu.be/cSAp9sBzPbc):
 
-    >>> import ndspy.soundSequence
-    >>> song = ndspy.soundSequence.SSEQ.fromFile('never-gonna-give-you-up.sseq')
-    >>> song.parse()
-    >>> for event in song.events:
-    ...     if isinstance(event, ndspy.soundSequence.NoteSequenceEvent):
-    ...         event.pitch = 60
-    ...
-    >>> song.saveToFile('never-gonna-give-you-up-but-all-the-notes-are-c.sseq')
-    >>>
+```python
+>>> import ndspy.soundSequence
+>>> song = ndspy.soundSequence.SSEQ.fromFile('never-gonna-give-you-up.sseq')
+>>> song.parse()
+>>> for event in song.events:
+...     if isinstance(event, ndspy.soundSequence.NoteSequenceEvent):
+...         event.pitch = 60
+...
+>>> song.saveToFile('never-gonna-give-you-up-but-all-the-notes-are-c.sseq')
+>>>
+```
 
 Compress and decompress data using the *LZ10* compression format:
 
-    >>> import ndspy.lz10
-    >>> compressed = ndspy.lz10.compress(b'This is some data to compress')
-    >>> compressed
-    b'\x10\x1d\x00\x00\x04This \x00\x02so\x00me data \x00to compr\x00ess\x00\x00\x00\x00\x00'
-    >>> ndspy.lz10.decompress(compressed)
-    b'This is some data to compress'
-    >>>
+```python
+>>> import ndspy.lz10
+>>> compressed = ndspy.lz10.compress(b'This is some data to compress')
+>>> compressed
+b'\x10\x1d\x00\x00\x04This \x00\x02so\x00me data \x00to compr\x00ess\x00\x00\x00\x00\x00'
+>>> ndspy.lz10.decompress(compressed)
+b'This is some data to compress'
+>>>
+```
 
 Search for all files starting with a particular byte sequence in a ROM:
 
-    >>> import ndspy.rom
-    >>> game = ndspy.rom.NintendoDSRom.fromFile('game.nds')
-    >>> for i, file in enumerate(game.files):
-    ...     if file.startswith(b'BMD0'):
-    ...         print(game.filenames[i] + ' is a NSBMD model')
-    ...
-    demo/end_kp.nsbmd is a NSBMD model
-    demo/staffroll.nsbmd is a NSBMD model
-    demo/staffroll_back.nsbmd is a NSBMD model
-    enemy/A_jiku.nsbmd is a NSBMD model
-    enemy/all_goal_flag.nsbmd is a NSBMD model
-    [snip]
-    map/world7.nsbmd is a NSBMD model
-    map/world8.nsbmd is a NSBMD model
-    >>>
+```python
+>>> import ndspy.rom
+>>> game = ndspy.rom.NintendoDSRom.fromFile('game.nds')
+>>> for i, file in enumerate(game.files):
+...     if file.startswith(b'BMD0'):
+...         print(game.filenames[i] + ' is a NSBMD model')
+...
+demo/end_kp.nsbmd is a NSBMD model
+demo/staffroll.nsbmd is a NSBMD model
+demo/staffroll_back.nsbmd is a NSBMD model
+enemy/A_jiku.nsbmd is a NSBMD model
+enemy/all_goal_flag.nsbmd is a NSBMD model
+[snip]
+map/world7.nsbmd is a NSBMD model
+map/world8.nsbmd is a NSBMD model
+>>>
+```
 
 
 <a name="installation"></a>
