@@ -8,11 +8,14 @@ setuptools.setup(
     version='1.0.0',
     author='RoadrunnerWMC',
     author_email='roadrunnerwmc@gmail.com',
-    description='ndspy is a Python library and suite of command-line tools that can help you read, modify and create many types of files used in Nintendo DS games.',
+    description='Python library that can help you read, modify and create many types of files used in Nintendo DS games.',
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/RoadrunnerWMC/ndspy',
     packages=setuptools.find_packages(),
+    install_requires=[
+        'crcmod',
+    ],
     classifiers=[
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',

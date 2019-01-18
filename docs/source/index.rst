@@ -41,8 +41,7 @@ suitable for use in applications written in Python, and in scripts to do more
 complex tasks than the command-line tools are capable of.
 
 As ndspy is written in pure Python, it is cross-platform and should run on all
-platforms Python supports. Additionally, all dependencies other than Python
-itself are optional.
+platforms Python supports.
 
 Interested? Read on to see some examples, or check the :doc:`api` to see the
 documentation for a specific module. When you're ready to install, head over to
@@ -154,7 +153,8 @@ the following possibilities will probably work for you, though:
 If you want the very latest version of ndspy including features and bugfixes
 not yet in any official release, you can also download the code from the
 `GitHub repository <https://github.com/RoadrunnerWMC/ndspy>`_ and install it
-manually.
+manually. Note that `crcmod <https://pypi.org/project/crcmod/>`_ is a required
+dependency.
 
 
 Support
