@@ -18,9 +18,9 @@ ndspy follows a few key design principles:
 
 ndspy provides both a Python API and a set of simple command-line tools that
 make use of it. The command-line tools let you convert files to and from binary
-formats without having to write any Python code yourself . The API is
-suitable for use in applications written in Python, and in scripts to do more
-complex tasks than the command-line tools are capable of.
+formats without having to write any Python code yourself. The API is suitable
+for use in applications written in Python, and in scripts to do more complex
+tasks than the command-line tools are capable of.
 
 As ndspy is written in pure Python, it is cross-platform and should run on all
 platforms Python supports.
