@@ -13,6 +13,7 @@ setuptools.setup(
     long_description_content_type='text/markdown',
     url='https://github.com/RoadrunnerWMC/ndspy',
     packages=setuptools.find_packages(),
+    python_requires='>=3.6',
     install_requires=[
         'crcmod',
     ],
