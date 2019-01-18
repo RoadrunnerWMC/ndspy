@@ -133,6 +133,8 @@ Search for all files starting with a particular byte sequence in a ROM:
 Installation
 ------------
 
+ndspy requires Python 3.6 or newer to run. Python 2 is not supported at all.
+
 The easiest way to get the latest stable release of ndspy is through PyPI using
 pip.
 

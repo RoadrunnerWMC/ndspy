@@ -99,6 +99,8 @@ map/world8.nsbmd is a NSBMD model
 Installation
 ------------
 
+ndspy requires Python 3.6 or newer to run. Python 2 is not supported at all.
+
 The easiest way to get the latest stable release of ndspy is through PyPI using
 pip.
 
