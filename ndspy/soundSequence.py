@@ -947,7 +947,7 @@ class PortamentoOnOffSequenceEvent(SequenceEvent):
         super().__init__(0xCE)
         if value in [0, 1]:
             value = bool(value)
-        self.value = self.Value(value)
+        self.value = value
 
     def save(self, eventsToOffsets=None):
         return super().save() + bytes([self.value])
