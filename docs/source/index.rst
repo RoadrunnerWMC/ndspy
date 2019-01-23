@@ -195,6 +195,7 @@ subject to drastic changes at any time. This is also mentioned in the
     tutorials
     api
     tools
+    changelog
     sdatStructure
 
 
@@ -220,6 +221,8 @@ using information from many, many sources. In alphabetical order:
     about PSG instruments in *SBNK* files
 *   `GBATEK <http://problemkaputt.de/gbatek.htm>`_ -- for various miscellaneous
     things
+*   Personal correspondence with Gota7#9350 on Discord -- for information about
+    note definition type values in *SBNK* files
 *   `Imran Nazar: The Smallest NDS File
     <http://imrannazar.com/The-Smallest-NDS-File>`_ -- convenient quick
     reference for the ROM header format; also provides a nice test case for the

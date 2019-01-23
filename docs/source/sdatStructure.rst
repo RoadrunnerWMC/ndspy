@@ -95,7 +95,10 @@ Note definition
 A *note definition* defines one note that an instrument can play. It includes
 all of the following:
 
-*   A *SWAR* number (specifically, an index (0-3) into the *SWAR* ID list in the
+*   A type value that can cause the note definition to play an *SWAV*, a square
+    wave, or white noise [1]_.
+*   If the type value indicates that an *SWAV* should be played: a *SWAR*
+    number (specifically, an index (0-3) into the *SWAR* ID list in the
     *SBNK*), and the number of an *SWAV* within it.
 *   Which note this is, as a number. Examples: 60 (middle C), 74 (high D), 46
     (low A♯).
@@ -108,6 +111,13 @@ done by playing the sample at a faster or slower sample rate to artificially
 make it sound higher or lower. Games calculate the required sample rate for
 this automatically; you never need to deal with the specifics of how that
 works.
+
+.. [1]
+    If the note definition is within a single-note instrument, it won't have
+    its own type value, and the *instrument's* type value will be used instead
+    to achieve the same thing. In all other cases, the note definition does
+    have its own type value as you'd expect. If you're using ndspy, it glosses
+    over this quirk for you.
 
 Single-note instrument
 ++++++++++++++++++++++

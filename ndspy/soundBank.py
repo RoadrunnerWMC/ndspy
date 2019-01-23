@@ -19,6 +19,7 @@ Support for SBNK instrument banks.
 """
 
 
+import enum
 import struct
 
 from . import _common
@@ -33,13 +34,23 @@ RANGE_INSTRUMENT_TYPE = 16
 REGIONAL_INSTRUMENT_TYPE = 17
 
 
+class NoteType(enum.IntEnum):
+    """
+    An enumeration that distinguishes between the three primary types of
+    note definitions.
+    """
+    PCM = 1
+    PSG_SQUARE_WAVE = 2
+    PSG_WHITE_NOISE = 3
+
+
 class NoteDefinition:
     """
     A note definition within a SBNK instrument.
     """
     def __init__(self, waveID_dutyCycle=0, waveArchiveIDID=0, pitch=60,
             attack=127, decay=127, sustain=127, release=127, pan=64,
-            unknown=1):
+            type=1):
         self.waveID = waveID_dutyCycle
         self.waveArchiveIDID = waveArchiveIDID
         self.pitch = pitch
@@ -48,7 +59,8 @@ class NoteDefinition:
         self.sustain = sustain
         self.release = release
         self.pan = pan
-        self.unknown = unknown
+        if type in [1, 2, 3]: type = NoteType(type)
+        self.type = type
 
 
     @property
@@ -60,19 +72,19 @@ class NoteDefinition:
     
 
     @classmethod
-    def fromData(cls, data):
+    def fromData(cls, data, type=1):
         """
         Create a note definition from raw file data that does not
-        include the "unknown" value.
+        include the type value at the beginning.
         """
-        return cls(*struct.unpack_from('<HH6B', data), 1)
+        return cls(*struct.unpack_from('<HH6B', data), type)
 
 
     @classmethod
-    def fromDataWithUnknown(cls, data):
+    def fromDataWithType(cls, data):
         """
         Create a note definition from raw file data that includes the
-        "unknown" value.
+        type value at the beginning.
         """
         values = struct.unpack_from('<3H6B', data)
         return cls(*values[1:], values[0])
@@ -81,25 +93,25 @@ class NoteDefinition:
     def save(self):
         """
         Generate data representing this note definition, without
-        including the "unknown" value.
+        including the type value.
         """
         return struct.pack('<HH6B', self.waveID, self.waveArchiveIDID,
             self.pitch, self.attack, self.decay, self.sustain,
             self.release, self.pan)
 
 
-    def saveWithUnknown(self):
+    def saveWithType(self):
         """
         Generate data representing this note definition, including the
-        "unknown" value.
+        type value at the beginning.
         """
-        return struct.pack('<H', self.unknown) + self.save()
+        return struct.pack('<H', self.type) + self.save()
 
 
-    def __str__(self, typeContext=SINGLE_NOTE_PCM_INSTRUMENT_TYPE):
+    def __str__(self):
         name = _common.noteName(self.pitch)
 
-        if typeContext == SINGLE_NOTE_PSG_SQUARE_WAVE_INSTRUMENT_TYPE:
+        if self.type == NoteType.PSG_SQUARE_WAVE:
             pct = ['12.5%',
                    '25%',
                    '37.5%',
@@ -108,20 +120,20 @@ class NoteDefinition:
                    '75%',
                    '87.5%',
                    '0%'][self.dutyCycle & 7]
-            extraInfo = f' ({pct} duty cycle)'
-        elif typeContext == SINGLE_NOTE_PSG_WHITE_NOISE_INSTRUMENT_TYPE:
-            extraInfo = ''
+            extraInfo = f'PSG square wave: {pct} duty cycle'
+        elif self.type == NoteType.PSG_WHITE_NOISE:
+            extraInfo = 'PSG white noise'
         else:
-            extraInfo = f' (SWAR {self.waveArchiveIDID}, SWAV {self.waveID})'
+            extraInfo = f'PCM: SWAR {self.waveArchiveIDID}, SWAV {self.waveID}'
 
-        return f'<note def {name}{extraInfo}>'
+        return f'<note def {name} ({extraInfo})>'
 
 
     def __repr__(self):
         params = ', '.join(repr(s) for s in
             [self.waveID, self.waveArchiveIDID, self.pitch, self.attack,
             self.decay, self.sustain, self.release, self.pan,
-            self.unknown])
+            self.type])
         return f'{type(self).__name__}({params})'
         
 
@@ -170,9 +182,18 @@ class SingleNoteInstrument(Instrument):
     An instrument that contains one note definition and nothing else.
     This class encompasses instrument type values 1 through 15.
     """
-    def __init__(self, type, noteDefinition):
-        super().__init__(type)
+    def __init__(self, noteDefinition):
         self.noteDefinition = noteDefinition
+        super().__init__(int(noteDefinition.type))
+
+
+    @property
+    def type(self):
+        return int(self.noteDefinition.type)
+    @type.setter
+    def type(self, value):
+        if value in [1, 2, 3]: value = NoteType(value)
+        self.noteDefinition.type = value
 
 
     @classmethod
@@ -182,9 +203,9 @@ class SingleNoteInstrument(Instrument):
         """
 
         noteData = data[startOffset : startOffset + 10]
-        noteDefinition = NoteDefinition.fromData(noteData)
+        noteDefinition = NoteDefinition.fromData(noteData, type)
 
-        return cls(type, noteDefinition), 10
+        return cls(noteDefinition), 10
 
 
     def save(self):
@@ -196,31 +217,11 @@ class SingleNoteInstrument(Instrument):
 
 
     def __str__(self):
-
-        if self.type == SINGLE_NOTE_PCM_INSTRUMENT_TYPE:
-            typeName = 'PCM'
-        elif self.type == SINGLE_NOTE_PSG_SQUARE_WAVE_INSTRUMENT_TYPE:
-            typeName = 'PSG square wave'
-        elif self.type == SINGLE_NOTE_PSG_WHITE_NOISE_INSTRUMENT_TYPE:
-            typeName = 'PSG white noise'
-        else:
-            typeName = 'unknown'
-
-        try:
-            nd = self.noteDefinition.__str__(self.type)
-        except TypeError:
-            # The object's __str__ method doesn't support the `type`
-            # parameter, so it probably isn't NoteDefinition or a
-            # subclass of it. In this case, just use str().
-            nd = str(self.noteDefinition)
-
-        return f'<single-note {typeName} instrument {nd}>'
+        return f'<single-note instrument {self.noteDefinition}>'
 
 
     def __repr__(self):
-        return (f'{type(self).__name__}('
-                f'{self.type!r}, '
-                f'{self.noteDefinition!r})')
+        return (f'{type(self).__name__}({self.noteDefinition!r})')
 
 
 class RangeInstrument(Instrument):
@@ -247,7 +248,7 @@ class RangeInstrument(Instrument):
         for i in range(lastPitch - firstPitch + 1):
             noteData = data[off : off+0xC]
             noteDefinitions.append(
-                NoteDefinition.fromDataWithUnknown(noteData))
+                NoteDefinition.fromDataWithType(noteData))
             off += 0xC
 
         return (cls(firstPitch, noteDefinitions),
@@ -265,7 +266,7 @@ class RangeInstrument(Instrument):
 
         off = 2
         for n in self.noteDefinitions:
-            data[off : off+0xC] = n.saveWithUnknown()
+            data[off : off+0xC] = n.saveWithType()
             off += 0xC
 
         return super().save() + (data,)
@@ -278,15 +279,13 @@ class RangeInstrument(Instrument):
                 f'{_common.noteName(i + self.firstPitch)}: {d}')
         defs = ', '.join(joinList)
         firstNote = _common.noteName(self.firstPitch)
-        lastNote = _common.noteName(self.lastPitch)
-        return f'<range instrument {firstNote}-{lastNote} {{{defs}}}>'
+        return f'<range instrument starting at {firstNote} {{{defs}}}>'
 
 
     def __repr__(self):
         defs = ', '.join(repr(d) for d in self.noteDefinitions)
         return (f'{type(self).__name__}('
                 f'{self.firstPitch!r}, '
-                f'{self.lastPitch!r}, '
                 f'[{defs}])')
 
 
@@ -334,7 +333,7 @@ class RegionalInstrument(Instrument):
             if e == 0 and off != startOffset + 8: break
 
             noteData = data[off : off+0xC]
-            note = NoteDefinition.fromDataWithUnknown(noteData)
+            note = NoteDefinition.fromDataWithType(noteData)
             off += 0xC
 
             regions.append(cls.Region(e, note))
@@ -355,7 +354,7 @@ class RegionalInstrument(Instrument):
         for i, region in enumerate(self.regions):
             data[i] = region.lastPitch
             data[8 + 0xC * i : 0x14 + 0xC * i] = \
-                region.noteDefinition.saveWithUnknown()
+                region.noteDefinition.saveWithType()
 
         return super().save() + (data,)
 

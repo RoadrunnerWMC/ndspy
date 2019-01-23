@@ -57,14 +57,63 @@ The ``ndspy.soundBank`` module contains classes and functions related to the
     The type value of a :py:class:`RegionalInstrument`: 17.
 
 
-.. py:class:: NoteDefinition([waveID_dutyCycle[, waveArchiveIDID[, pitch[, attack[, decay[, sustain[, release[, pan[, unknown]]]]]]]]])
+.. py:class:: NoteType
+
+    :base class: :py:class:`enum.IntEnum`
+
+    An enumeration that distinguishes between the three primary types of note
+    definitions.
+
+    .. seealso::
+
+        :py:class:`NoteDefinition` -- for more information about these type
+        values.
+
+    .. data:: PCM
+
+        The type value of a :py:class:`NoteDefinition` that plays an *SWAV*
+        from a *SWAR*: 1.
+
+    .. data:: PSG_SQUARE_WAVE
+
+        The type value of a :py:class:`NoteDefinition` that plays a square wave
+        using the Nintendo DS's PSG hardware: 2.
+
+    .. data:: PSG_WHITE_NOISE
+
+        The type value of a :py:class:`NoteDefinition` that plays white noise
+        using the Nintendo DS's PSG hardware: 3.
+
+
+.. py:class:: NoteDefinition([waveID_dutyCycle[, waveArchiveIDID[, pitch[, attack[, decay[, sustain[, release[, pan[, type]]]]]]]]])
 
     A note definition within a *SBNK* instrument. This can be thought of as a
     template from which many notes of different pitches can be played.
 
-    Some attributes only have an effect if the note definition is used in
-    certain contexts; these situations are detailed in "Note" boxes in the
-    documentation for these attributes.
+    There are three known meaningful type values (:py:attr:`type`) associated
+    with this class, which affect which attributes are meaningful:
+
+    *   :py:data:`NoteType.PCM` will produce a PCM note definition, which can
+        play a *SWAV* wave file from a *SWAR* wave archive file.
+
+        If the note definition is of this type, you can use the
+        :py:attr:`waveID` and :py:attr:`waveArchiveIDID` attributes to set the
+        *SWAV* and *SWAR* IDs, respectively.
+
+    *   :py:data:`NoteType.PSG_SQUARE_WAVE` will produce a PSG square-wave note
+        definition, which uses the Nintendo DS's PSG hardware to play a square
+        wave.
+
+        If the instrument is of this type, you can use the :py:attr:`dutyCycle`
+        attribute to set the square wave's duty cycle.
+
+    *   :py:data:`NoteType.PSG_WHITE_NOISE` will produce a PSG white noise note
+        definition, which uses the Nintendo DS's PSG hardware to play white
+        noise.
+
+        There are no attributes that are specific to this instrument type.
+
+    Attributes not mentioned above will work with all type values.
 
     :param waveID_dutyCycle: The initial value for the :py:attr:`waveID` and
         :py:attr:`dutyCycle` attributes.
@@ -84,7 +133,7 @@ The ``ndspy.soundBank`` module contains classes and functions related to the
 
     :param pan: The initial value for the :py:attr:`pan` attribute.
 
-    :param unknown: The initial value for the :py:attr:`unknown` attribute.
+    :param type: The initial value for the :py:attr:`type` attribute.
 
     .. py:attribute:: attack
 
@@ -163,9 +212,8 @@ The ``ndspy.soundBank`` module contains classes and functions related to the
 
         .. note::
 
-            This only has an effect if this note definition is part of a
-            :py:class:`SingleNoteInstrument` with a type value of
-            :py:const:`SINGLE_NOTE_PSG_SQUARE_WAVE_INSTRUMENT_TYPE`.
+            This only has an effect if :py:attr:`type` is
+            :py:data:`NoteType.PSG_SQUARE_WAVE`.
 
         .. note::
 
@@ -265,20 +313,29 @@ The ``ndspy.soundBank`` module contains classes and functions related to the
 
         :default: 127
 
-    .. py:attribute:: unknown
+    .. py:attribute:: type
 
-        A value of unknown purpose.
+        The type of sound that will be produced when this note definition is
+        played. The value of this attribute affects whether other attributes
+        are meaningful or not, such as :py:attr:`dutyCycle`, :py:attr:`waveID`,
+        and :py:attr:`waveArchiveIDID`.
 
-        .. note::
+        .. warning::
 
-            This is only present in the file data if the note definition is
-            part of a :py:class:`RegionalInstrument` or
-            :py:class:`RangeInstrument`. In other contexts, this will be
-            initialized as a default value, and ignored when saving.
+            If this note definition is within a
+            :py:class:`SingleNoteInstrument`, this attribute is an alias for
+            :py:attr:`SingleNoteInstrument.type` (automatically cast to and
+            from :py:class:`NoteType` for you). See the documentation for
+            :py:attr:`SingleNoteInstrument.type` for more information.
 
-        :type: :py:class:`int`
+        .. seealso::
 
-        :default: 1
+            :py:class:`NoteDefinition` -- for more information about valid
+            values for this attribute.
+
+        :type: :py:class:`NoteType` (or :py:class:`int`)
+
+        :default: :py:data:`NoteType.PCM`
 
     .. py:attribute:: waveArchiveIDID
 
@@ -300,10 +357,8 @@ The ``ndspy.soundBank`` module contains classes and functions related to the
 
         .. note::
 
-            This has no effect if this note definition is part of a
-            :py:class:`SingleNoteInstrument` with a type value of
-            :py:const:`SINGLE_NOTE_PSG_SQUARE_WAVE_INSTRUMENT_TYPE` or
-            :py:const:`SINGLE_NOTE_PSG_WHITE_NOISE_INSTRUMENT_TYPE`.
+            This only has an effect if :py:attr:`type` is
+            :py:data:`NoteType.PCM`.
 
         .. seealso::
             :py:attr:`waveID` -- the ID number of the *SWAV* to use from the
@@ -320,16 +375,14 @@ The ``ndspy.soundBank`` module contains classes and functions related to the
 
         .. note::
 
-            This has no effect if this note definition is part of a
-            :py:class:`SingleNoteInstrument` with a type value of
-            :py:const:`SINGLE_NOTE_PSG_SQUARE_WAVE_INSTRUMENT_TYPE` or
-            :py:const:`SINGLE_NOTE_PSG_WHITE_NOISE_INSTRUMENT_TYPE`.
+            This only has an effect if :py:attr:`type` is
+            :py:data:`NoteType.PCM`.
 
         .. note::
 
-            This attribute is an alias for :py:attr:`dutyCycle`. This does not
-            cause conflicts, since that attribute only affects note definitions
-            that define PSG square waves, which do not use *SWAV*\s at all.
+            This is an alias for :py:attr:`dutyCycle`. This does not cause
+            conflicts, since that attribute only affects note definitions that
+            define PSG square waves, which do not use *SWAV*\s at all.
 
         .. seealso::
             :py:attr:`waveArchiveIDID` -- the ID number of the ID number of the
@@ -339,29 +392,31 @@ The ``ndspy.soundBank`` module contains classes and functions related to the
 
         :default: 0
 
-    .. py:classmethod:: fromData(data)
+    .. py:classmethod:: fromData(data[, type])
 
         Create a note definition from raw file data that does not include the
-        :py:attr:`unknown` value.
+        :py:attr:`type` value at the beginning.
 
         .. seealso::
-            :py:func:`fromDataWithUnknown` -- use this function instead if the
-            file data does include :py:attr:`unknown`.
+            :py:func:`fromDataWithType` -- use this function instead if the
+            file data does include :py:attr:`type`.
 
         :param bytes data: The data to be read. Only the first 10 bytes will be
             used.
 
+        :param type: The initial value for the :py:attr:`type` attribute.
+
         :returns: The note definition object.
         :rtype: :py:class:`NoteDefinition`
 
-    .. py:classmethod:: fromDataWithUnknown(data)
+    .. py:classmethod:: fromDataWithType(data)
 
         Create a note definition from raw file data that includes the
-        :py:attr:`unknown` value.
+        :py:attr:`type` value at the beginning.
 
         .. seealso::
             :py:func:`fromData` -- use this function instead if the file data
-            does not include :py:attr:`unknown`.
+            does not include :py:attr:`type`.
 
         :param bytes data: The data to be read. Only the first 12 bytes will be
             used.
@@ -372,23 +427,23 @@ The ``ndspy.soundBank`` module contains classes and functions related to the
     .. py:function:: save()
 
         Generate data representing this note definition, without including the
-        :py:attr:`unknown` value.
+        :py:attr:`type` value at the beginning.
 
         .. seealso::
-            :py:func:`saveWithUnknown` -- use this function instead if you want
-            the data to include :py:attr:`unknown`.
+            :py:func:`saveWithType` -- use this function instead if you want
+            the data to include :py:attr:`type`.
 
         :returns: The note definition data.
         :rtype: :py:class:`bytes`
 
-    .. py:function:: saveWithUnknown()
+    .. py:function:: saveWithType()
 
         Generate data representing this note definition, including the
-        :py:attr:`unknown` value.
+        :py:attr:`type` value at the beginning.
 
         .. seealso::
             :py:func:`save` -- use this function instead if you do not want the
-            data to include :py:attr:`unknown`.
+            data to include :py:attr:`type`.
 
         :returns: The note definition data.
         :rtype: :py:class:`bytes`
@@ -463,6 +518,12 @@ The ``ndspy.soundBank`` module contains classes and functions related to the
 
         The type value of this instrument.
 
+        .. warning::
+
+            In the :py:class:`SingleNoteInstrument` subclass, this is an alias
+            for ``instrument.noteDefinition.type``. See
+            :py:attr:`SingleNoteInstrument.type` for more information.
+
         .. seealso::
 
             :py:const:`NO_INSTRUMENT_TYPE`,
@@ -510,7 +571,7 @@ The ``ndspy.soundBank`` module contains classes and functions related to the
         :rtype: ``(type,)``, where ``type`` is of type :py:class:`int`
 
 
-.. py:class:: SingleNoteInstrument(type, noteDefinition)
+.. py:class:: SingleNoteInstrument(noteDefinition)
 
     :base class: :py:class:`Instrument`
 
@@ -519,62 +580,37 @@ The ``ndspy.soundBank`` module contains classes and functions related to the
     This class encompasses instrument type (:py:attr:`Instrument.type`) values
     1 through 15.
 
-    There are three known meaningful type values associated with this class,
-    which affect which attributes of :py:attr:`noteDefinition` are meaningful:
-
-    *   :py:const:`SINGLE_NOTE_PCM_INSTRUMENT_TYPE` will produce a single-note
-        PCM instrument, which is an instrument that can play a *SWAV* wave file
-        from a *SWAR* wave archive file.
-
-        If the instrument is of this type, you can use the
-        :py:attr:`NoteDefinition.waveID` and
-        :py:attr:`NoteDefinition.waveArchiveIDID` attributes of
-        :py:attr:`noteDefinition` to set the *SWAV* and *SWAR* IDs,
-        respectively.
-
-    *   :py:const:`SINGLE_NOTE_PSG_SQUARE_WAVE_INSTRUMENT_TYPE` will produce a
-        single-note PSG square wave instrument, which is an instrument that
-        uses the Nintendo DS's PSG hardware to play a square wave.
-
-        If the instrument is of this type, you can use the
-        :py:attr:`NoteDefinition.dutyCycle` attribute of
-        :py:attr:`noteDefinition` to set the square wave's duty cycle.
-
-    *   :py:const:`SINGLE_NOTE_PSG_WHITE_NOISE_INSTRUMENT_TYPE` will produce a
-        single-note PSG white noise instrument, which is an instrument that
-        uses the Nintendo DS's PSG hardware to play white noise.
-
-        There are no attributes of :py:attr:`noteDefinition` that are specific
-        to this instrument type.
-
-    Attributes of :py:class:`NoteDefinition` not mentioned above will work with
-    all instrument type values.
-
     See the base class documentation (:py:class:`Instrument`) for information
     about inherited functions and attributes.
 
-    :param type: The initial value for the :py:attr:`type` attribute. This
-        should be between 1 and 15, inclusive.
-
-        .. seealso::
-
-            The introductory information for this class
-            (:py:class:`SingleNoteInstrument`) has more information about valid
-            values for this parameter and how they relate to attributes of
-            :py:attr:`noteDefinition`.
+    :param noteDefinition: The initial value for the :py:attr:`noteDefinition`
+        attribute.
 
     .. py:attribute:: noteDefinition
 
         The note definition that this instrument will use.
 
-        .. seealso::
-
-            The introductory information for this class
-            (:py:class:`SingleNoteInstrument`) has more information about how
-            different values of :py:attr:`type` affect which attributes of
-            :py:class:`NoteDefinition` should be used.
-
         :type: :py:class:`NoteDefinition`
+
+    .. py:attribute:: type
+
+        The type value of this instrument. See :py:attr:`Instrument.Type` for
+        more information.
+
+        .. warning::
+
+            The type values for a single-note instrument and its note
+            definition are encoded as a single shared value in the *SBNK* file;
+            thus, they are required to be the same. As such, this property is
+            an alias for ``instrument.noteDefinition.type`` (automatically cast
+            to and from :py:class:`int` for you).
+
+            .. seealso::
+
+                :py:attr:`NoteDefinition.type` -- the attribute that this is an
+                alias of.
+
+        :type: :py:class:`int`
 
     .. py:classmethod:: fromData(type, data, startOffset)
 
