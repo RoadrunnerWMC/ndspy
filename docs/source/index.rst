@@ -177,8 +177,8 @@ Versioning
 
 ndspy follows `semantic versioning <https://semver.org/>`_ to the best of my
 ability. If a tool claims to work with ndspy 1.0.2, it should also work with
-ndspy 1.2.0, but not necessarily 2.0.0. (Please note that ndspy hasn't actually
-reached these version numbers yet!)
+ndspy 1.2.0, but not necessarily 2.0.0. (Please note that not all of those
+version numbers actually exist!)
 
 Undocumented modules are considered exempt from semantic versioning, and are
 subject to drastic changes at any time. This is also mentioned in the
