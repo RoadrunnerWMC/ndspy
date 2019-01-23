@@ -25,6 +25,20 @@ The ``ndspy`` namespace contains functions and classes that don't need
 their own modules.
 
 
+.. py:data:: VERSION
+
+    A ``collections.namedtuple`` that provides the current ndspy version. You
+    can use this like a 3-tuple (so, for example, this would behave like
+    ``(2, 0, 0)`` for ndspy 2.0.0) or like an object with ``major``, ``minor``
+    and ``patch`` integer attributes.
+
+    .. note::
+
+        This was added in ndspy 2.0.0, so it doesn't exist in 1.0.0 and 1.0.1.
+        However, 2.0.0 was released less than a week after 1.0.0, so it
+        wouldn't be too unsafe to just assume this probably exists.
+
+
 .. py:class:: Processor
 
     :base class: :py:class:`enum.Enum`

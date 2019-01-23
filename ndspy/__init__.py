@@ -19,7 +19,13 @@ Functions and classes that don't need their own modules.
 """
 
 
+import collections
 import enum
+
+
+VERSION = collections.namedtuple('version', 'major minor patch')(2, 0, 0)
+try: VERSION.__class__.__name__ = 'ndspy.version'
+except: pass
 
 
 class Processor(enum.Enum):
