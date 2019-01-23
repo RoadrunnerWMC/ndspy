@@ -17,7 +17,7 @@
     along with ndspy.  If not, see <https://www.gnu.org/licenses/>.
 
 Changelog
-========================
+=========
 
 This page contains the full changelog for all ndspy versions. All old versions
 can be downloaded from the `Releases page on GitHub
@@ -25,8 +25,8 @@ can be downloaded from the `Releases page on GitHub
 
 .. contents:: :local:
 
-1.0.0
------
+1.0.0 (Jan. 18, 2019)
+---------------------
 
 First release! The API has changed a lot in the weeks prior to this release, so
 if you find yourself in possession of any code written for pre-1.0.0 ndspy,
@@ -38,14 +38,14 @@ you'll probably need to make adjustments.
     you really must have it for some reason, you can find it `on GitHub
     <https://github.com/RoadrunnerWMC/ndspy/releases/tag/v1.0.0>`_.
 
-1.0.1
------
+1.0.1 (Jan. 18, 2019)
+---------------------
 
 Fixed an issue that caused pip to erroneously attempt to install on unsupported
 versions of Python, instead of giving the correct error message.
 
-2.0.0
------
+2.0.0 (Jan. 23, 2019)
+---------------------
 
 *   Updated the :py:mod:`ndspy.soundBank` API to reflect the new discovery that
     note definition type values are defined for all instrument types, not just
