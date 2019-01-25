@@ -24,6 +24,13 @@ import struct
 from . import _common
 
 
+_ENCODINGS = [None, 'latin-1', 'utf-16', 'shift-jis', 'utf-8']
+# Latin-1 is found in Animal Crossing Wild World and Super Princess Peach
+# UTF-16 is found in the Zeldas and NSMB
+# SJIS is found in Super Princess Peach
+# UTF-8 is found in WarioWare DIY
+
+
 class BMG:
     """
     A class representing a BMG file.
@@ -38,7 +45,8 @@ class BMG:
 
         self.id = id
 
-        self.unk10 = 2
+        self.encoding = 'utf-16'
+        self.endianness = '<'
         self.unk14 = 0
         self.unk18 = 0
         self.unk1C = 0
@@ -47,20 +55,41 @@ class BMG:
             self._initFromData(data)
 
 
+    def _getFullEncoding(self):
+        if self.encoding.lower() == 'utf-16':
+            return 'utf-16' + ('le' if self.endianness == '<' else 'be')
+        return self.encoding
+
+
     def _initFromData(self, data):
         if data[:8] != b'MESGbmg1':
             raise ValueError('Not a BMG file.')
 
-        magic, dataLen, sectionCount, self.unk10, unk14, unk18, unk1C = \
-            struct.unpack_from('<8s6I', data, 0)
+        # Super Princess Peach uses *big-endian* BMGs. What even.
+
+        # Well, OK, whatever. We can make an extremely accurate guess by
+        # reading the file length value both ways and seeing which one
+        # seems to make more sense:
+        dataLenLE, = struct.unpack_from('<I', data, 8)
+        dataLenBE, = struct.unpack_from('>I', data, 8)
+        self.endianness = se = '<' if dataLenLE < dataLenBE else '>'
+        # Still, though... ugh.
+
+        magic, dataLen, sectionCount, enc, unk14, unk18, unk1C = \
+            struct.unpack_from(se + '8sIIB3I', data, 0)
+        if enc != 0 and enc < len(_ENCODINGS):
+            self.encoding = _ENCODINGS[enc]
+        else:
+            raise ValueError(f'Unknown encoding value: {enc}')
 
         INF1 = []
         def parseINF1(offset, length):
-            count, entryLength, self.id = struct.unpack_from('<HHI', data, offset + 8)
-            assert entryLength == 8
+            count, entryLength, self.id = struct.unpack_from(se + 'HHI', data, offset + 8)
 
             for i in range(count):
-                entryOff, entryAttribs = struct.unpack_from('<II', data, offset + 16 + i * 8)
+                thingOff = offset + 16 + i * entryLength
+                entryOff, = struct.unpack_from(se + 'I', data, thingOff)
+                entryAttribs = data[thingOff + 4 : thingOff + entryLength]
                 INF1.append((entryOff, entryAttribs))
 
         DAT1 = b''
@@ -72,7 +101,7 @@ class BMG:
         self.labels = []
         def parseFLW1(offset, length):
             instructionsCount, labelsCount, unk0C = \
-                struct.unpack_from('<HHI', data, offset + 8)
+                struct.unpack_from(se + 'HHI', data, offset + 8)
             # unk0C is always 0, as far as I can tell
 
             instructionsTableOffset = offset + 16
@@ -85,24 +114,24 @@ class BMG:
             indicesTableOffset = instructionsTableOffset + instructionsCount * 8
             bmgIDsTableOffset = indicesTableOffset + labelsCount * 2
             for i in range(labelsCount):
-                index, = struct.unpack_from('<h', data, indicesTableOffset + i * 2)
-                bmgID, = struct.unpack_from('<b', data, bmgIDsTableOffset + i)
+                index, = struct.unpack_from(se + 'h', data, indicesTableOffset + i * 2)
+                bmgID, = struct.unpack_from(se + 'b', data, bmgIDsTableOffset + i)
                 if bmgID != 0 or index != 0:
                     self.labels.append((bmgID, index))
 
         self.scripts = []
         def parseFLI1(offset, length):
-            count, entryLength, unk0C = struct.unpack_from('<HHI', data, offset + 8)
+            count, entryLength, unk0C = struct.unpack_from(se + 'HHI', data, offset + 8)
             assert entryLength == 8
             # unk0C is always 0, as far as I can tell
 
             for i in range(count):
-                id, index = struct.unpack_from('<IHxx', data, offset + 16 + i * 8)
+                id, index = struct.unpack_from(se + 'IHxx', data, offset + 16 + i * 8)
                 self.scripts.append((id, index))
 
         offset = 0x20
         for i in range(sectionCount):
-            sectionMagic, sectionLen = struct.unpack_from('<4sI', data, offset)
+            sectionMagic, sectionLen = struct.unpack_from(se + '4sI', data, offset)
             if sectionMagic == b'INF1':
                 parseINF1(offset, sectionLen)
             elif sectionMagic == b'DAT1':
@@ -117,6 +146,9 @@ class BMG:
 
         # Now we just need to read the messages.
 
+        nullChar = '\0'.encode(self._getFullEncoding())
+        escapeSequenceStart = '\x1A'.encode(self._getFullEncoding())
+
         self.messages = []
         for offset, attribs in INF1:
 
@@ -128,23 +160,23 @@ class BMG:
             stringParts = []
             currentStringStart = offset
 
-            nextBytes = DAT1[offset : offset + 2]
-            while nextBytes != b'\0\0':
-                if nextBytes == b'\x1A\x00': # escape sequence
+            nextBytes = DAT1[offset : offset + len(nullChar)]
+            while nextBytes != nullChar:
+                if nextBytes == escapeSequenceStart: # escape sequence
                     if currentStringStart and currentStringStart != offset:
-                        stringParts.append(DAT1[currentStringStart:offset].decode('utf-16le'))
-                    escapeLen, escapeType = DAT1[offset + 2 : offset + 4]
-                    escapeData = DAT1[offset + 4 : offset + escapeLen]
+                        stringParts.append(DAT1[currentStringStart:offset].decode(self._getFullEncoding()))
+                    escapeLen, escapeType = DAT1[offset + len(escapeSequenceStart) : offset + len(escapeSequenceStart) + 2]
+                    escapeData = DAT1[offset + len(escapeSequenceStart) + 2 : offset + escapeLen]
                     stringParts.append(Message.Escape(escapeType, escapeData))
                     offset += escapeLen
                     currentStringStart = offset
                 else:
-                    offset += 2
+                    offset += len(nullChar)
 
-                nextBytes = DAT1[offset : offset + 2]
+                nextBytes = DAT1[offset : offset + len(nullChar)]
 
             if currentStringStart and currentStringStart != offset:
-                stringParts.append(DAT1[currentStringStart:offset].decode('utf-16le'))
+                stringParts.append(DAT1[currentStringStart:offset].decode(self._getFullEncoding()))
 
             self.messages.append(Message(attribs, stringParts, offset == 0))
 
@@ -182,6 +214,11 @@ class BMG:
         """
         Generate file data representing this BMG.
         """
+        se = self.endianness
+        if se not in '<>':
+            raise ValueError(f"BMG.endianness is '{se}', which is"
+                             f" neither '<' nor '>'")
+
         data = bytearray(0x20)
 
         instructionsCount = len(self.instructions)
@@ -195,15 +232,30 @@ class BMG:
         if self.scripts: numSections += 1
 
         INF1 = bytearray(16)
-        DAT1 = bytearray(10) # Starts with 2 null bytes for whatever reason
+        DAT1 = bytearray(8)
         FLW1 = bytearray(16)
         FLI1 = bytearray(16)
 
-        for message in self.messages:
+        DAT1.extend('\0'.encode(self._getFullEncoding()))
+
+        if self.messages:
+            inf1EntryLen = 4 + len(self.messages[0].info)
+        else:
+            inf1EntryLen = 4
+
+        for i, message in enumerate(self.messages):
+            if len(message.info) != inf1EntryLen - 4:
+                raise ValueError(f'Message info values are presumed to'
+                                 f' be {inf1EntryLen - 4} bytes long,'
+                                 f' but message {i} has a'
+                                 f' {len(message.info)}-byte-long info'
+                                 f' value!')
+
             offset = 0 if message.isNull else len(DAT1) - 8
-            INF1.extend(struct.pack('<II', offset, message.info))
+            INF1.extend(struct.pack(se + 'I', offset))
+            INF1.extend(message.info)
             if not message.isNull:
-                DAT1.extend(message.save())
+                DAT1.extend(message.save(self._getFullEncoding()))
 
         for inst in self.instructions:
             if hasattr(inst, 'save'):
@@ -214,14 +266,14 @@ class BMG:
         while len(FLW1) % 16: FLW1.extend(b'\0' * 8)
 
         for bmgID, instIndex in self.labels:
-            FLW1.extend(struct.pack('<h', instIndex))
+            FLW1.extend(struct.pack(se + 'h', instIndex))
         for _ in range(labelsCount - len(self.labels)):
             FLW1.extend(b'\0\0')
         for bmgID, instIndex in self.labels:
-            FLW1.extend(struct.pack('<b', bmgID))
+            FLW1.extend(struct.pack(se + 'b', bmgID))
 
         for id, startIndex in self.scripts:
-            FLI1.extend(struct.pack('<II', id, startIndex))
+            FLI1.extend(struct.pack(se + 'II', id, startIndex))
 
         # Sections' lengths must be 32-byte aligned
         while len(INF1) % 32: INF1.append(0)
@@ -234,14 +286,14 @@ class BMG:
         while FLI1len % 32: FLI1len += 1
 
         # Pack section headers
-        struct.pack_into('<4sIHHI', INF1, 0,
-            b'INF1', len(INF1), len(self.messages), 8, self.id)
-        struct.pack_into('<4sI', DAT1, 0, b'DAT1', len(DAT1))
+        struct.pack_into(se + '4sIHHI', INF1, 0,
+            b'INF1', len(INF1), len(self.messages), inf1EntryLen, self.id)
+        struct.pack_into(se + '4sI', DAT1, 0, b'DAT1', len(DAT1))
         if self.instructions:
-            struct.pack_into('<4sIHH', FLW1, 0,
+            struct.pack_into(se + '4sIHH', FLW1, 0,
                 b'FLW1', len(FLW1), instructionsCount, labelsCount)
         if self.scripts:
-            struct.pack_into('<4sIHH', FLI1, 0,
+            struct.pack_into(se + '4sIHH', FLI1, 0,
                 b'FLI1', FLI1len, len(self.scripts), 8)
 
         # Insert the sections
@@ -253,7 +305,7 @@ class BMG:
         # Pack the BMG header
         totalLen = len(data)
         while totalLen % 32: totalLen += 1
-        struct.pack_into('<8s3I', data, 0, b'MESGbmg1', totalLen, numSections, self.unk10)
+        struct.pack_into(se + '8sIIB', data, 0, b'MESGbmg1', totalLen, numSections, _ENCODINGS.index(self.encoding.lower()))
 
         return bytes(data)
 
@@ -270,32 +322,32 @@ class BMG:
 
     def __str__(self):
         return (f'<bmg id={self.id} '
-                f'({len(self.messages)} messages,'
+                f'({len(self.messages)} messages, '
                 f'{len(self.scripts)} scripts)>')
 
 
     def __repr__(self):
-        optionalArgs = []
+        args = [repr(self.messages)]
 
         if self.instructions:
-            optionalArgs.append(repr(self.instructions))
+            args.append(repr(self.instructions))
 
         if self.labels:
             p = ''
-            if len(optionalArgs) < 1:
+            if len(args) < 2:
                 p = 'labels='
-            optionalArgs.append(p + repr(self.labels))
+            args.append(p + repr(self.labels))
 
         if self.scripts:
             p = ''
-            if len(optionalArgs) < 2:
+            if len(args) < 3:
                 p = 'scripts='
-            optionalArgs.append(p + repr(self.scripts))
+            args.append(p + repr(self.scripts))
 
-        optionalArgs.append(f'id={self.id:#x}')
+        args.append(f'id={self.id:#x}')
 
         return (f'{type(self).__name__}.fromMessages('
-                f'{self.messages!r}{", ".join(optionalArgs)})')
+                f'{", ".join(args)})')
 
 
 class Message:
@@ -313,15 +365,17 @@ class Message:
             self.type = type
             self.data = data
 
-            # Type = 4 is used for pluralization
-            # (and there's a couple parameters -- need to look into that)
+            # Type = 4 is used for pluralization in Spirit Tracks
+            # (and there are a couple parameters -- need to look into
+            # that)
 
-        def save(self):
+        def save(self, encoding):
             """
             Generate binary data representing this escape sequence.
             """
-            data = bytearray(b'\x1A\x00')
-            data.append(len(self.data) + 4)
+            start = '\x1A'.encode(encoding)
+            data = bytearray(start)
+            data.append(len(self.data) + 2 + len(start))
             data.append(self.type)
             data.extend(self.data)
             return data
@@ -333,29 +387,29 @@ class Message:
             return f'[{self.type}:{self.data.hex()}]'
 
     info = 0
-    stringParts = []
+    stringParts = None
     isNull = False
 
-    def __init__(self, info=0, stringParts=None, isNull=False):
+    def __init__(self, info=b'', stringParts=None, isNull=False):
         self.info = info
         self.stringParts = [] if stringParts is None else stringParts
         self.isNull = isNull
 
-    def save(self):
+    def save(self, encoding):
         """
         Generate binary data representing this message.
         """
         data = bytearray()
         for part in self.stringParts:
             if isinstance(part, str):
-                data.extend(part.encode('utf-16le'))
+                data.extend(part.encode(encoding))
             else:
-                data.extend(part.save())
-        data.extend(b'\0\0')
+                data.extend(part.save(encoding))
+        data.extend('\0'.encode(encoding))
         return data
 
     def __repr__(self):
-        return f'{type(self).__name__}({hex(self.info)}, {self.stringParts!r})'
+        return f'{type(self).__name__}({self.info!r}, {self.stringParts!r})'
 
     def __str__(self):
         return ''.join(str(s) for s in self.stringParts)

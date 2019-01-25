@@ -23,11 +23,11 @@
 
 The ``ndspy.bmg`` module provides support for loading and saving *BMG* files.
 
-*BMG* files contain all of the text in a game that will be displayed to the
-player (apart from text embedded into images). Games contain one or more *BMG*
-files for each language they support, and will load the appropriate one
-depending on the console's language setting. Each "message" is referenced by
-index.
+In games that use them, *BMG* files generally contain most or all of the text
+that can be displayed to the player (apart from text embedded into images).
+Games contain one or more *BMG* files for each language they support, and will
+load the appropriate one depending on the console's language setting. Each
+"message" is referenced by index.
 
 Some *BMG* files -- namely, those used in the DS Zelda games -- can contain
 scripts that control game progression in addition to text. ndspy can read and
@@ -45,6 +45,34 @@ therefore out of its scope.
     :type data: bytes
 
     :param id: The initial value for the :py:attr:`id` attribute.
+
+    .. py:attribute:: encoding
+
+        The encoding that should be used for storing strings in the *BMG*.
+        Choosing an encoding is a trade-off between space efficiency, time
+        efficiency, and the amount and choice of characters that can be
+        encoded.
+
+        Valid encodings are ``latin-1``, ``utf-16``, ``shift-jis``, and
+        ``utf-8``.
+
+        :type: :py:class:`str`
+
+        :default: ``'utf-16'``
+
+    .. py:attribute:: endianness
+
+        Whether values in the *BMG* should be stored using big- or
+        little-endian byte order. Since the Nintendo DS is by default a
+        little-endian console, almost every game uses little-endian *BMG*
+        files. An exception to this is *Super Princess Peach.*
+
+        ``'<'`` and ``'>'`` (representing little-endian and big-endian,
+        respectively) are the only values this attribute is allowed to take.
+
+        :type: :py:class:`str`
+
+        :default: ``'<'``
 
     .. py:attribute:: id
 
@@ -110,14 +138,6 @@ therefore out of its scope.
             :py:class:`int`\s)
 
         :default: ``[]``
-
-    .. py:attribute:: unk10
-
-        Unknown header value at 0x10.
-
-        :type: :py:class:`int`
-
-        :default: 2
 
     .. py:attribute:: unk14
 
@@ -214,17 +234,34 @@ therefore out of its scope.
 
     .. py:attribute:: info
 
-        A value representing message metadata, which comes from the *BMG*'s
-        *INF1* block. The specific meaning of this value is currently unclear.
+        A value containing message metadata, which comes from the *BMG*'s
+        *INF1* block.
 
-        :type: :py:class:`int`
+        The meaning of this value is completely game-dependent, and some games
+        just leave this empty and don't use it at all.
 
-        :default: 0
+        .. warning::
+
+            While the amount of metadata per message varies from game to game,
+            it's always required that all messages in a *BMG* have the same
+            amount of metadata. If you violate this, you'll experience errors
+            when trying to save!
+
+        :type: :py:class:`bytes`
+
+        :default: ``b''``
 
     .. py:attribute:: isNull
 
         This is ``True`` if the message is null; that is, if its data offset
-        value in *INF1* is 0.
+        value in *INF1* is 0. A null message should have an empty
+        :py:attr:`stringParts` list.
+
+        .. note::
+
+            :py:class:`Message`\s with this attribute set to ``True`` are used
+            to represent empty messages instead of ``None`` because empty
+            messages can still have non-empty :py:attr:`info` values.
 
         :type: :py:class:`bool`
 
@@ -239,9 +276,12 @@ therefore out of its scope.
 
         :default: ``[]``
 
-    .. py:function:: save()
+    .. py:function:: save(encoding)
 
         Generate binary data representing this message.
+
+        :param str encoding: The encoding to use for the string data in the
+            message (i.e. ``'utf-16'``, ``'ascii'``, etc).
 
         :returns: The message data.
         :rtype: :py:class:`bytes`
@@ -274,9 +314,14 @@ therefore out of its scope.
 
         :default: 0
 
-    .. py:function:: save()
+    .. py:function:: save(encoding)
 
         Generate binary data representing this escape sequence.
+
+        :param str encoding: The encoding that should be assumed when building
+            the binary data for the escape sequence (i.e. ``'utf-16'``,
+            ``'ascii'``, etc). This is used to properly encode the escape
+            character itself, U+001A.
 
         :returns: The escape sequence data.
         :rtype: :py:class:`bytes`
