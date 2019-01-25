@@ -37,6 +37,12 @@ contain any file data; it merely defines the folder hierarchy, and names of
 folders and files. As such, this particular page of documentation page will use
 the terms "filename" and "file" rather interchangeably.
 
+
+.. _file-names-and-file-ids:
+
+Filenames and file IDs
+----------------------
+
 It's important to understand how file IDs relate to filenames. Here's an
 example directory structure showing both filenames and file IDs:
 

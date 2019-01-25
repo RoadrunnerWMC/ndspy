@@ -21,9 +21,28 @@ Tutorials
 
 This section contains tutorials to help you learn how to use ndspy!
 
+I suggest starting with :doc:`tutorial00-gettingStarted` to ensure that you've
+installed ndspy correctly and know how to run the correct copy of Python. After
+that, you should try :doc:`tutorial01-editingRom`, which is intended to be a
+relatively gentle introduction to basic ndspy usage. Once you've completed both
+of those, you can pretty much jump around to whatever tutorials interest you.
+
+Some familiarity with Python is assumed; however, we won't be using any
+particularly advanced syntax [1]_, so it's OK if you're not too good at it yet.
+
+These tutorials use *New Super Mario Bros.* as the example game, because it's
+popular and it's what I'm most familiar with. However, ndspy should work with
+any games that use file formats it supports.
+
+.. [1]
+
+    ``with`` blocks for opening files could be considered an exception;
+    however, you don't really need to understand how they work in order to use
+    them.
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 1
     :caption: Subpages
 
+    tutorial00-gettingStarted
     tutorial01-editingRom
