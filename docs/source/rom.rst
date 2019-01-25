@@ -30,6 +30,101 @@
     they're sorted in the same order as in ROM header data.
 
 
+Examples
+--------
+
+Change a ROM's name and resave it:
+
+.. code-block:: python
+
+    >>> import ndspy.rom
+    >>> rom = ndspy.rom.NintendoDSRom.fromFile('nsmb.nds')
+    >>> print(rom.name)
+    bytearray(b'NEW MARIO')
+    >>> rom.name = b'Example Name'
+    >>> rom.saveToFile('nsmb_edited.nds')
+    >>>
+
+Get a file from a ROM by file ID:
+
+.. code-block:: python
+
+    >>> import ndspy.rom
+    >>> rom = ndspy.rom.NintendoDSRom.fromFile('nsmb.nds')
+    >>> soundDataSDAT = rom.files[134]
+    >>> with open('sound_data.sdat', 'wb') as f:
+    ...     f.write(soundDataSDAT)
+    ...
+    4839008
+    >>>
+
+Replace a file in a ROM by filename, and resave it:
+
+.. code-block:: python
+
+    >>> import ndspy.rom
+    >>> rom = ndspy.rom.NintendoDSRom.fromFile('nsmb.nds')
+    >>> with open('sound_data.sdat', 'rb') as f:
+    ...     soundDataSDAT = f.read()
+    ...
+    >>> rom.setFileByName('sound_data.sdat', soundDataSDAT)
+    >>> rom.saveToFile('nsmb_edited.nds')
+    >>>
+
+Print the names of all NSBTX files, found by looking for their file data magics
+rather than file extensions:
+
+.. code-block:: python
+
+    >>> import ndspy.rom
+    >>> rom = ndspy.rom.NintendoDSRom.fromFile('nsmb.nds')
+    >>> rom.setFileByName('sound_data.sdat', soundDataSDAT)
+    >>> for i, file in enumerate(rom.files):
+    ...     if file.startswith(b'BTX0'):
+    ...         print(rom.filenames.filenameOf(i))
+    ...
+    enemy/b_lift.nsbtx
+    enemy/d_bridge.nsbtx
+    enemy/I_do_hahen_l.nsbtx
+    enemy/I_do_hahen_r.nsbtx
+    enemy/I_kaiten_ami.nsbtx
+    [snip]
+    polygon_unit/wire_netting8.nsbtx
+    polygon_unit/wire_netting9.nsbtx
+    >>>
+
+Load a ROM's ARM9 code file and overlays:
+
+.. code-block:: python
+
+    >>> arm9 = rom.loadArm9()
+    >>> print(arm9)
+    <main-code at 0x02000000
+        <code-section at 0x02000000: b'\xff\xde\xff\xe7\xff\xde\xff\xe7\xff\xde\xff\xe7\xff\xde\x15\xa3\x82\xe5\x1d\1\xfa\x11\x1c%\x8a\td\x80\x19\xaf\xdc\x8d'... implicit>
+        <code-section at 0x01FF8000: b'\0\xc0\x90\xe5\40\x90\xe5H \x9f\xe5H\x10\x9f\xe5\0\xc0\x82\xe5\40\x82\xe5\x08\xc0\x90\xe5\x0c \x90\xe5'...>
+        <code-section at 0x027E0000: b'`\x81\xff\1`\x81\xff\1`\x81\xff\18\x83\xff\1H\x83\xff\1X\x83\xff\1h\x83\xff\1`\x81\xff\1'...>
+        <code-section at 0x02043380: b'\0\x10\x90\xe5\0\0Q\xe3\1\x10A\x12\0\x10\x80\x15\0\0\x90\xe5\x1e\xff/\xe1\xb0\x10\xd0\xe1\0\0Q\xe3'...>
+        <code-section at 0x02085880: b''>
+    >
+    >>> overlays = rom.loadArm9Overlays()
+    >>> for id, overlay in overlays.items():
+    ...     print(id, overlay)
+    ...
+    0 <overlay at 0x020986E0 file=0 compressed verify-hash>
+    1 <overlay at 0x020CC2E0 file=5 compressed verify-hash>
+    2 <overlay at 0x020CC2E0 file=7 compressed verify-hash>
+    3 <overlay at 0x020CC2E0 file=9 compressed verify-hash>
+    4 <overlay at 0x020CC2E0 file=11 compressed verify-hash>
+    5 <overlay at 0x020CC2E0 file=12 compressed verify-hash>
+    [snip]
+    129 <overlay at 0x020B8920 file=27 compressed verify-hash>
+    130 <overlay at 0x021226E0 file=126 compressed verify-hash>
+    >>>
+
+
+API
+---
+
 .. data:: ICON_BANNER_LEN
 
     The length (in bytes) of the icon banner data: 0x840.
