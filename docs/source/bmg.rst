@@ -36,6 +36,74 @@ decoding and encoding the instructions themselves is very game-specific and
 therefore out of its scope.
 
 
+Examples
+--------
+
+Load a *BMG* from a ROM and inspect its messages and scripts:
+
+.. code-block:: python
+
+    >>> import ndspy.rom, ndspy.bmg
+    >>> rom = ndspy.rom.NintendoDSRom.fromFile('Zelda - Spirit Tracks.nds')
+    >>> bmgData = rom.getFileByName('English/Message/castle_town.bmg')
+    >>> bmg = ndspy.bmg.BMG(bmgData)
+    >>> print(bmg)
+    <bmg id=12 (159 messages, 26 scripts)>
+    >>> print(bmg.messages[2])
+    What took you so long,
+    [254:0000]?
+
+    Did you keep me waiting
+    just so you could change
+    clothes?
+    >>> bmg.messages[2].stringParts
+    ['What took you so long,\n', Escape(254, bytearray(b'\x00\x00')), '?\n\nDid you keep me waiting\njust so you could change\nclothes?']
+    >>> bmg.scripts[:5]
+    [(6553601, 9), (6553602, 140), (6553604, 117), (6553605, 124), (6553609, 183)]
+    >>> bmg.labels[:5]
+    [(12, 28), (-1, -1), (12, 0), (12, 68), (12, 73)]
+    >>> bmg.instructions[:5]
+    [bytearray(b'\x033\x00\x00e\x00\x00\x00'), bytearray(b'\x03\n\x01\x00\n\x00\r\x00'), bytearray(b'\x033\x02\x00\x03\x00\x00\x00'), bytearray(b'\x033\x03\x00\x02\x00\x00\x00'), bytearray(b'\x033\x04\x00\x04\x00\x00\x00')]
+    >>>
+
+Load a *BMG* from a file, edit a message, and save it back into a ROM:
+
+.. code-block:: python
+
+    >>> import ndspy.bmg, ndspy.rom
+    >>> bmg = ndspy.bmg.BMG.fromFile('course.bmg')
+    >>> print(bmg.messages[15])
+    Welcome to the secret
+    Challenge mode. Think you can
+    reach the goal? If you get
+    stuck, press START and choose
+    Return to Map.
+    >>> bmg.messages[15].stringParts = ["Welcome to the secret\nChallenge mode where it's\nvery easy to softlock."]
+    >>> print(bmg.messages[15])
+    Welcome to the secret
+    Challenge mode where it's
+    very easy to softlock.
+    >>> rom = ndspy.rom.NintendoDSRom.fromFile('nsmb.nds')
+    >>> rom.setFileByName('script/course.bmg', bmg.save())
+    >>> rom.saveToFile('nsmb_edited.nds')
+    >>>
+
+Create a new *BMG* using the ``latin-1`` encoding, and save it to a file:
+
+.. code-block:: python
+
+    >>> import ndspy.bmg
+    >>> message1 = ndspy.bmg.Message(b'', ['Want to save your game?'])
+    >>> message2 = ndspy.bmg.Message(b'', ["Sure!\nNo thanks."])
+    >>> bmg = ndspy.bmg.BMG.fromMessages([message1, message2])
+    >>> bmg.encoding = 'latin-1'
+    >>> bmg.saveToFile('savegame-en-us.bmg')
+    >>>
+
+
+API
+---
+
 .. py:class:: BMG([data], *, [id=0])
 
     A *BMG* file.
