@@ -1,6 +1,11 @@
 ndspy
 =====
 
+[![Discord](https://img.shields.io/discord/534221996230180884.svg?logo=discord&logoColor=white&colorB=7289da)](https://discord.gg/RQhxAxw)
+[![Documentation](https://img.shields.io/badge/documentation-Read%20the%20Docs-brightgreen.svg?logo=read%20the%20docs&logoColor=white)](http://ndspy.readthedocs.io/)
+[![PyPI](https://img.shields.io/pypi/v/ndspy.svg?logo=python&logoColor=white)](https://pypi.org/project/ndspy/)
+[![License: GNU GPL 3.0](https://img.shields.io/github/license/RoadrunnerWMC/ndspy.svg?logo=gnu&logoColor=white)](https://www.gnu.org/licenses/gpl-3.0)
+
 **ndspy** ("en-dee-ESS-pie") is a Python library and suite of command-line
 tools that can help you read, modify and create many types of files used in
 Nintendo DS games.
