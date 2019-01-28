@@ -21,6 +21,8 @@ Support for filename tables in ROMs and NARCs.
 
 import struct
 
+from . import _common
+
 
 class Folder:
     """
@@ -179,7 +181,13 @@ class Folder:
             return None
 
 
-    def _strList(self, indent=0):
+    def _strListUncombined(self, indent=0, fileList=None):
+        """
+        Return a list of (line, preview) pairs, where line is a whole
+        printout line except for the preview, and preview is the
+        preview. This lets _strList pad the previews to all fall in the
+        same column.
+        """
         L = []
         indentStr = ' ' * (indent + 1)
 
@@ -187,17 +195,50 @@ class Folder:
         # those of files contained in subfolders
 
         for i, fileName in enumerate(self.files):
-            L.append(f'{self.firstID + i:04d}' + indentStr + fileName)
+
+            fid = self.firstID + i
+
+            if fileList is None or fid >= len(fileList):
+                preview = None
+            else:
+                preview = _common.shortBytesRepr(fileList[fid], 0x10)
+
+            L.append((f'{fid:04d}' + indentStr + fileName, preview))
 
         for folderName, folder in self.folders:
-            L.append(f'{folder.firstID:04d}' + indentStr + folderName + '/')
-            L.extend(folder._strList(indent + 4))
+            L.append((f'{folder.firstID:04d}' + indentStr + folderName + '/', None))
+            L.extend(folder._strListUncombined(indent + 4, fileList))
 
         return L
 
 
+    def _strList(self, indent=0, fileList=None):
+        """
+        Return a list of lines that could be useful for a printout of
+        the folder. fileList can be used to add previews of files.
+
+        Even though this is an internal function, other ndspy modules
+        (narc, for one) call it directly, so be careful if you change
+        it!
+        """
+
+        strings = []
+
+        uncombined = self._strListUncombined(indent, fileList)
+
+        previewColumn = max(len(entry[0]) for entry in uncombined) + 4
+
+        for line, preview in uncombined:
+            if preview is not None:
+                line += ' ' * (previewColumn - len(line))
+                line += preview
+            strings.append(line)
+
+        return strings
+
+
     def __str__(self):
-        return '\n'.join(self._strList(0))
+        return '\n'.join(self._strList())
 
 
     def __repr__(self):

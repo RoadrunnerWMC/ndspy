@@ -80,15 +80,16 @@ def isIterable(object):
         return False
 
 
-def shortBytesRepr(data):
+def shortBytesRepr(data, maxLen=None):
     """
     Like bytes.__repr__(), but will truncate large amounts of data.
     Will also take advantage of octal encoding to make the output more
     compact.
     """
-    MAX_LEN = 0x20
+    if maxLen is None:
+        maxLen = 0x20
 
-    dataTrunc = data[:MAX_LEN]
+    dataTrunc = data[:maxLen]
     r = ["b'"]
     for b in dataTrunc:
         if b < 8:
@@ -99,7 +100,7 @@ def shortBytesRepr(data):
 
     final = ''.join(r)
 
-    if len(data) > MAX_LEN:
+    if len(data) > maxLen:
         return final + '...'
     else:
         return final

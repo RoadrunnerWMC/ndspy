@@ -25,10 +25,12 @@ This tutorial will explain the process of opening a ROM file, extracting a file
 from it, putting a modified version of the file back into the ROM, and saving
 the modified ROM.
 
-We're going to do this the way I would personally do it -- by making small
-temporary scripts that accomplish whatever we need. To make it easier to
-follow, I'll post the entire script file every time it changes, instead of just
-the edited parts. (The modified lines will be highlighted, though.)
+.. note::
+
+    We're going to do this the way I would personally do it -- by making small
+    temporary scripts that accomplish whatever we need. To make it easier to
+    follow, I'll post the entire script file every time it changes, instead of
+    just the edited parts. (The modified lines will be highlighted, though.)
 
 
 Opening the ROM
@@ -171,7 +173,7 @@ Extracting a file
 I'm going to extract ``polygon_unit/evf_cloud1.nsbtx``, which is the texture
 for the foreground clouds in World 7-1.
 
-.. figure:: images/tutorial01-before.png
+.. figure:: images/tutorial-rom-before.png
     :scale: 30%
     :align: center
 
@@ -440,7 +442,7 @@ Naturally, though, there's a shortcut for that:
 And that's all there is to it! Go try your ROM out and enjoy whatever change
 you made.
 
-.. figure:: images/tutorial01-after.png
+.. figure:: images/tutorial-rom-after.png
     :scale: 30%
     :align: center
 

@@ -28,62 +28,129 @@ referenced by either ID or by a filename from a filename table. Filename tables
 work the same as those of ROMs.
 
 
-.. py:function:: load(data)
+.. py:class:: NARC([data])
 
-    Read *NARC* data, and create a filename table and a list of files. This is
-    the inverse of :py:func:`save`.
+    A *NARC* archive file.
 
-    :param bytes data: The *NARC* archive file data.
+    :param data: The data to be read as a *NARC* file. If this is not provided,
+        the *NARC* object will initially be empty.
+    :type data: bytes
 
-    :returns: The root folder of the filename table, and a list of files as
-        :py:class:`bytes`.
+    .. py:attribute:: endiannessOfBeginning
 
-    :rtype: ``(folder, files)``, where ``folder`` is of type
-        :py:class:`ndspy.fnt.Folder` and ``files`` is a :py:class:`list` of
-        :py:class:`bytes`
+        The endianness of the first 8 bytes of the *NARC* file header. The rest
+        of the file is always little-endian.
 
+        ``'<'`` and ``'>'`` (representing little-endian and big-endian,
+        respectively) are the only values this attribute is allowed to take.
 
-.. py:function:: loadFromFile(filePath)
+        :type: :py:class:`str`
 
-    Load a *NARC* archive from a filesystem file, and create a filename table
-    and a list of files. This is the inverse of :py:func:`saveToFile`.
+        :default: ``'<'``
 
-    :param filePath: The path to the *NARC* archive file to open.
-    :type filePath: :py:class:`str` or other path-like object
+    .. py:attribute:: filenames
 
-    :returns: The root folder of the filename table, and a list of files as
-        :py:class:`bytes`.
+        The root folder of the *NARC*'s filename table.
 
-    :rtype: ``(folder, files)``, where ``folder`` is of type
-        :py:class:`ndspy.fnt.Folder` and ``files`` is a :py:class:`list` of
-        :py:class:`bytes`
+        .. seealso::
 
+            :py:mod:`ndspy.fnt` -- the ndspy module the
+            :py:class:`ndspy.fnt.Folder` class resides in.
 
-.. py:function:: save(filenames, fileList)
+            :py:attr:`files` -- the corresponding list of files that these
+            filenames refer to.
 
-    Create a *NARC* archive from a filename table and a list of files. This is
-    the inverse of :py:func:`load`.
+        :type: :py:class:`ndspy.fnt.Folder`
 
-    :param Folder filenames: The root folder of the filename table.
+        :default: ``ndspy.fnt.Folder()``
 
-    :param fileList: The list of files to include in the archive.
-    :type fileList: :py:class:`list` of :py:class:`bytes`
+    .. py:attribute:: files
 
-    :returns: The *NARC* archive.
+        The list of files in this *NARC*. Indices are file IDs; that is,
+        ":py:attr:`files`\[0]" is the file with file ID 0,
+        ":py:attr:`files`\[1]" is the file with file ID 1, etc.
 
-    :rtype: :py:class:`bytes`
+        .. seealso::
 
+            :py:attr:`filenames` -- the set of filenames for these files.
 
-.. py:function:: saveToFile(filenames, fileList, filePath)
+        :type: :py:class:`list` of :py:class:`bytes`
 
-    Create a *NARC* archive from a filename table and a list of files, and
-    save it to a filesystem file. This is the inverse of
-    :py:func:`loadFromFile`.
+        :default: ``[]``
 
-    :param Folder filenames: The root folder of the filename table.
+    .. py:classmethod:: fromFilesAndNames(files[, filenames])
 
-    :param fileList: The list of files to include in the archive.
-    :type fileList: :py:class:`list` of :py:class:`bytes`
+        Create a *NARC* archive from a list of files and (optionally) a
+        filename table.
 
-    :param filePath: The path to the *NARC* archive file to save to.
-    :type filePath: :py:class:`str` or other path-like object
+        :param files: The initial value for the :py:attr:`files` attribute.
+
+        :param filenames: The initial value for the :py:attr:`filenames`
+            attribute.
+
+        :returns: The *NARC* object.
+        :rtype: :py:class:`NARC`
+
+    .. py:classmethod:: fromFile(filePath)
+
+        Load a *NARC* archive from a filesystem file. This is a convenience
+        function.
+
+        :param filePath: The path to the *NARC* file to open.
+        :type filePath: :py:class:`str` or other path-like object
+
+        :returns: The *NARC* object.
+        :rtype: :py:class:`NARC`
+
+    .. py:function:: getFileByName(filename)
+
+        Return the data for the file with the given filename (path). This is a
+        convenience function; the following two lines of code are exactly
+        equivalent (apart from some error checking):
+
+        .. code-block:: python
+
+            fileData = narc.getFileByName(filename)
+            fileData = narc.files[narc.filenames.idOf(filename)]
+
+        .. seealso::
+            :py:func:`setFileByName` -- to replace the file data instead of
+            retrieving it.
+
+        :param str filename: The name of the file.
+
+        :returns: The file's data.
+        :rtype: :py:class:`bytes`
+
+    .. py:function:: setFileByName(filename, data)
+
+        Replace the data for the file with the given filename (path) with the
+        given data. This is a convenience function; the following two lines of
+        code are exactly equivalent (apart from some error checking):
+
+        .. code-block:: python
+
+            narc.setFileByName(filename, fileData)
+            narc.files[narc.filenames.idOf(filename)] = fileData
+
+        .. seealso::
+            :py:func:`getFileByName` -- to retrieve the file data
+            instead of replacing it.
+
+        :param str filename: The name of the file.
+        :param bytes data: The new data for the file.
+
+    .. py:function:: save()
+
+        Generate file data representing this *NARC*.
+
+        :returns: The *NARC* archive file data.
+        :rtype: :py:class:`bytes`
+
+    .. py:function:: saveToFile(filePath)
+
+        Generate file data representing this *NARC*, and save it to a
+        filesystem file. This is a convenience function.
+
+        :param filePath: The path to the *NARC* archive file to save to.
+        :type filePath: :py:class:`str` or other path-like object
