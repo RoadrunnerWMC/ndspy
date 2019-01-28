@@ -51,9 +51,6 @@ any games that use file formats it supports.
 
 .. todo::
 
-    *   Exporting and importing within a NARC: show how to do it with a loose
-        NARC as well as within a ROM.
-
     *   Messing with ARM9: change the value at 0xADDR to VALUE. Basically
         manual Magigoomba replaces. (Maybe also mention that you can do this
         with MG.)
