@@ -27,7 +27,7 @@ which are essentially just slightly glorified lists of *SWAV* files.
 .. seealso::
 
     If you aren't familiar with how *SDAT* files are structured, consider
-    reading :doc:`the appendix explaining this <sdatStructure>`.
+    reading :doc:`the appendix explaining this <../appendices/sdat-structure>`.
 
     Documentation about the *SWAV* files within *SWAR*\s can be found on the
     :doc:`soundWave` page.

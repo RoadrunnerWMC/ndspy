@@ -23,7 +23,7 @@ This section contains the documentation for ndspy's Python API.
 
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 1
     :caption: Subpages
 
     __init__

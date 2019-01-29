@@ -59,14 +59,14 @@ complex tasks than the command-line tools are capable of.
 As ndspy is written in pure Python, it is cross-platform and should run on all
 platforms Python supports.
 
-Interested? Read on to see some examples, or check the :doc:`api` to see the
-documentation for a specific module. When you're ready to install, head over to
-the :ref:`installation` section!
+Interested? Read on to see some examples, or check the :doc:`api/index` to see
+the documentation for a specific module. When you're ready to install, head
+over to the :ref:`installation` section!
 
 .. note::
     If you plan to use ndspy to work with sound data and you aren't yet
     familiar with *SDAT* files, consider reading :doc:`the appendix explaining
-    how they're structured <sdatStructure>` first.
+    how they're structured <appendices/sdat-structure>` first.
 
 .. [1]
     That is, if it's arranged in the way that files in that format usually are.
@@ -177,8 +177,8 @@ Support
 -------
 
 I spent a long time writing the documentation for ndspy, so first please
-double-check that your question isn't already answered in the :doc:`api` or
-:doc:`tutorials`.
+double-check that your question isn't already answered in the :doc:`api/index`
+or :doc:`tutorials/index`.
 
 If that doesn't help, you can ask me (RoadrunnerWMC) your questions via `the
 ndspy Discord server <https://discord.gg/RQhxAxw>`_. I'll try to get back to
@@ -208,11 +208,11 @@ subject to drastic changes at any time. This is also mentioned in the
     :caption: Contents
 
     Home <self>
-    tutorials
-    api
-    tools
+    tutorials/index
+    api/index
+    tools/index
     changelog
-    sdatStructure
+    appendices/sdat-structure
 
 
 Credits

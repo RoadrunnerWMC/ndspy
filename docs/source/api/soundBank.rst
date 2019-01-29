@@ -26,7 +26,7 @@ The ``ndspy.soundBank`` module contains classes and functions related to the
 
 .. seealso::
     If you aren't familiar with how *SDAT* files are structured, consider
-    reading :doc:`the appendix explaining this <sdatStructure>`.
+    reading :doc:`the appendix explaining this <../appendices/sdat-structure>`.
 
 
 .. data:: NO_INSTRUMENT_TYPE

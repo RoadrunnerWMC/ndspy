@@ -21,11 +21,11 @@ Tutorials
 
 This section contains tutorials to help you learn how to use ndspy!
 
-I suggest starting with :doc:`tutorial00-gettingStarted` to ensure that you've
-installed ndspy correctly and know how to run the correct copy of Python. After
-that, you should try :doc:`tutorial01-editingRom`, which is intended to be a
-relatively gentle introduction to basic ndspy usage. Once you've completed both
-of those, you can pretty much jump around to whatever tutorials interest you.
+I suggest starting with :doc:`getting-started` to ensure that you've installed
+ndspy correctly and know how to run the correct copy of Python. After that, you
+should try :doc:`rom-editing`, which is intended to be a relatively gentle
+introduction to basic ndspy usage. Once you've completed both of those, you can
+pretty much jump around to whatever tutorials interest you.
 
 Some familiarity with Python is assumed; however, we won't be using any
 particularly advanced syntax [1]_, so it's OK if you're not too good at it yet.
@@ -44,9 +44,9 @@ any games that use file formats it supports.
     :maxdepth: 1
     :caption: Subpages
 
-    tutorial00-gettingStarted
-    tutorial01-editingRom
-    tutorial02-editingNarc
+    getting-started
+    rom-editing
+    narc-editing
 
 
 .. todo::

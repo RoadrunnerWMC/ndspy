@@ -33,7 +33,7 @@ wide variety of events that can change things like volume, panning, and flow of
 control.
 
 Documentation for sequence event classes can be found on the
-:doc:`sequenceEvents` page.
+:doc:`soundSequence-events` page.
 
 .. note::
     While the terms "channel" and "track" are often used interchangeably in
@@ -43,16 +43,16 @@ Documentation for sequence event classes can be found on the
 
 .. seealso::
     If you aren't familiar with how *SDAT* files are structured, consider
-    reading :doc:`the appendix explaining this <sdatStructure>`.
+    reading :doc:`the appendix explaining this <../appendices/sdat-structure>`.
 
 
-.. toctree to cause sequenceEvents to be a subpage
+.. toctree to cause soundSequence-events to be a subpage
 
 .. toctree::
     :maxdepth: 2
     :caption: Subpages
 
-    sequenceEvents
+    soundSequence-events
 
 
 .. _parsed-vs-unparsed-sseqs:
@@ -88,7 +88,7 @@ the events data, and that data can be found in the ``.eventsData`` attribute.
 
 If you want to access events data as a list, you need to call the
 ``.parse()`` function on the *SSEQ* to switch it to the "parsed" state. This
-function (largely powered by :py:func:`readSequenceEvents`) attempts to
+function (largely powered by :py:func:`readsoundSequence-events`) attempts to
 parse the events data; if it's succcessful, the events will be placed in the
 ``.events`` attribute. The function is pretty intelligent, but it nevertheless
 has a relatively high failure rate due to the sheer complexity of events data,
@@ -477,11 +477,11 @@ perform conditional execution -- the sequence event immediately following the
     :rtype: :py:class:`str`
 
 
-.. py:function:: readSequenceEvents(data[, notableOffsets])
+.. py:function:: readsoundSequence-events(data[, notableOffsets])
 
     Convert raw sequence event data (as seen in *SSEQ* and *SSAR* files) to a
     list of :py:class:`SequenceEvent` objects. This is the inverse of
-    :py:func:`saveSequenceEvents`.
+    :py:func:`savesoundSequence-events`.
 
     A second list will also be returned that contains the elements from the
     first list that appeared in the input data at the offsets given in
@@ -520,10 +520,10 @@ perform conditional execution -- the sequence event immediately following the
         :py:class:`list`\s of :py:class:`SequenceEvent`
 
 
-.. py:function:: saveSequenceEvents(events[, notableEvents])
+.. py:function:: savesoundSequence-events(events[, notableEvents])
 
     Convert a list of :py:class:`SequenceEvent` objects to raw sequence event
-    data. This is the inverse of :py:func:`readSequenceEvents`.
+    data. This is the inverse of :py:func:`readsoundSequence-events`.
 
     A second list will also be returned that contains the offsets in the output
     data of the elements from ``notableEvents``. This is useful if the data can

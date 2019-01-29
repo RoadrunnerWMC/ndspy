@@ -32,7 +32,7 @@ and shorter loop periods than *STRM* files.
 .. seealso::
 
     If you aren't familiar with how *SDAT* files are structured, consider
-    reading :doc:`the appendix explaining this <sdatStructure>`.
+    reading :doc:`the appendix explaining this <../appendices/sdat-structure>`.
 
 
 .. py:class:: SWAV([file])

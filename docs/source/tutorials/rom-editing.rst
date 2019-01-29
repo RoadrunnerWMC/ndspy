@@ -173,7 +173,7 @@ Extracting a file
 I'm going to extract ``polygon_unit/evf_cloud1.nsbtx``, which is the texture
 for the foreground clouds in World 7-1.
 
-.. figure:: images/tutorial-rom-before.png
+.. figure:: images/rom-before.png
     :scale: 30%
     :align: center
 
@@ -442,7 +442,7 @@ Naturally, though, there's a shortcut for that:
 And that's all there is to it! Go try your ROM out and enjoy whatever change
 you made.
 
-.. figure:: images/tutorial-rom-after.png
+.. figure:: images/rom-after.png
     :scale: 30%
     :align: center
 

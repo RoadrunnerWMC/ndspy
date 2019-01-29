@@ -25,20 +25,20 @@ This tutorial will explain the process of opening a *NARC* archive file,
 extracting a file from it, putting a modified version of the file back into the
 *NARC* archive, and saving the modified ROM.
 
-If you've completed the first tutorial (:doc:`tutorial01-editingRom`), this
-will feel extremely familiar. *NARC*\s are more-or-less like miniature ROMs
-that only have files and filenames, so the ndspy APIs for ROMs and *NARC*\s are
-very similar.
+If you've completed the first tutorial (:doc:`rom-editing`), this will feel
+extremely familiar. *NARC*\s are more-or-less like miniature ROMs that only
+have files and filenames, so the ndspy APIs for ROMs and *NARC*\s are very
+similar.
 
 .. seealso::
 
     If you haven't tried the first two tutorials yet, I recommend you do so:
 
-    *   :doc:`tutorial00-gettingStarted`: This tutorial helps you check that
-        you have ndspy installed and set up correctly.
-    *   :doc:`tutorial01-editingRom`: This one is written at a slower pace than
-        the other tutorials, and serves as a gentle introduction to help you
-        get a feel for how to use ndspy in general.
+    *   :doc:`getting-started`: This tutorial helps you check that you have
+        ndspy installed and set up correctly.
+    *   :doc:`rom-editing`: This one is written at a slower pace than the other
+        tutorials, and serves as a gentle introduction to help you get a feel
+        for how to use ndspy in general.
 
 
 Opening the NARC
@@ -132,7 +132,7 @@ I'm going to extract ``d_2d_mgvs_escape_ncg.bin`` and
 ``d_2d_mgvs_escape_ncl.bin``, which are the sprite graphics and palette for
 *New Super Mario Bros.'s* "Danger, Bob-omb! Danger!" minigame.
 
-.. figure:: images/tutorial-narc-before.png
+.. figure:: images/narc-before.png
     :scale: 30%
     :align: center
 
@@ -329,7 +329,7 @@ Or if you just want to save it as its own file, that can be done using the
 
 And, well, that's it! Have fun with your newly modified *NARC* file.
 
-.. figure:: images/tutorial-narc-after.png
+.. figure:: images/narc-after.png
     :scale: 30%
     :align: center
 

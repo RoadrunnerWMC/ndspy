@@ -31,7 +31,7 @@ As ndspy is written in pure Python, it is cross-platform and should run on all
 platforms Python supports.
 
 Interested? Read on to see some examples, or check the [API
-Reference](https://ndspy.readthedocs.io/en/latest/api.html) to see the
+Reference](https://ndspy.readthedocs.io/en/latest/api/index.html) to see the
 documentation for a specific module. When you're ready to install, head over to
 the [Installation](#installation) section!
 
@@ -134,10 +134,11 @@ Documentation
 Docs](https://ndspy.readthedocs.io/en/latest/index.html), and the documentation
 source code can be found in the ``docs/`` folder in this repository. In
 addition to the [API
-reference](https://ndspy.readthedocs.io/en/latest/api.html), there are also
+reference](https://ndspy.readthedocs.io/en/latest/api/index.html), there are
+also
 [examples](https://ndspy.readthedocs.io/en/latest/index.html#a-few-examples-of-ndspy-in-action)
-and [tutorials](https://ndspy.readthedocs.io/en/latest/tutorials.html) to help
-you out!
+and [tutorials](https://ndspy.readthedocs.io/en/latest/tutorials/index.html) to
+help you out!
 
 
 Support
@@ -145,9 +146,9 @@ Support
 
 I spent a long time writing the documentation for ndspy, so first please
 double-check that your question isn't already answered in the [API
-reference](https://ndspy.readthedocs.io/en/latest/api.html) or
-[Tutorials](https://ndspy.readthedocs.io/en/latest/tutorials.html) sections in
-the documentation.
+reference](https://ndspy.readthedocs.io/en/latest/api/index.html) or
+[Tutorials](https://ndspy.readthedocs.io/en/latest/tutorials/index.html)
+sections in the documentation.
 
 If that doesn't help, you can ask me (RoadrunnerWMC) your questions via [the
 ndspy Discord server](https://discord.gg/RQhxAxw). I'll try to get back to
@@ -168,5 +169,5 @@ version numbers actually exist!)
 Undocumented modules are considered exempt from semantic versioning, and are
 subject to drastic changes at any time. This is also mentioned in the
 [Undocumented
-APIs](https://ndspy.readthedocs.io/en/latest/api.html#undocumented-apis)
+APIs](https://ndspy.readthedocs.io/en/latest/api/index.html#undocumented-apis)
 section of the documentation.
