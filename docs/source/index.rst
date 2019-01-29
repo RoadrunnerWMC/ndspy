@@ -83,9 +83,30 @@ over to the :ref:`installation` section!
 A few examples of ndspy in action
 ---------------------------------
 
+.. testsetup:: *
+
+    import os, os.path
+    import shutil
+    import tempfile
+
+    origCwd = os.getcwd()
+    dir = tempfile.TemporaryDirectory()
+    os.chdir(dir.name)
+
+    if haveNSMB:
+        shutil.copyfile(nsmbRomPath, 'nsmb.nds')
+
+    shutil.copyfile(testFilesPath / 'never-gonna-give-you-up.sseq',
+                    'never-gonna-give-you-up.sseq')
+
+.. testcleanup:: *
+
+    os.chdir(origCwd)
+    dir.cleanup()
+
 Create a *BMG* file containing message strings:
 
-.. code-block:: python
+.. doctest::
 
     >>> import ndspy.bmg
     >>> message1 = ndspy.bmg.Message(b'', ['Open your eyes...'])
@@ -98,7 +119,7 @@ Create a *BMG* file containing message strings:
 Change all notes in a *SSEQ* sequenced music file to middle C, similar to `this
 song <https://youtu.be/cSAp9sBzPbc>`_:
 
-.. code-block:: python
+.. doctest::
 
     >>> import ndspy.soundSequence
     >>> song = ndspy.soundSequence.SSEQ.fromFile('never-gonna-give-you-up.sseq')
@@ -112,7 +133,7 @@ song <https://youtu.be/cSAp9sBzPbc>`_:
 
 Compress and decompress data using the *LZ10* compression format:
 
-.. code-block:: python
+.. doctest::
 
     >>> import ndspy.lz10
     >>> compressed = ndspy.lz10.compress(b'This is some data to compress')
@@ -124,20 +145,21 @@ Compress and decompress data using the *LZ10* compression format:
 
 Search for all files starting with a particular byte sequence in a ROM:
 
-.. code-block:: python
+.. doctest::
+    :skipif: not haveNSMB
 
     >>> import ndspy.rom
-    >>> game = ndspy.rom.NintendoDSRom.fromFile('game.nds')
-    >>> for i, file in enumerate(game.files):
+    >>> rom = ndspy.rom.NintendoDSRom.fromFile('nsmb.nds')
+    >>> for i, file in enumerate(rom.files):
     ...     if file.startswith(b'BMD0'):
-    ...         print(game.filenames[i] + ' is a NSBMD model')
+    ...         print(rom.filenames[i] + ' is a NSBMD model')
     ...
     demo/end_kp.nsbmd is a NSBMD model
     demo/staffroll.nsbmd is a NSBMD model
     demo/staffroll_back.nsbmd is a NSBMD model
     enemy/A_jiku.nsbmd is a NSBMD model
     enemy/all_goal_flag.nsbmd is a NSBMD model
-    [snip]
+    ...
     map/world7.nsbmd is a NSBMD model
     map/world8.nsbmd is a NSBMD model
     >>>

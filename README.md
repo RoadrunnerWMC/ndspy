@@ -83,17 +83,17 @@ Search for all files starting with a particular byte sequence in a ROM:
 
 ```python
 >>> import ndspy.rom
->>> game = ndspy.rom.NintendoDSRom.fromFile('game.nds')
->>> for i, file in enumerate(game.files):
+>>> rom = ndspy.rom.NintendoDSRom.fromFile('nsmb.nds')
+>>> for i, file in enumerate(rom.files):
 ...     if file.startswith(b'BMD0'):
-...         print(game.filenames[i] + ' is a NSBMD model')
+...         print(rom.filenames[i] + ' is a NSBMD model')
 ...
 demo/end_kp.nsbmd is a NSBMD model
 demo/staffroll.nsbmd is a NSBMD model
 demo/staffroll_back.nsbmd is a NSBMD model
 enemy/A_jiku.nsbmd is a NSBMD model
 enemy/all_goal_flag.nsbmd is a NSBMD model
-[snip]
+...
 map/world7.nsbmd is a NSBMD model
 map/world8.nsbmd is a NSBMD model
 >>>

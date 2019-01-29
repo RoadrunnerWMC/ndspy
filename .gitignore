@@ -22,3 +22,5 @@ docs/_build/
 docs/build/
 
 .directory
+
+test_files/roms/*
