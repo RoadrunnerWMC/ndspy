@@ -197,7 +197,7 @@ class NARC:
 
         filenames = '\n    '.join(self.filenames._strList(0, self.files))
 
-        return (f'<narc{notes}\n    {filenames}\n>')
+        return f'<narc{notes}\n    {filenames}\n>'
 
 
     def __repr__(self):
