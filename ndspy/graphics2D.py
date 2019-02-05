@@ -198,7 +198,7 @@ def saveImageTiles(tiles):
     Convert a list of ImageTiles to binary data.
     This is the inverse of loadImageTiles().
     """
-    return b''.join(t.data for t in tiles)
+    return b''.join(t.save() for t in tiles)
 
 
 def saveImageTilesToFile(tiles, filePath):
