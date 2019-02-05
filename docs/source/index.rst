@@ -315,3 +315,5 @@ Indices and tables
     Write tutorials.
 
     Try running the SSEQ/SSAR parser on all ROMs to identify issues.
+
+    ROM secure area en/decryption, ported from ndstool
