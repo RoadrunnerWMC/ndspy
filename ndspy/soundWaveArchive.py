@@ -147,12 +147,7 @@ class SWAR:
 
     def __str__(self):
         linesList = [f'<swar']
-
-        maxNumLen = len(str(len(self.waves) - 1))
-
-        for i, wav in enumerate(self.waves):
-            linesList.append(f'    [{i:{maxNumLen}}] {wav}')
-
+        linesList.extend(_common.enumeratedListOfStrs(self.waves))
         linesList.append('>')
         return '\n'.join(linesList)
 

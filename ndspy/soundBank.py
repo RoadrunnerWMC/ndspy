@@ -793,12 +793,7 @@ class SBNK:
 
     def __str__(self):
         linesList = [f'<sbnk waveArchiveIDs={self.waveArchiveIDs}']
-
-        maxNumLen = len(str(len(self.instruments) - 1))
-
-        for i, inst in enumerate(self.instruments):
-            linesList.append(f'    [{i:{maxNumLen}}] {inst}')
-
+        linesList.extend(_common.enumeratedListOfStrs(self.instruments))
         linesList.append('>')
         return '\n'.join(linesList)
 
