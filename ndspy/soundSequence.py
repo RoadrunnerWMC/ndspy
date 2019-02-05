@@ -799,8 +799,8 @@ class MonoPolySequenceEvent(SequenceEvent):
     dataLength = 2
 
     class Value(enum.IntEnum):
-        poly = 0
-        mono = 1
+        POLY = 0
+        MONO = 1
 
     def __init__(self, value):
         super().__init__(0xC7)
@@ -898,9 +898,9 @@ class VibratoTypeSequenceEvent(SequenceEvent):
     dataLength = 2
 
     class Value(enum.IntEnum):
-        pitch = 0
-        volume = 1
-        pan = 2
+        PITCH = 0
+        VOLUME = 1
+        PAN = 2
 
     def __init__(self, value):
         super().__init__(0xCC)

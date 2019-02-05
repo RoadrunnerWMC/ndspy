@@ -1165,11 +1165,11 @@ This page describes the sequence event classes within
 
     The default mode is mono mode.
 
-    .. data:: mono
+    .. data:: MONO
 
         Value 1: indicates mono mode.
 
-    .. data:: poly
+    .. data:: POLY
 
         Value 0: indicates poly mode.
 
@@ -1342,15 +1342,15 @@ This page describes the sequence event classes within
 
         What's the default?
 
-    .. data:: pitch
+    .. data:: PITCH
 
         Value 0: notes' pitches will be vibrated.
 
-    .. data:: volume
+    .. data:: VOLUME
 
         Value 1: notes' volumes will be vibrated.
 
-    .. data:: pan
+    .. data:: PAN
 
         Value 2: notes' panning values will be vibrated.
 
