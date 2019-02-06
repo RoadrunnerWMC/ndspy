@@ -82,7 +82,7 @@ class ImageTile:
     """
     A class that represents a single image tile.
     """
-    indices = None
+    pixels = None
     bitsPerPixel = 8
 
     def __init__(self, data=None, bitsPerPixel=8):
@@ -92,7 +92,7 @@ class ImageTile:
         _checkBitsPerPixel(bitsPerPixel)
 
         if data is None:
-            self.indices = [0] * 64
+            self.pixels = [0] * 64
 
         else:
             if self.bitsPerPixel == 4:
@@ -101,10 +101,10 @@ class ImageTile:
                                      f' bytes long, but is actually'
                                      f' {len(data)} bytes long')
 
-                self.indices = []
+                self.pixels = []
                 for byte in data:
-                    self.indices.append(byte & 0xF)
-                    self.indices.append(byte >> 4)
+                    self.pixels.append(byte & 0xF)
+                    self.pixels.append(byte >> 4)
 
             else:
                 if len(data) != 64:
@@ -112,15 +112,15 @@ class ImageTile:
                                      f' bytes long, but is actually'
                                      f' {len(data)} bytes long')
 
-                self.indices = list(data)
+                self.pixels = list(data)
 
         self.bitsPerPixel = bitsPerPixel
 
 
     @classmethod
-    def fromIndices(cls, indices, bitsPerPixel=8):
+    def fromPixels(cls, pixels, bitsPerPixel=8):
         self = cls(None, bitsPerPixel)
-        self.indices = indices
+        self.pixels = pixels
         return self
 
 
@@ -139,9 +139,9 @@ class ImageTile:
         img = PIL.Image.new('RGBA', (8, 8), (0, 0, 0, 0))
         for y in range(8):
             for x in range(8):
-                col = self.indices[y * 8 + x]
-                if col: # "0" is always transparent
-                    img.putpixel((x, y), colors[cs + col])
+                px = self.pixels[y * 8 + x]
+                if px: # "0" is always transparent
+                    img.putpixel((x, y), colors[cs + px])
 
         return img
 
@@ -153,19 +153,19 @@ class ImageTile:
             data = bytearray()
 
             left = None
-            for idx in self.indices:
+            for px in self.pixels:
                 if left is None:
-                    left = idx & 0xF
+                    left = px & 0xF
                     continue
 
-                value = left | ((idx << 4) & 0xF0)
+                value = left | ((px << 4) & 0xF0)
                 left = None
                 data.append(value)
 
             return bytes(data)
 
         else:
-            return bytes(self.indices)
+            return bytes(self.pixels)
 
 
 def loadImageTiles(data, bitsPerPixel=8):
@@ -379,7 +379,7 @@ def tileAt(tiles, x, y, *, width=32):
     """
     Convenience function: return the tile at (x, y) in the tile list
     given, assuming a row width of `w` (32 by default).
-    This can be used with ImageTile.indices as well (with width 8).
+    This can be used with ImageTile.pixels as well (with width 8).
     TODO: maybe rename it somehow to indicate that? Maybe even move it
     into ndspy.__init__ (like the named-list things)?
     """
@@ -396,7 +396,7 @@ def putTile(tiles, x, y, t, *, width=32):
     Convenience function: replace the tile at (x, y) in the tile list
     given with `t`, assuming a row width of `w` (32 by default).
     If (x, y) is not in the tile list, nothing happens.
-    This can be used with ImageTile.indices as well (with width 8).
+    This can be used with ImageTile.pixels as well (with width 8).
     TODO: maybe rename it somehow to indicate that? Maybe even move it
     into ndspy.__init__ (like the named-list things)?
     """
