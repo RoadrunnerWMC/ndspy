@@ -47,23 +47,6 @@ class WaveType(enum.IntEnum):
     ADPCM = 2
 
 
-class Alignment:
-    """
-    An enumeration that defines common alignment types.
-    """
-    # Based on Qt's Qt::AlignmentFlag enum, which has always been very
-    # intuitive to use and I've never had a problem with
-    LEFT = 0x01
-    RIGHT = 0x02
-    H_CENTER = 0x04
-
-    TOP = 0x10
-    BOTTOM = 0x20
-    V_CENTER = 0x40
-
-    CENTER = H_CENTER | V_CENTER
-
-
 def indexInNamedList(L, name):
     """
     Find the index of the item with a particular name in a list
