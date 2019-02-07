@@ -173,18 +173,29 @@ Misconceptions
 Still a little confused about what exactly ndspy is or what it's capable of?
 This section will try to answer some questions you may have.
 
-*   ndspy is a *library*, not a *program.* To use ndspy, you have to write your
+-   ndspy is a *library*, not a *program.* To use ndspy, you have to write your
     own Python code; ndspy is essentially a tool your code can use. This may
     sound daunting -- especially if you're not very familiar with Python -- but
     the :doc:`tutorials/index` walk you through this process step-by-step for
     some common tasks. In the future, I plan to add some command-line and
     maybe even GUI tools powered by ndspy, but until then, this is how you use
     it.
-*   ndspy runs on your PC, not on the Nintendo DS itself. You use it to create
+-   ndspy runs on your PC, not on the Nintendo DS itself. You use it to create
     and modify game files, which can then be run on the console. DS games have
     to be written in a compiled language such as C or C++ to have any hope of
     being efficient; Python will never be a serious option there,
     unfortunately.
+-   ndspy doesn't support every type of file used in every DS game. In fact,
+    for any given game, it's likely that the majority of the game's files
+    *won't* be supported by ndspy. There's a huge amount of variety in video
+    game file formats, and it would be impossible to support them all. ndspy
+    focuses on file formats used in many games, especially first-party ones.
+    Support for formats that are specific to a particular game would best
+    belong in a separate Python library instead.
+
+    That said, certain parts of ndspy (such as its support for ROM files and
+    raw texture data) have to do with the console's hardware rather than its
+    software, and thus should be relevant to most or all games.
 
 
 .. _installation:
@@ -224,6 +235,7 @@ dependency.
     because it doesn't know that f-strings is the only feature ndspy needs from
     3.6. As a workaround, you can download the ndspy source code folder and put
     it in your PyPy's site-packages folder manually.
+
 
 Support
 -------
