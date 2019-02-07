@@ -42,7 +42,8 @@ Nintendo DS games.
 ndspy follows a few key design principles:
 
 -   **Accuracy**: ndspy should be able to open and resave any supported file
-    with byte-for-byte accuracy if it's in its canonical format [1]_.
+    with byte-for-byte accuracy if it's in its canonical format
+    [#canonical-format]_.
 -   **Flexibility**: ndspy should be able to read any valid file in a format it
     supports. In cases where there's a high chance it will be unable to fully
     interpret some especially complex part of a file, it should still be useful
@@ -52,12 +53,13 @@ ndspy follows a few key design principles:
 
 ndspy provides both a Python API and a set of simple command-line tools that
 make use of it. The command-line tools let you convert files to and from binary
-formats without having to write any Python code yourself [2]_. The API is
-suitable for use in applications written in Python, and in scripts to do more
-complex tasks than the command-line tools are capable of.
+formats without having to write any Python code yourself [#cli-tools]_. The API
+is suitable for use in applications written in Python, and in scripts to do
+more complex tasks than the command-line tools are capable of.
 
 As ndspy is written in pure Python, it is cross-platform and should run on all
-platforms Python supports.
+platforms Python supports. Note that Python doesn't support the Nintendo DS
+itself; ndspy is intended to be used on your PC.
 
 Interested? Read on to see some examples, or check the :doc:`api/index` to see
 the documentation for a specific module. When you're ready to install, head
@@ -68,13 +70,13 @@ over to the :ref:`installation` section!
     familiar with *SDAT* files, consider reading :doc:`the appendix explaining
     how they're structured <appendices/sdat-structure>` first.
 
-.. [1]
+.. [#canonical-format]
     That is, if it's arranged in the way that files in that format usually are.
     Although it's often possible to arrange a file in many different ways and
     still have it be valid, ndspy only aims for byte-for-byte output accuracy
     with files that are arranged in the most common way.
 
-.. [2]
+.. [#cli-tools]
     Unfortunately, the command-line tools are sorely lacking in both substance
     and documentation at the moment. I hope to improve these in the
     not-too-distant future!
@@ -165,12 +167,33 @@ Search for all files starting with a particular byte sequence in a ROM:
     >>>
 
 
+Misconceptions
+--------------
+
+Still a little confused about what exactly ndspy is or what it's capable of?
+This section will try to answer some questions you may have.
+
+*   ndspy is a *library*, not a *program.* To use ndspy, you have to write your
+    own Python code; ndspy is essentially a tool your code can use. This may
+    sound daunting -- especially if you're not very familiar with Python -- but
+    the :doc:`tutorials/index` walk you through this process step-by-step for
+    some common tasks. In the future, I plan to add some command-line and
+    maybe even GUI tools powered by ndspy, but until then, this is how you use
+    it.
+*   ndspy runs on your PC, not on the Nintendo DS itself. You use it to create
+    and modify game files, which can then be run on the console. DS games have
+    to be written in a compiled language such as C or C++ to have any hope of
+    being efficient; Python will never be a serious option there,
+    unfortunately.
+
+
 .. _installation:
 
 Installation
 ------------
 
-ndspy requires Python 3.6 or newer to run. Python 2 is not supported at all.
+ndspy requires Python 3.6 or newer to run [#pypy-3.5]_. Python 2 is not
+supported at all.
 
 The easiest way to get the latest stable release of ndspy is through PyPI using
 pip.
@@ -194,6 +217,13 @@ not yet in any official release, you can also download the code from the
 manually. Note that `crcmod <https://pypi.org/project/crcmod/>`_ is a required
 dependency.
 
+.. [#pypy-3.5]
+    PyPy3.5 v6.0 or newer should also work, due to its
+    anachronistic-yet-appreciated support for f-strings (introduced in Python
+    3.6). However, setuptools (pip) will refuse to install ndspy in PyPy3.5
+    because it doesn't know that f-strings is the only feature ndspy needs from
+    3.6. As a workaround, you can download the ndspy source code folder and put
+    it in your PyPy's site-packages folder manually.
 
 Support
 -------
