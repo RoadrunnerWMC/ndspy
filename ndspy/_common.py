@@ -207,6 +207,100 @@ def saveInfoBlock(entries, entryLengths):
     return bytes(data)
 
 
+def unpackAlignmentFromPos(xPack, yPack):
+    """
+    Given x/y values with alignment information included, as in
+    BNCL/BNCD/BNBL, return the actual x, y and alignment values.
+    """
+    align = 0
+
+    x = xPack & 0xFFF
+    align |= [
+        Alignment.LEFT,
+        Alignment.H_CENTER,
+        Alignment.RIGHT,
+        Alignment.LEFT, # 3 is treated the same as 0
+    ][(xPack >> 12) & 3]
+
+    y = yPack & 0xFFF
+    align |= [
+        Alignment.TOP,
+        Alignment.V_CENTER,
+        Alignment.BOTTOM,
+        Alignment.TOP, # 3 is treated the same as 0
+    ][(yPack >> 12) & 3]
+
+    return x, y, align
+
+
+def packAlignmentIntoPos(x, y, alignment):
+    """
+    Given x, y and alignment values, return packed x/y values with the
+    alignment information embedded, as in BNCL/BNCD/BNBL.
+    """
+    xPack = x & 0xFFF
+    yPack = y & 0xFFF
+
+    if alignment & Alignment.H_CENTER:
+        xPack |= 0x1000
+    elif alignment & Alignment.RIGHT:
+        xPack |= 0x2000
+
+    if alignment & Alignment.V_CENTER:
+        yPack |= 0x1000
+    elif alignment & Alignment.BOTTOM:
+        yPack |= 0x2000
+
+    return xPack, yPack
+
+
+def getTopLeftOfAlignedRect(x, y, width, height, alignment):
+    """
+    Given x/y/w/h and alignment for a rectangle, return the coordinate
+    of its top-left corner as calculated for BNCL/BNCD/BNBL.
+    """
+
+    # These formulas are straight from NSMB, "+ 1"s and all
+
+    if alignment & Alignment.H_CENTER:
+        x -= (width + 1) // 2
+    elif alignment & Alignment.RIGHT:
+        x -= width
+
+    if alignment & Alignment.V_CENTER:
+        y -= (height + 1) // 2
+    elif alignment & Alignment.BOTTOM:
+        y -= height
+
+    return x, y
+
+
+def getAlignmentName(alignment):
+    """
+    Return a nice string name for the given alignment value.
+    """
+
+    xAlignStr = 'left'
+    if alignment & Alignment.H_CENTER:
+        xAlignStr = 'center'
+    elif alignment & Alignment.RIGHT:
+        xAlignStr = 'right'
+
+    yAlignStr = 'top'
+    if alignment & Alignment.V_CENTER:
+        yAlignStr = 'center'
+    elif alignment & Alignment.BOTTOM:
+        yAlignStr = 'bottom'
+
+    alignStr = f'{yAlignStr}-{xAlignStr}'
+
+    # Special case: "center-center" -> "center"
+    if alignStr == 'center-center':
+        alignStr = 'center'
+
+    return alignStr
+
+
 def enumeratedListOfStrs(items, indent=4):
     """
     Return a list of strings, where each string is indented by the
