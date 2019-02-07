@@ -226,7 +226,10 @@ class Folder:
 
         uncombined = self._strListUncombined(indent, fileList)
 
-        previewColumn = max(len(entry[0]) for entry in uncombined) + 4
+        if uncombined:
+            previewColumn = max(len(entry[0]) for entry in uncombined) + 4
+        else:
+            previewColumn = 4
 
         for line, preview in uncombined:
             if preview is not None:
