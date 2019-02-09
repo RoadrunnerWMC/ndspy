@@ -30,7 +30,7 @@ LUT_ABGR_255 = [None] * 0x10000
 def unpack(color):
     """
     Return the color as a quadruple (r, g, b, a), where a is 0 or 1
-    (0 meaning opaque and 1 meaning transparent), and r, g and b are
+    (0 meaning transparent and 1 meaning opaque), and r, g and b are
     between 0 and 31 inclusive.
     """
     return (color & 0x1F,
@@ -42,7 +42,7 @@ def unpack(color):
 def pack(r, g, b, a=0):
     """
     Pack these channel values into a color. a should be 0 or 1 (0
-    meaning opaque and 1 meaning transparent), and r, g and b should be
+    meaning transparent and 1 meaning opaque), and r, g and b should be
     between 0 and 31 inclusive.
     """
     value = 0
@@ -62,7 +62,7 @@ def unpack255(color):
     r = r << 3 | r >> 2
     g = g << 3 | g >> 2
     b = b << 3 | b >> 2
-    return (r, g, b, 0 if a else 255)
+    return (r, g, b, 255 if a else 0)
 
 
 def pack255(r, g, b, a=255):
@@ -73,7 +73,7 @@ def pack255(r, g, b, a=255):
     return pack(((r + 4) << 2) // 33,
                 ((g + 4) << 2) // 33,
                 ((b + 4) << 2) // 33,
-                1 if a < 128 else 0)
+                0 if a < 128 else 1)
 
 
 # Avoiding using the already-defined functions here, because doing so
@@ -88,7 +88,7 @@ for i in range(0x10000):
     r255 = r << 3 | r >> 2
     g255 = g << 3 | g >> 2
     b255 = b << 3 | b >> 2
-    a255 = 0 if a else 255
+    a255 = 255 if a else 0
     LUT_UNPACKED_255[i] = (r255, g255, b255, a255)
 
     LUT_RGBA_255[i] = (r255 << 24) | (g255 << 16) | (b255 << 8) | a255

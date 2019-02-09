@@ -42,6 +42,7 @@ def loadPalette(data):
     """
     Convert binary data to a list of (r, g, b, a) color tuples.
     This is the inverse of savePalette().
+    Note that alpha values are ignored in some contexts.
     """
     colors = []
     colorVals = struct.unpack_from(f'<{len(data) // 2}H', data)
@@ -62,6 +63,7 @@ def savePalette(colors):
     """
     Convert a list of (r, g, b, a) color tuples to binary data.
     This is the inverse of loadPalette().
+    Note that alpha values are ignored in some contexts.
     """
     colorVals = [ndspyColor.pack255(r, g, b, a) for (r, g, b, a) in colors]
     return struct.pack(f'<{len(colors)}H', *colorVals)
@@ -141,7 +143,7 @@ class ImageTile:
             for x in range(8):
                 px = self.pixels[y * 8 + x]
                 if px: # "0" is always transparent
-                    img.putpixel((x, y), colors[cs + px])
+                    img.putpixel((x, y), colors[(cs + px) | 0x8000])
 
         return img
 
