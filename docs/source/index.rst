@@ -310,6 +310,10 @@ using information from many, many sources. In alphabetical order:
 *   `kiwi.ds Nitro Composer File (*.sdat) Specification
     <https://sites.google.com/site/kiwids/sdat.html>`_ -- probably the best
     overall reference for *SDAT*
+*   `Source code for melonDS <https://github.com/Arisotura/melonDS>`_ (`website
+    <http://melonds.kuribo64.net/>`_) -- for texture-rendering code,
+    specifically, but it's a fantastic reference for hardware behavior in
+    general
 *   `NDSTech Wiki (archived)
     <https://web.archive.org/web/20110106014930/http://www.bottledlight.com/ds/index.php/FileFormats/NDSFormat>`_
     -- for some more information about the ROM file format

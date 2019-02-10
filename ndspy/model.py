@@ -27,6 +27,18 @@ class NSBMD:
     A 3D model.
     """
     def __init__(self, data=None):
+        # TODO: check what good defaults are for these
+        # Also double-check that these actually match what _parseTEX0 loads
+        # Also add corresponding ones for _parseMDL0
+        self.texUnk08 = 0
+        self.texUnk10 = 0
+        self.texUnk18 = 0
+        self.texUnk20 = 0
+        self.texUnk2C = 0
+        self.texUnk32 = 0
+        self.textures = []
+        self.palettes = []
+
         if data is not None:
             self._initFromData(data)
 
@@ -47,7 +59,7 @@ class NSBMD:
         for off in blockOffsets:
             blockMagic, blockLen = struct.unpack_from('<4sI', data, off)
             blockData = data[off : off+blockLen]
-            print('BLOCK OFF ' + blockMagic.decode('ascii') + ' ' + hex(off))
+            # print('BLOCK OFF ' + blockMagic.decode('ascii') + ' ' + hex(off))
 
             if blockMagic == b'MDL0':
                 self._parseMDL0(blockData)
@@ -100,14 +112,14 @@ class NSBMD:
                     boundingBoxWidth, boundingBoxHeight, boundingBoxDepth,
                     runtimeUse) = \
                 struct.unpack_from('<5I16B4H6h8s', data, modelOff)
-            print('RUNTIME USE @ ' + hex(modelOff + 0x38))
-            print(runtimeUse)
+            # print('RUNTIME USE @ ' + hex(modelOff + 0x38))
+            # print(runtimeUse)
 
             # Bones
-            print('BONES @ ' + hex(modelOff + bonesOffset))
+            # print('BONES @ ' + hex(modelOff + bonesOffset))
 
             # Materials
-            print('MATERIALS @ ' + hex(modelOff + materialsOffset))
+            # print('MATERIALS @ ' + hex(modelOff + materialsOffset))
             off = modelOff + materialsOffset + 4 # TODO: WHY DO WE HAVE TO ADD 4
             materialsCount, materialsHeaderSize = struct.unpack_from('<xBH', data, off)
             off += 4
@@ -196,15 +208,15 @@ class NSBMD:
                 palNames.append(name)
                 off += 16
 
-            print('Palettes:', palNames, palDatas, hex(off + 0x18))
+            # print('Palettes:', palNames, palDatas, hex(off + 0x18))
 
             for (unk00, unk02), matOffset, matName in zip(unkMatBlockEntries, matOffsets, matNames):
                 off = modelOff + materialsOffset + matOffset + 4
-                print(hex(off + 0x18))
+                # print(hex(off + 0x18))
 
 
             # Polygons
-            print('POLYGONS @ ' + hex(modelOff + polygonsBeginOffset))
+            # print('POLYGONS @ ' + hex(modelOff + polygonsBeginOffset))
             off = modelOff + polygonsBeginOffset
             polygonsCount, polygonsHeaderSize = struct.unpack_from('<xBH', data, off)
             off += 4

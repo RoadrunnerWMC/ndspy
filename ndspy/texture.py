@@ -19,6 +19,14 @@ import enum
 import struct
 
 from . import _common
+from . import color as ndspyColor
+
+
+HavePIL = True
+try:
+    import PIL.Image
+except ImportError:
+    HavePIL = False
 
 
 class TextureFormat(enum.IntEnum):
@@ -124,6 +132,14 @@ class Texture:
         return self
 
 
+    @property
+    def size(self):
+        return self.width, self.height
+    @size.setter
+    def size(self, value):
+        self.width, self.height = value
+
+
     def save(self):
         params = 0
 
@@ -158,6 +174,41 @@ class Texture:
         params |= (self.coordsTransformationMode & 3) << 14
 
         return self.unk00, self.unk02, params, self.unk04, self.data1, self.data2
+
+
+    def render(self, palette=None):
+        """
+        Given a palette, render this texture as list of (r, g, b, a)
+        tuples, where each channel goes from 0 to 31.
+        palette should be a Palette.
+        palette can be None if the texture is in a format that doesn't
+        need a palette (Direct 16-Bit).
+        """
+        colors = palette.colors if palette is not None else None
+        return renderTextureData(self.data1,
+                                 self.data2,
+                                 self.format,
+                                 self.width,
+                                 self.height,
+                                 colors,
+                                 self.isColor0Transparent)
+
+
+    def renderAsImage(self, palette=None):
+        """
+        Given a palette, render this texture as a PIL Image.
+        palette should be a Palette.
+        palette can be None if the texture is in a format that doesn't
+        need a palette (Direct 16-Bit).
+        """
+        colors = palette.colors if palette is not None else None
+        return renderTextureDataAsImage(self.data1,
+                                        self.data2,
+                                        self.format,
+                                        self.width,
+                                        self.height,
+                                        colors,
+                                        self.isColor0Transparent)
 
 
     def __str__(self):
@@ -238,6 +289,16 @@ class NSBTX:
     data).
     """
     def __init__(self, data=None):
+        # TODO: find reasonable default values for these
+        self.unk08 = 0
+        self.unk10 = 0
+        self.unk18 = 0
+        self.unk20 = 0
+        self.unk2C = 0
+        self.unk32 = 0
+        self.textures = []
+        self.palettes = []
+
         if data is not None:
             self._initFromData(data)
 
@@ -349,8 +410,8 @@ def _readTEX0(data):
         tex = Texture(unk00, unk02, params, unk04, b'', b'')
 
         if tex.format == TextureFormat.TEXELED_4X4:
-            thisTexOff1 = compressedData1Off + texDataOff
-            thisTexOff2 = compressedData2Off + texDataOff // 2
+            thisTexOff1 = compressedData1Off + thisTexOff
+            thisTexOff2 = compressedData2Off + thisTexOff // 2
             thisTexDataLen1 = int(tex.width * tex.height * tex.format.bitsPerPixel1() / 8)
             thisTexDataLen2 = int(tex.width * tex.height * tex.format.bitsPerPixel2() / 8)
             thisTexData1 = data[thisTexOff1 : thisTexOff1 + thisTexDataLen1]
@@ -475,3 +536,322 @@ def _saveTEX0(fields):
         len(palettesData) >> 3, fields['unk32'], palOff, palDataOff)
 
     return bytes(data)
+
+
+def renderTextureDataAsImage(data1, data2, format, width, height, palette=None, isColor0Transparent=True):
+    """
+    Render the given texture data as a PIL Image.
+    format should be a TextureFormat.
+    palette should be a list of colors (or None, if the texture format
+    doesn't require one).
+    """
+    if not HavePIL:
+        raise RuntimeError('PIL is not installed, so ndspy cannot render textures.')
+
+    rgbas = renderTextureData(data1, data2, format, width, height, palette, isColor0Transparent)
+
+    w, h = width, height
+
+    pxiter = iter(rgbas)
+    dest = [0] * (w * h)
+    for y in range(h):
+        for x in range(w):
+            r31, g31, b31, a31 = next(pxiter)
+            r255 = r31 << 3 | r31 >> 2
+            g255 = g31 << 3 | g31 >> 2
+            b255 = b31 << 3 | b31 >> 2
+            a255 = a31 << 3 | a31 >> 2
+            rgba = (a255 << 24) | (b255 << 16) | (g255 << 8) | r255
+            dest[y * w + x] = rgba
+
+    img = PIL.Image.frombytes('RGBA', (w, h), struct.pack(f'<{w * h}I', *dest))
+
+    return img
+
+
+def renderTextureData(data1, data2, format, width, height, palette=None, isColor0Transparent=True):
+    """
+    Render the given texture data as a list of (r, g, b, a) tuples,
+    where each channel goes from 0 to 31. (Yes, including a.)
+    format should be a TextureFormat.
+    palette should be a list of colors (or None, if the texture format
+    doesn't require one).
+    """
+    if format == TextureFormat.TRANSLUCENT_A3I5:
+        return _renderA3I5(data1, width, height, palette)
+    elif format == TextureFormat.PALETTED_2BPP:
+        return _renderPaletted2BPP(data1, width, height, palette, isColor0Transparent)
+    elif format == TextureFormat.PALETTED_4BPP:
+        return _renderPaletted4BPP(data1, width, height, palette, isColor0Transparent)
+    elif format == TextureFormat.PALETTED_8BPP:
+        return _renderPaletted8BPP(data1, width, height, palette, isColor0Transparent)
+    elif format == TextureFormat.TEXELED_4X4:
+        return _renderTexeled4x4(data1, data2, width, height, palette, isColor0Transparent)
+    elif format == TextureFormat.TRANSLUCENT_A5I3:
+        return _renderA5I3(data1, width, height, palette)
+    elif format == TextureFormat.DIRECT_16_BIT:
+        return _renderDirect16Bit(data1, width, height)
+    else:
+        raise ValueError(f'Cannot render texture format: {format}')
+
+
+def _renderA3I5(data, w, h, colors):
+    """
+    Render this texture using the A3I5 format.
+    """
+    COLOR_LUT = ndspyColor.LUT_UNPACKED
+
+    pxiter = iter(data)
+    dest = [0] * (w * h)
+    for y in range(h):
+        for x in range(w):
+            value = next(pxiter)
+            color = colors[value & 0x1F]
+
+            r, g, b, _ = COLOR_LUT[color]
+            a = value >> 5
+            a = (a << 2) | (a >> 1)
+
+            dest[y * w + x] = (r, g, b, a)
+
+    return dest
+
+
+def _renderPaletted2BPP(data, w, h, colors, isColor0Transparent):
+    """
+    Render this texture using the Paletted 2bpp format.
+    """
+    COLOR_LUT = ndspyColor.LUT_UNPACKED
+    alpha0 = 0 if isColor0Transparent else 31
+
+    pxiter = iter(data)
+    dest = [0] * (w * h)
+    for y in range(h):
+        for x in range(0, w, 4):
+            value = next(pxiter)
+
+            value1 = value & 3
+            color = colors[value1]
+            r, g, b, _ = COLOR_LUT[color]
+            a = 31 if value1 != 0 else alpha0
+            dest[y * w + x] = (r, g, b, a)
+
+            value2 = (value >> 2) & 3
+            color = colors[value2]
+            r, g, b, _ = COLOR_LUT[color]
+            a = 31 if value2 != 0 else alpha0
+            dest[y * w + x + 1] = (r, g, b, a)
+
+            value3 = (value >> 4) & 3
+            color = colors[value3]
+            r, g, b, _ = COLOR_LUT[color]
+            a = 31 if value3 != 0 else alpha0
+            dest[y * w + x + 2] = (r, g, b, a)
+
+            value3 = value >> 6
+            color = colors[value3]
+            r, g, b, _ = COLOR_LUT[color]
+            a = 31 if value3 != 0 else alpha0
+            dest[y * w + x + 3] = (r, g, b, a)
+
+    return dest
+
+
+def _renderPaletted4BPP(data, w, h, colors, isColor0Transparent):
+    """
+    Render this texture using the Paletted 4bpp format.
+    """
+    COLOR_LUT = ndspyColor.LUT_UNPACKED
+    alpha0 = 0 if isColor0Transparent else 31
+
+    pxiter = iter(data)
+    dest = [0] * (w * h)
+    for y in range(h):
+        for x in range(0, w, 2):
+            value = next(pxiter)
+
+            value1 = value & 0xF
+            color = colors[value1]
+            r, g, b, _ = COLOR_LUT[color]
+            a = 31 if value1 != 0 else alpha0
+            dest[y * w + x] = (r, g, b, a)
+
+            value2 = value >> 4
+            color = colors[value2]
+            r, g, b, _ = COLOR_LUT[color]
+            a = 31 if value2 != 0 else alpha0
+            dest[y * w + x + 1] = (r, g, b, a)
+
+    return dest
+
+
+def _renderPaletted8BPP(data, w, h, colors, isColor0Transparent):
+    """
+    Render this texture using the Paletted 8bpp format.
+    """
+    COLOR_LUT = ndspyColor.LUT_UNPACKED
+    alpha0 = 0 if isColor0Transparent else 31
+
+    pxiter = iter(data)
+    dest = [0] * (w * h)
+    for y in range(h):
+        for x in range(w):
+            value = data[y * w + x]
+            color = colors[value]
+            r, g, b, _ = COLOR_LUT[color]
+            a = 31 if value != 0 else alpha0
+            dest[y * w + x] = (r, g, b, a)
+
+    return dest
+
+
+def _renderTexeled4x4(data1, data2, w, h, colors, isColor0Transparent):
+    """
+    Render this texture using the Texeled 4x4 format.
+    """
+    COLOR_LUT = ndspyColor.LUT_UNPACKED
+
+    # This one sure is... fun :(
+
+    pxiter1 = iter(data1)
+    pxiter2 = iter(data2)
+    dest = [0] * (w * h)
+    for y in range(0, h, 4):
+        for x in range(0, w, 4):
+            value2 = next(pxiter2) | (next(pxiter2) << 8)
+            paletteOffset = (value2 & 0x3FFF) * 2
+            interpMode = value2 >> 14
+
+            for suby in range(4):
+                value1 = next(pxiter1)
+                for subx in range(4):
+                    subvalue = value1 & 3
+                    value1 >>= 2
+
+                    # The color-averaging code is based on code from
+                    # melonDS, because I trust its accuracy in this area
+
+                    alpha = 31
+
+                    if subvalue < 2:
+                        color = colors[paletteOffset + subvalue]
+
+                    elif subvalue == 2:
+
+                        if interpMode == 1:
+                            # Texel value 2 interp mode 1:
+                            # (color0 + color1) / 2
+
+                            color0 = colors[paletteOffset]
+                            color1 = colors[paletteOffset + 1]
+
+                            r0 = color0 & 0x001F
+                            g0 = color0 & 0x03E0
+                            b0 = color0 & 0x7C00
+                            r1 = color1 & 0x001F
+                            g1 = color1 & 0x03E0
+                            b1 = color1 & 0x7C00
+
+                            r = (r0 + r1) >> 1
+                            g = ((g0 + g1) >> 1) & 0x03E0
+                            b = ((b0 + b1) >> 1) & 0x7C00
+
+                            color = r | g | b
+
+                        elif interpMode == 3:
+                            # Texel value 2 interp mode 3:
+                            # (color0 * 5 + color1 * 3) / 8
+
+                            color0 = colors[paletteOffset]
+                            color1 = colors[paletteOffset + 1]
+
+                            r0 = color0 & 0x001F
+                            g0 = color0 & 0x03E0
+                            b0 = color0 & 0x7C00
+                            r1 = color1 & 0x001F
+                            g1 = color1 & 0x03E0
+                            b1 = color1 & 0x7C00
+
+                            r = (r0 * 5 + r1 * 3) >> 3
+                            g = ((g0 * 5 + g1 * 3) >> 3) & 0x03E0
+                            b = ((b0 * 5 + b1 * 3) >> 3) & 0x7C00
+
+                            color = r | g | b
+
+                        else:
+                            color = colors[paletteOffset + 2]
+
+                    elif subvalue == 3:
+
+                        if interpMode < 2:
+                            # (transparent)
+                            color = alpha = 0
+
+                        elif interpMode == 2:
+                            color = colors[paletteOffset + 3]
+
+                        else:
+                            # Texel value 3 interp mode 3:
+                            # (color0 * 3 + color1 * 5) / 8
+
+                            color0 = colors[paletteOffset]
+                            color1 = colors[paletteOffset + 1]
+
+                            r0 = color0 & 0x001F
+                            g0 = color0 & 0x03E0
+                            b0 = color0 & 0x7C00
+                            r1 = color1 & 0x001F
+                            g1 = color1 & 0x03E0
+                            b1 = color1 & 0x7C00
+
+                            r = (r0 * 3 + r1 * 5) >> 3
+                            g = ((g0 * 3 + g1 * 5) >> 3) & 0x03E0
+                            b = ((b0 * 3 + b1 * 5) >> 3) & 0x7C00
+
+                            color = r | g | b
+
+                    if alpha == 31:
+                        r, g, b, _ = COLOR_LUT[color]
+                    else:
+                        r = g = b = 0
+
+                    dest[(y + suby) * w + x + subx] = (r, g, b, alpha)
+
+    return dest
+
+
+def _renderA5I3(data, w, h, colors):
+    """
+    Render this texture using the A5I3 format.
+    """
+    COLOR_LUT = ndspyColor.LUT_UNPACKED
+
+    pxiter = iter(data)
+    dest = [0] * (w * h)
+    for y in range(h):
+        for x in range(w):
+            value = next(pxiter)
+            color = colors[value & 0x7]
+            r, g, b, _ = COLOR_LUT[color]
+            a = value >> 3
+            dest[y * w + x] = (r, g, b, a)
+
+    return dest
+
+
+def _renderDirect16Bit(data, w, h):
+    """
+    Render this texture using the Direct 16-Bit format.
+    """
+    COLOR_LUT = ndspyColor.LUT_UNPACKED
+
+    pxiter = iter(data)
+    dest = [0] * (w * h)
+    for y in range(h):
+        for x in range(w):
+            color = next(pxiter) | (next(pxiter) << 8)
+            r, g, b, a1 = COLOR_LUT[color]
+            a = 31 if a1 else 0
+            dest[y * w + x] = (r, g, b, a)
+
+    return dest
