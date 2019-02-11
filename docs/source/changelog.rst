@@ -25,24 +25,38 @@ can be downloaded from the `Releases page on GitHub
 
 .. contents:: :local:
 
-1.0.0 (Jan. 18, 2019)
+
+3.0.0 (Feb. 10, 2019)
 ---------------------
 
-First release! The API has changed a lot in the weeks prior to this release, so
-if you find yourself in possession of any code written for pre-1.0.0 ndspy,
-you'll probably need to make adjustments.
+*   Completely redesigned :py:mod:`ndspy.narc`'s API in order to add
+    compatibility with *New Super Mario Bros.* This is a very
+    backwards-incompatible change, and any code using the module definitely
+    needs to be updated.
+*   Medium-sized changes to :py:mod:`ndspy.bmg`'s API in order to add
+    compatibility with... pretty much game except *The Legend of Zelda: Phantom
+    Hourglass* and *The Legend of Zelda: Spirit Tracks.* This is a pretty
+    important change, of course, but it's also backwards-incompatible.
+    Depending on what parts of the module your code uses, though, your code
+    might still run correctly without any changes.
+*   Converted the names of
+    :py:class:`ndspy.soundSequence.MonoPolySequenceEvent.Value` and
+    :py:class:`ndspy.soundSequence.VibratoTypeSequenceEvent.Value` members to
+    upper-case, since that's the recommended style for enum members now. This
+    is backward-incompatible, but only if your code uses these enums.
+*   Added the first two tutorials to the documentation, and added example code
+    for certain modules.
+*   Reorganized the folder structure of the documentation. This makes most
+    previous documentation links invalid, unfortunately, but the reorganization
+    was done with an eye toward avoiding this having to happen again in the
+    future.
+*   Changes pertaining to undocumented modules:
 
-.. note::
+    *    :py:mod:`ndspy.bnbl` and :py:mod:`ndspy.bncl` were added
+    *    :py:mod:`ndspy.graphics2D` got some API improvements
+    *    Swapped the interpretation of alpha values in :py:mod:`ndspy.color`
+    *    Added the ability to render textures with :py:mod:`ndspy.texture`
 
-    This release had to be removed from PyPI due to a bug fixed in 1.0.1. If
-    you really must have it for some reason, you can find it `on GitHub
-    <https://github.com/RoadrunnerWMC/ndspy/releases/tag/v1.0.0>`_.
-
-1.0.1 (Jan. 18, 2019)
----------------------
-
-Fixed an issue that caused pip to erroneously attempt to install on unsupported
-versions of Python, instead of giving the correct error message.
 
 2.0.0 (Jan. 23, 2019)
 ---------------------
@@ -56,3 +70,24 @@ versions of Python, instead of giving the correct error message.
     your code didn't crash on 1.0.x, this doesn't affect you.
 *   Added :py:data:`ndspy.VERSION`.
 *   Added this changelog page to the documentation.
+
+
+1.0.1 (Jan. 18, 2019)
+---------------------
+
+Fixed an issue that caused pip to erroneously attempt to install on unsupported
+versions of Python, instead of giving the correct error message.
+
+
+1.0.0 (Jan. 18, 2019)
+---------------------
+
+First release! The API has changed a lot in the weeks prior to this release, so
+if you find yourself in possession of any code written for pre-1.0.0 ndspy,
+you'll probably need to make adjustments.
+
+.. note::
+
+    This release had to be removed from PyPI due to a bug fixed in 1.0.1. If
+    you really must have it for some reason, you can find it `on GitHub
+    <https://github.com/RoadrunnerWMC/ndspy/releases/tag/v1.0.0>`_.
