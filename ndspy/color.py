@@ -15,6 +15,8 @@
 # You should have received a copy of the GNU General Public License
 # along with ndspy.  If not, see <https://www.gnu.org/licenses/>.
 
+# Support for DS color values (A1BGR5)
+
 from . import _common
 
 
@@ -39,7 +41,7 @@ def unpack(color):
             (color >> 15) & 1)
 
 
-def pack(r, g, b, a=0):
+def pack(r, g, b, a=1):
     """
     Pack these channel values into a color. a should be 0 or 1 (0
     meaning transparent and 1 meaning opaque), and r, g and b should be
@@ -56,7 +58,7 @@ def pack(r, g, b, a=0):
 def unpack255(color):
     """
     Same as unpack(), but scales each channel to the standard 0-255
-    scale.
+    scale. Equivalent to expand(unpack(color)).
     """
     r, g, b, a = unpack(color)
     r = r << 3 | r >> 2
@@ -68,12 +70,38 @@ def unpack255(color):
 def pack255(r, g, b, a=255):
     """
     Same as pack(), but expects each channel to be on the standard 0-255
-    scale.
+    scale. Equivalent to pack(contract(r, g, b[, a])).
     """
     return pack(((r + 4) << 2) // 33,
                 ((g + 4) << 2) // 33,
                 ((b + 4) << 2) // 33,
                 0 if a < 128 else 1)
+
+
+def expand(r, g, b, a=1):
+    """
+    Convert the given channel values, where a is 0 or 1
+    (0 meaning transparent and 1 meaning opaque) and r, g and b are
+    between 0 and 31 inclusive, into a new (r, g, b, a) tuple, where
+    all channels are between 0 and 255.
+    """
+    r = r << 3 | r >> 2
+    g = g << 3 | g >> 2
+    b = b << 3 | b >> 2
+    return (r, g, b, 255 if a else 0)
+
+
+def contract(r, g, b, a=255):
+    """
+    Convert the given channel values, where all are between
+    0 and 255, to a new (r, g, b, a) tuple, where a is 0 or 1
+    (0 meaning transparent and 1 meaning opaque) and r, g and b are
+    between 0 and 31 inclusive.
+    """
+    return (((r + 4) << 2) // 33,
+            ((g + 4) << 2) // 33,
+            ((b + 4) << 2) // 33,
+            0 if a < 128 else 1)
 
 
 # Avoiding using the already-defined functions here, because doing so
