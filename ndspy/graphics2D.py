@@ -134,7 +134,7 @@ class ImageTile:
         """
         if not HavePIL:
             raise RuntimeError('PIL is not installed, so ndspy cannot render ImageTiles.')
-        _checkBitsPerPixel(bitsPerPixel)
+        _checkBitsPerPixel(self.bitsPerPixel)
 
         paletteSize = 16 if (self.bitsPerPixel == 4) else 256
         cs = paletteNum * paletteSize
@@ -149,7 +149,7 @@ class ImageTile:
 
 
     def save(self):
-        _checkBitsPerPixel(bitsPerPixel)
+        _checkBitsPerPixel(self.bitsPerPixel)
 
         if self.bitsPerPixel == 4:
             data = bytearray()
