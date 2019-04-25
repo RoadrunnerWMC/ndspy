@@ -136,6 +136,8 @@ class ImageTile:
             raise RuntimeError('PIL is not installed, so ndspy cannot render ImageTiles.')
         _checkBitsPerPixel(self.bitsPerPixel)
 
+        colorsFullAlpha = [(r, g, b, 255) for (r, g, b, a) in colors]
+
         paletteSize = 16 if (self.bitsPerPixel == 4) else 256
         cs = paletteNum * paletteSize
         img = PIL.Image.new('RGBA', (8, 8), (0, 0, 0, 0))
@@ -143,7 +145,7 @@ class ImageTile:
             for x in range(8):
                 px = self.pixels[y * 8 + x]
                 if px: # "0" is always transparent
-                    img.putpixel((x, y), colors[(cs + px) | 0x8000])
+                    img.putpixel((x, y), colorsFullAlpha[cs + px])
 
         return img
 
