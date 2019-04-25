@@ -16,11 +16,10 @@
 # along with ndspy.  If not, see <https://www.gnu.org/licenses/>.
 
 # Support for DS color values (A1BGR5), which are canonically represented
-# in ndspy as (r, g, b, a) tuples (where r, g and b range from 0 to 31 and
-# a is 0 or 1). These are used in palettes, A1BGR5 textures, lighting colors,
-# and other places.
+# in ndspy as (r5, g5, b5, a1) quadruples. These are used in palettes, A1BGR5
+# textures, lighting colors, and other places.
 
-# Colors with 5-bit alpha values, as used in ndspy.texture, are not supported
+# Colors in (r5, g5, b5, a5) format, as used in ndspy.texture, are not supported
 # by this module, since converting those to/from A1BGR5 values is impossible
 # without rounding (which you can do manually if you so wish)
 
@@ -59,9 +58,7 @@ for i in range(0x10000):
 
 def unpack(color):
     """
-    Return the color as a quadruple (r, g, b, a), where a is 0 or 1
-    (0 meaning transparent and 1 meaning opaque), and r, g and b are
-    between 0 and 31 inclusive.
+    Unpack the color value as a quadruple (r5, g5, b5, a1).
     """
     return (color & 0x1F,
             (color >> 5) & 0x1F,
@@ -71,9 +68,7 @@ def unpack(color):
 
 def pack(r, g, b, a=1):
     """
-    Pack these channel values into a color. a should be 0 or 1 (0
-    meaning transparent and 1 meaning opaque), and r, g and b should be
-    between 0 and 31 inclusive.
+    Pack the (r5, g5, b5, a1) values into a color value.
     """
     value = r & 0x1F
     value |= (g & 0x1F) << 5
@@ -84,8 +79,8 @@ def pack(r, g, b, a=1):
 
 def unpack255(color):
     """
-    Same as unpack(), but scales each channel to the standard 0-255
-    scale. Equivalent to expand(unpack(color)).
+    Unpack the color as an approximate quadruple (r8, g8, b8, a8).
+    Equivalent to expand(unpack(color)).
     """
     r, g, b, a = unpack(color)
     r = r << 3 | r >> 2
@@ -96,8 +91,8 @@ def unpack255(color):
 
 def pack255(r, g, b, a=255):
     """
-    Same as pack(), but expects each channel to be on the standard 0-255
-    scale. Equivalent to pack(contract(r, g, b[, a])).
+    Pack the (r8, g8, b8, a8) values into an approximate color value.
+    Equivalent to pack(contract(r, g, b[, a])).
     """
     return pack(((r + 4) << 2) // 33,
                 ((g + 4) << 2) // 33,
@@ -107,10 +102,7 @@ def pack255(r, g, b, a=255):
 
 def expand(r, g, b, a=1):
     """
-    Convert the given channel values, where a is 0 or 1
-    (0 meaning transparent and 1 meaning opaque) and r, g and b are
-    between 0 and 31 inclusive, into a new (r, g, b, a) tuple, where
-    all channels are between 0 and 255.
+    Convert the given (r5, g5, b5, a1) values to an approximate (r8, g8, b8, a8) quadruple.
     """
     r = r << 3 | r >> 2
     g = g << 3 | g >> 2
@@ -120,10 +112,7 @@ def expand(r, g, b, a=1):
 
 def contract(r, g, b, a=255):
     """
-    Convert the given channel values, where all are between
-    0 and 255, to a new (r, g, b, a) tuple, where a is 0 or 1
-    (0 meaning transparent and 1 meaning opaque) and r, g and b are
-    between 0 and 31 inclusive.
+    Convert the given (r8, g8, b8, a8) values to an approximate (r5, g5, b5, a1) quadruple.
     """
     return (((r + 4) << 2) // 33,
             ((g + 4) << 2) // 33,
@@ -133,16 +122,14 @@ def contract(r, g, b, a=255):
 
 def load(data):
     """
-    Convert two bytes of data representing a color to a matching (r, g, b, a) tuple
+    Convert two bytes of data representing a color value to a (r5, g5, b5, a1) quadruple.
     """
     return unpack(data[1] << 8 | data[0])
 
 
 def save(r, g, b, a=1):
     """
-    Convert the given channel values, where a is 0 or 1
-    (0 meaning transparent and 1 meaning opaque) and r, g and b are
-    between 0 and 31 inclusive, into two bytes.
+    Convert the given (r5, g5, b5, a1) values to two bytes of data representing a color value.
     """
     v = pack(r, g, b, a)
     return bytes([v & 0xFF, v >> 8])
@@ -150,8 +137,7 @@ def save(r, g, b, a=1):
 
 def loadPalette(data):
     """
-    Convert binary data to a list of (r, g, b, a) color tuples, where
-    r, g and b are between 0 and 31 inclusive, and a is 0 or 1.
+    Convert binary data to a list of (r5, g5, b5, a1) quadruples.
     This is the inverse of savePalette().
     """
     LUT = LUT_UNPACKED
@@ -169,8 +155,7 @@ def loadPaletteFromFile(filePath):
 
 def savePalette(colors):
     """
-    Convert a list of (r, g, b, a) color tuples to binary data, where
-    r, g and b are between 0 and 31 inclusive, and a is 0 or 1.
+    Convert a list of (r5, g5, b5, a1) quadruples to binary data.
     This is the inverse of loadPalette().
     """
     return struct.pack(f'<{len(colors)}H', *(pack(*c) for c in colors))
@@ -178,7 +163,7 @@ def savePalette(colors):
 
 def savePaletteToFile(colors, filePath):
     """
-    Convert a list of (r, g, b, a) color tuples to binary data, and save
+    Convert a list of (r5, g5, b5, a1) quadruples to binary data, and save
     it to a filesystem file.
     This is the inverse of loadPaletteFromFile().
     """

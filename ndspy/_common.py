@@ -332,8 +332,8 @@ def ensurePIL():
 def colorsToImage(colors, width, height, *, aBits=1):
     """
     Render the given list of color values as a PIL Image.
-    colors should be a list of (r, g, b, a) tuples, where r, g and b
-    range from 0 to 31, and a is of length aBits (usually 1 or 5).
+    colors should be a list of (r5, g5, b5, aN) quadruples, where
+    aN is of length aBits (usually 1 or 5).
     """
     ensurePIL()
 

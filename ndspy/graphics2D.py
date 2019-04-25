@@ -109,10 +109,8 @@ class ImageTile:
     def render(self, colors, paletteNum=0):
         """
         Given a list of colors and the desired palette number to use, 
-        render this ImageTile as a list of (r, g, b, a) tuples (where
-        r, g, b range from 0 to 31, and a is 0 or 1).
-        colors should be a list of (r, g, b, a) tuples in the aforementioned
-        scale.
+        render this ImageTile as a list of (r5, g5, b5, a1) quadruples.
+        colors should be a list of (r5, g5, b5, a1) quadruples.
         """
         _checkImageFormat(self.format)
 
@@ -141,7 +139,7 @@ class ImageTile:
         """
         Given a list of colors and the desired palette number to use, 
         render this ImageTile as a PIL Image.
-        colors should be a list of (r, g, b, a) tuples.
+        colors should be a list of (r5, g5, b5, a1) quadruples.
         """
         return _common.colorsToImage(self.render(colors, paletteNum), 8, 8, aBits=1)
 
@@ -285,9 +283,9 @@ class TilemapTile:
     def renderSingle(self, imageTile, colors):
         """
         Given an image tile and a list of colors, render this
-        TilemapTile as a list of (r, g, b, a) tuples (0-31 format).
+        TilemapTile as a list of (r5, g5, b5, a1) quadruples.
         imageTile should be an ImageTile.
-        colors should be a list of (r, g, b, a) tuples (0-31).
+        colors should be a list of (r5, g5, b5, a1) quadruples.
         """
         pixels = imageTile.render(colors, 0 if self.format == TilemapFormat.I8 else self.paletteNum)
 
@@ -310,7 +308,7 @@ class TilemapTile:
         Given an image tile and a list of colors, render this
         TilemapTile as a PIL Image.
         imageTile should be an ImageTile.
-        colors should be a list of (r, g, b, a) tuples (0-31).
+        colors should be a list of (r5, g5, b5, a1) quadruples.
         """
         return _common.colorsToImage(self.renderSingle(imageTile, colors), 8, 8, aBits=1)
 
@@ -318,9 +316,9 @@ class TilemapTile:
     def render(self, imageTiles, colors, tileNumOffset=0):
         """
         Given lists of image tiles and colors, render this TilemapTile
-        as a list of (r, g, b, a) tuples (0-31 format).
+        as a list of (r5, g5, b5, a1) quadruples.
         imageTiles should be a list of, well, ImageTiles.
-        colors should be a list of (r, g, b, a) tuples.
+        colors should be a list of (r5, g5, b5, a1) quadruples.
         """
         if self.tileNum < tileNumOffset:
             raise ValueError(f'TilemapTile.tileNum < tileNumOffset ({self.tileNum} < {tileNumOffset})')
@@ -332,7 +330,7 @@ class TilemapTile:
         Given lists of image tiles and colors, render this TilemapTile
         as a PIL Image.
         imageTiles should be a list of, well, ImageTiles.
-        colors should be a list of (r, g, b, a) tuples.
+        colors should be a list of (r5, g5, b5, a1) quadruples.
         """
         if self.tileNum < tileNumOffset:
             raise ValueError(f'TilemapTile.tileNum < tileNumOffset ({self.tileNum} < {tileNumOffset})')
@@ -400,8 +398,8 @@ def saveTilemapTilesToFile(tiles, filePath):
 def renderImageTiles(tiles, colors, paletteNum=0, width=32):
     """
     Given a list of ImageTiles, a list of colors, and a desired palette
-    ID to render with, render all the tiles as a list of (r, g, b, a)
-    tuples (0-31).
+    ID to render with, render all the tiles as a list of (r5, g5, b5, a1)
+    quadruples.
     The width of the image defaults to 32 tiles, but can be adjusted.
     """
     height, remainder = divmod(len(tiles), width)
@@ -436,7 +434,7 @@ def renderImageTilesAsImage(tiles, colors, paletteNum=0, width=32):
 def renderTilemapTiles(tilemapTiles, imageTiles, colors, width, tileNumOffset=0):
     """
     Given a list of TilemapTiles, a list of ImageTiles, and a list of
-    colors, render the tilemap to a list of (r, g, b, a) tuples (0-31).
+    colors, render the tilemap to a list of (r5, g5, b5, a1) quadruples.
     The tilemap's width must also be specified.
     """
     height, remainder = divmod(len(tilemapTiles), width)

@@ -171,8 +171,8 @@ class Texture:
 
     def render(self, palette=None):
         """
-        Given a palette, render this texture as list of (r, g, b, a)
-        tuples, where each channel goes from 0 to 31.
+        Given a palette, render this texture as a list of (r5, g5, b5, a5) quadruples.
+        (Yes, a is 5 bits long.)
         palette should be a Palette.
         palette can be None if the texture is in a format that doesn't
         need a palette (A1BGR5).
@@ -541,8 +541,8 @@ def renderTextureDataAsImage(data1, data2, format, width, height, palette=None, 
 
 def renderTextureData(data1, data2, format, width, height, palette=None, isColor0Transparent=True):
     """
-    Render the given texture data as a list of (r, g, b, a) tuples,
-    where each channel goes from 0 to 31. (Yes, including a.)
+    Render the given texture data as a list of (r5, g5, b5, a5) quadruples.
+    (Yes, a is 5 bits long.)
     format should be a TextureFormat.
     palette should be a list of colors (or None, if the texture format
     doesn't require one).
