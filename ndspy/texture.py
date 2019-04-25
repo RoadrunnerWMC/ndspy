@@ -22,26 +22,19 @@ from . import _common
 from . import color as ndspyColor
 
 
-HavePIL = True
-try:
-    import PIL.Image
-except ImportError:
-    HavePIL = False
-
-
 class TextureFormat(enum.IntEnum):
     """
     An enum describing the various texture formats (for 3D models) the
     Nintendo DS supports.
     """
     UNKNOWN_0 = 0
-    TRANSLUCENT_A3I5 = 1
-    PALETTED_2BPP = 2
-    PALETTED_4BPP = 3
-    PALETTED_8BPP = 4
-    TEXELED_4X4 = 5
-    TRANSLUCENT_A5I3 = 6
-    DIRECT_16_BIT = 7
+    A3I5 = 1
+    I2 = 2
+    I4 = 3
+    I8 = 4
+    TEXELED = 5
+    A5I3 = 6
+    A1BGR5 = 7
 
 
     def bitsPerPixel1(self):
@@ -53,13 +46,13 @@ class TextureFormat(enum.IntEnum):
         """
         return {
             type(self).UNKNOWN_0: 0,
-            type(self).TRANSLUCENT_A3I5: 8,
-            type(self).PALETTED_2BPP: 2,
-            type(self).PALETTED_4BPP: 4,
-            type(self).PALETTED_8BPP: 8,
-            type(self).TEXELED_4X4: 2,
-            type(self).TRANSLUCENT_A5I3: 8,
-            type(self).DIRECT_16_BIT: 16,
+            type(self).A3I5: 8,
+            type(self).I2: 2,
+            type(self).I4: 4,
+            type(self).I8: 8,
+            type(self).TEXELED: 2,
+            type(self).A5I3: 8,
+            type(self).A1BGR5: 16,
             }[self]
 
 
@@ -70,9 +63,9 @@ class TextureFormat(enum.IntEnum):
         This is useful for calculating the expected amount of data some
         texture will have, given its width, height and format.
         """
-        # Only TEXELED_4X4 uses the second data region, and it's 1bpp
+        # Only TEXELED uses the second data region, and it's 1bpp
         # there. 
-        if self == type(self).TEXELED_4X4:
+        if self == type(self).TEXELED:
             return 1
         else:
             return 0
@@ -182,7 +175,7 @@ class Texture:
         tuples, where each channel goes from 0 to 31.
         palette should be a Palette.
         palette can be None if the texture is in a format that doesn't
-        need a palette (Direct 16-Bit).
+        need a palette (A1BGR5).
         """
         colors = palette.colors if palette is not None else None
         return renderTextureData(self.data1,
@@ -199,7 +192,7 @@ class Texture:
         Given a palette, render this texture as a PIL Image.
         palette should be a Palette.
         palette can be None if the texture is in a format that doesn't
-        need a palette (Direct 16-Bit).
+        need a palette (A1BGR5).
         """
         colors = palette.colors if palette is not None else None
         return renderTextureDataAsImage(self.data1,
@@ -214,14 +207,14 @@ class Texture:
     def __str__(self):
         format = {
             int(TextureFormat.UNKNOWN_0): 'unknown-0',
-            int(TextureFormat.TRANSLUCENT_A3I5): 'translucent-a3i5',
-            int(TextureFormat.PALETTED_2BPP): 'paletted-2bpp',
-            int(TextureFormat.PALETTED_4BPP): 'paletted-4bpp',
-            int(TextureFormat.PALETTED_8BPP): 'paletted-8bpp',
-            int(TextureFormat.TEXELED_4X4): 'texeled-4x4',
-            int(TextureFormat.TRANSLUCENT_A5I3): 'translucent-a5i3',
-            int(TextureFormat.DIRECT_16_BIT): 'direct-16-bit',
-            }[self.format]
+            int(TextureFormat.A3I5): 'a3i5',
+            int(TextureFormat.I2): 'i2',
+            int(TextureFormat.I4): 'i4',
+            int(TextureFormat.I8): 'i8',
+            int(TextureFormat.TEXELED): 'texeled',
+            int(TextureFormat.A5I3): 'a5i3',
+            int(TextureFormat.A1BGR5): 'a1bgr5',
+            }.get(self.format, 'invalid')
         return f'<texture {format} {self.width}x{self.height}>'
 
 
@@ -253,15 +246,11 @@ class Palette:
         self.unk00 = unk00
         self.unk02 = unk02
         self.unkHeader02 = unkHeader02
-
-        if len(data) % 2 == 1:
-            raise ValueError(f'Palette data length is {len(data)} (must be even)')
-        self.colors = list(struct.unpack(f'<{len(data) // 2}H', data))
+        self.colors = ndspyColor.loadPalette(data)
 
 
     def save(self):
-        data = struct.pack(f'<{len(self.colors)}H', *self.colors)
-        return self.unk00, self.unk02, self.unkHeader02, data
+        return self.unk00, self.unk02, self.unkHeader02, ndspyColor.savePalette(self.colors)
 
 
     @classmethod
@@ -409,7 +398,7 @@ def _readTEX0(data):
 
         tex = Texture(unk00, unk02, params, unk04, b'', b'')
 
-        if tex.format == TextureFormat.TEXELED_4X4:
+        if tex.format == TextureFormat.TEXELED:
             thisTexOff1 = compressedData1Off + thisTexOff
             thisTexOff2 = compressedData2Off + thisTexOff // 2
             thisTexDataLen1 = int(tex.width * tex.height * tex.format.bitsPerPixel1() / 8)
@@ -484,10 +473,10 @@ def _saveTEX0(fields):
     for texName, tex in fields['textures']:
         unk00, unk02, params, unk04, data1, data2 = tex.save()
 
-        if tex.format == TextureFormat.TEXELED_4X4:
+        if tex.format == TextureFormat.TEXELED:
             thisTexOff = len(compressedData1)
             if len(data1) != len(data2) * 2:
-                raise ValueError(f'For texeled 4x4 textures, data1 must'
+                raise ValueError(f'For texeled textures, data1 must'
                     ' be twice as long as data2!'
                     f' (Found lengths: {len(data1)}, {len(data2)})')
             compressedData1.extend(data1)
@@ -545,28 +534,9 @@ def renderTextureDataAsImage(data1, data2, format, width, height, palette=None, 
     palette should be a list of colors (or None, if the texture format
     doesn't require one).
     """
-    if not HavePIL:
-        raise RuntimeError('PIL is not installed, so ndspy cannot render textures.')
-
-    rgbas = renderTextureData(data1, data2, format, width, height, palette, isColor0Transparent)
-
-    w, h = width, height
-
-    pxiter = iter(rgbas)
-    dest = [0] * (w * h)
-    for y in range(h):
-        for x in range(w):
-            r31, g31, b31, a31 = next(pxiter)
-            r255 = r31 << 3 | r31 >> 2
-            g255 = g31 << 3 | g31 >> 2
-            b255 = b31 << 3 | b31 >> 2
-            a255 = a31 << 3 | a31 >> 2
-            rgba = (a255 << 24) | (b255 << 16) | (g255 << 8) | r255
-            dest[y * w + x] = rgba
-
-    img = PIL.Image.frombytes('RGBA', (w, h), struct.pack(f'<{w * h}I', *dest))
-
-    return img
+    return _common.colorsToImage(
+        renderTextureData(data1, data2, format, width, height, palette, isColor0Transparent),
+        width, height, aBits=5)
 
 
 def renderTextureData(data1, data2, format, width, height, palette=None, isColor0Transparent=True):
@@ -577,20 +547,20 @@ def renderTextureData(data1, data2, format, width, height, palette=None, isColor
     palette should be a list of colors (or None, if the texture format
     doesn't require one).
     """
-    if format == TextureFormat.TRANSLUCENT_A3I5:
+    if format == TextureFormat.A3I5:
         return _renderA3I5(data1, width, height, palette)
-    elif format == TextureFormat.PALETTED_2BPP:
-        return _renderPaletted2BPP(data1, width, height, palette, isColor0Transparent)
-    elif format == TextureFormat.PALETTED_4BPP:
-        return _renderPaletted4BPP(data1, width, height, palette, isColor0Transparent)
-    elif format == TextureFormat.PALETTED_8BPP:
-        return _renderPaletted8BPP(data1, width, height, palette, isColor0Transparent)
-    elif format == TextureFormat.TEXELED_4X4:
-        return _renderTexeled4x4(data1, data2, width, height, palette, isColor0Transparent)
-    elif format == TextureFormat.TRANSLUCENT_A5I3:
+    elif format == TextureFormat.I2:
+        return _renderI2(data1, width, height, palette, isColor0Transparent)
+    elif format == TextureFormat.I4:
+        return _renderI4(data1, width, height, palette, isColor0Transparent)
+    elif format == TextureFormat.I8:
+        return _renderI8(data1, width, height, palette, isColor0Transparent)
+    elif format == TextureFormat.TEXELED:
+        return _renderTexeled(data1, data2, width, height, palette, isColor0Transparent)
+    elif format == TextureFormat.A5I3:
         return _renderA5I3(data1, width, height, palette)
-    elif format == TextureFormat.DIRECT_16_BIT:
-        return _renderDirect16Bit(data1, width, height)
+    elif format == TextureFormat.A1BGR5:
+        return _renderA1BGR5(data1, width, height)
     else:
         raise ValueError(f'Cannot render texture format: {format}')
 
@@ -617,9 +587,9 @@ def _renderA3I5(data, w, h, colors):
     return dest
 
 
-def _renderPaletted2BPP(data, w, h, colors, isColor0Transparent):
+def _renderI2(data, w, h, colors, isColor0Transparent):
     """
-    Render this texture using the Paletted 2bpp format.
+    Render this texture using the I2 format.
     """
     COLOR_LUT = ndspyColor.LUT_UNPACKED
     alpha0 = 0 if isColor0Transparent else 31
@@ -657,9 +627,9 @@ def _renderPaletted2BPP(data, w, h, colors, isColor0Transparent):
     return dest
 
 
-def _renderPaletted4BPP(data, w, h, colors, isColor0Transparent):
+def _renderI4(data, w, h, colors, isColor0Transparent):
     """
-    Render this texture using the Paletted 4bpp format.
+    Render this texture using the I4 format.
     """
     COLOR_LUT = ndspyColor.LUT_UNPACKED
     alpha0 = 0 if isColor0Transparent else 31
@@ -685,9 +655,9 @@ def _renderPaletted4BPP(data, w, h, colors, isColor0Transparent):
     return dest
 
 
-def _renderPaletted8BPP(data, w, h, colors, isColor0Transparent):
+def _renderI8(data, w, h, colors, isColor0Transparent):
     """
-    Render this texture using the Paletted 8bpp format.
+    Render this texture using the I8 format.
     """
     COLOR_LUT = ndspyColor.LUT_UNPACKED
     alpha0 = 0 if isColor0Transparent else 31
@@ -705,9 +675,9 @@ def _renderPaletted8BPP(data, w, h, colors, isColor0Transparent):
     return dest
 
 
-def _renderTexeled4x4(data1, data2, w, h, colors, isColor0Transparent):
+def _renderTexeled(data1, data2, w, h, colors, isColor0Transparent):
     """
-    Render this texture using the Texeled 4x4 format.
+    Render this texture using the Texeled format.
     """
     COLOR_LUT = ndspyColor.LUT_UNPACKED
 
@@ -839,9 +809,9 @@ def _renderA5I3(data, w, h, colors):
     return dest
 
 
-def _renderDirect16Bit(data, w, h):
+def _renderA1BGR5(data, w, h):
     """
-    Render this texture using the Direct 16-Bit format.
+    Render this texture using the A1BGR5 format.
     """
     COLOR_LUT = ndspyColor.LUT_UNPACKED
 
