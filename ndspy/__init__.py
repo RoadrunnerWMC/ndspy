@@ -28,7 +28,7 @@ try: VERSION.__class__.__name__ = 'ndspy.version'
 except: pass
 
 
-class Processor(enum.Enum):
+class Processor(enum.IntEnum):
     """
     An enumeration that can be used to distinguish between the Nintendo
     DS's two processors.
