@@ -41,18 +41,18 @@ their own modules.
 
 .. py:class:: Processor
 
-    :base class: :py:class:`enum.Enum`
+    :base class: :py:class:`enum.IntEnum`
 
     An enumeration that distinguishes between the Nintendo DS's two processors.
 
     .. data:: ARM9
 
-        The ARM9 processor. This is the main processor used by the DS.
+        Value 9: the ARM9 processor. This is the main processor used by the DS.
 
     .. data:: ARM7
 
-        The ARM7 processor. This is used for less-important tasks, and to play
-        GBA games.
+        Value 7: the ARM7 processor. This is used for less-important tasks, and
+        to play GBA games.
 
 
 .. py:class:: WaveType
