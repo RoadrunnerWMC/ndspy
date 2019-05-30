@@ -661,6 +661,10 @@ class SSEQMusic:
                 ' accidentally pass a SWAR to the constructor instead'
                 ' of a list of SWARs?)')
 
+        # Parse the SSEQ if it's not already
+        if not sseq.parsed:
+            sseq.parse()
+
         # Make a dictionary of tracks
         # Each track's events are considered to end whenever another
         # track begins.
