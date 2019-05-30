@@ -20,6 +20,12 @@ import struct
 
 import crcmod
 
+HavePIL = True
+try:
+    import PIL.Image
+except ImportError:
+    HavePIL = False
+
 from . import Alignment
 
 
@@ -114,9 +120,9 @@ def shortColorsListRepr(colors):
     """
     MAX_COLORS = 20
     colorsTrunc = colors[:MAX_COLORS]
-    hexColors = (f'0x{c:04X}' for c in colorsTrunc)
+    strColors = (f'({r},{g},{b},{a})' for r, g, b, a in colorsTrunc)
     ellipsis = ', ...' if len(colors) > MAX_COLORS else ''
-    return f'[{", ".join(hexColors)}{ellipsis}]'
+    return f'[{", ".join(strColors)}{ellipsis}]'
 
 
 def loadInfoBlock(data, off, expectedEntryLengths=None):
@@ -313,3 +319,45 @@ def enumeratedListOfStrs(items, indent=4):
     for i, item in enumerate(items):
         lines.append(indentStr + f'[{i:{maxNumLen}}] {item}')
     return lines
+
+
+def ensurePIL():
+    """
+    Display a nice error if PIL (Pillow) is not installed
+    """
+    if not HavePIL:
+        raise RuntimeError('PIL (Pillow) is not installed, so ndspy cannot render image data as PIL images. Run "pip install Pillow" to install it.')
+
+
+def colorsToImage(colors, width, height, *, aBits=1):
+    """
+    Render the given list of color values as a PIL Image.
+    colors should be a list of (r5, g5, b5, aN) quadruples, where
+    aN is of length aBits (usually 1 or 5).
+    """
+    ensurePIL()
+
+    if aBits not in [1, 5]:
+        raise ValueError(f'colorsToImage(): Unsupported value for aBits ({aBits})')
+
+    # Avoiding using color.expand() here because minimizing Python function calls in
+    # image-rendering functions is a very good idea for performance
+
+    pxiter = iter(colors)
+    dest = [0] * (width * height)
+    for y in range(height):
+        for x in range(width):
+            r31, g31, b31, a = next(pxiter)
+            r255 = r31 << 3 | r31 >> 2
+            g255 = g31 << 3 | g31 >> 2
+            b255 = b31 << 3 | b31 >> 2
+            if aBits == 1:
+                a255 = 255 if a else 0
+            elif aBits == 5:
+                a255 = a << 3 | a >> 2
+            rgba = (a255 << 24) | (b255 << 16) | (g255 << 8) | r255
+            dest[y * width + x] = rgba
+
+    img = PIL.Image.frombytes('RGBA', (width, height), struct.pack(f'<{width * height}I', *dest))
+
+    return img
