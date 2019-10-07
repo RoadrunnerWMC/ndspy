@@ -453,9 +453,10 @@ def guessInstrumentType(data, startOffset, possibleTypes, bytesAvailable):
     # Then rule out the improbable...
 
     if SINGLE_NOTE_PCM_INSTRUMENT_TYPE in possibleTypes:
-        # SWAV ID and SWAR ID will probably never be > 0x400... right?
-        if data[startOffset + 1] > 4: ruleOut(SINGLE_NOTE_PCM_INSTRUMENT_TYPE)
-        if data[startOffset + 3] > 4: ruleOut(SINGLE_NOTE_PCM_INSTRUMENT_TYPE)
+        # Among the games I've looked at, SWAV ID and SWAR ID are never
+        # each more than 0xA00, so we can use that as a reasonable limit
+        if data[startOffset + 1] >= 10: ruleOut(SINGLE_NOTE_PCM_INSTRUMENT_TYPE)
+        if data[startOffset + 3] >= 10: ruleOut(SINGLE_NOTE_PCM_INSTRUMENT_TYPE)
         # And pitch will probably never be 0, right?
         if data[startOffset + 4] == 0: ruleOut(SINGLE_NOTE_PCM_INSTRUMENT_TYPE)
         # For that matter, if pitch is 0x3C (middle C), we can probably
