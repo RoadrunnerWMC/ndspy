@@ -356,3 +356,25 @@ Indices and tables
     Try running the SSEQ/SSAR parser on all ROMs to identify issues.
 
     ROM secure area en/decryption, ported from ndstool
+
+    https://en.wikipedia.org/wiki/Sample-based_synthesis#Multisampling
+        Maybe rename regional instruments to that? And definitely link to that.
+
+    Unit testing:
+
+        To test a class that parses a file (aka the most common case), just
+        make these tests:
+
+        -   one file that contains everything the file would normally contain
+            (e.g. not including unreferenced SBNK inst's)
+
+        -   one empty file
+
+        -   as many interesting edge cases as you can think of (e.g.
+            unreferenced SBNK inst's)
+
+        Use ndspy to build these test case files.
+
+        Additionally, save the code used to build the files, and use *that* as
+        a second set of tests: does running this code produce the expected
+        output files again?
