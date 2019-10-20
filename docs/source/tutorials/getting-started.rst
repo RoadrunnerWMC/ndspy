@@ -66,4 +66,6 @@ If the script prints ``Hello world!`` and exits, everything's good.
             import ndspy
         ModuleNotFoundError: No module named 'ndspy'
 
-    Then you're running a copy of Python that doesn't have ndspy installed. Try putting the first two digits of the version of Python you installed into the command instead of just ``3`` -- for example, ``python3.6 test.py``.
+    Then you're running a copy of Python that doesn't have ndspy installed. Try
+    putting the first two digits of the version of Python you installed into
+    the command instead of just ``3`` -- for example, ``python3.6 test.py``.
