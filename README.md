@@ -137,7 +137,9 @@ This section will try to answer some questions you may have.
 Installation
 ------------
 
-ndspy requires Python 3.6 or newer to run. Python 2 is not supported at all.
+ndspy requires Python 3.6 or newer to run. CPython (the reference
+implementation of Python) and PyPy are both supported. Python 2, though, is not
+supported at all.
 
 The easiest way to get the latest stable release of ndspy is through PyPI using
 pip.
