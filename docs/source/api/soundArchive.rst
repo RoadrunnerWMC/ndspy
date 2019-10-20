@@ -53,7 +53,7 @@ and the files within them.
             find and replace values in this list.
 
         :type: :py:class:`list` of ``(name, bank)``, where ``name`` is of type
-            :py:class:`str` and ``bank`` is of type
+            :py:class:`str` or ``None``, and ``bank`` is of type
             :py:class:`ndspy.soundBank.SBNK` or ``None``
 
         :default: ``[]``
@@ -77,8 +77,8 @@ and the files within them.
             find and replace values in this list.
 
         :type: :py:class:`list` of ``(name, entries)``, where ``name`` is of
-            type :py:class:`str` and ``entries`` is ``None`` or a list of
-            :py:class:`ndspy.soundGroup.GroupEntry`\s
+            type :py:class:`str` or ``None``, and ``entries`` is ``None`` or a
+            list of :py:class:`ndspy.soundGroup.GroupEntry`\s
 
         :default: ``[]``
 
@@ -101,8 +101,8 @@ and the files within them.
             use to find and replace values in this list.
 
         :type: :py:class:`list` of ``(name, sequenceArchive)``, where ``name``
-            is of type :py:class:`str` and ``sequenceArchive`` is of type
-            :py:class:`ndspy.soundSequenceArchive.SSAR` or ``None``
+            is of type :py:class:`str` or ``None``, and ``sequenceArchive`` is
+            of type :py:class:`ndspy.soundSequenceArchive.SSAR` or ``None``
 
         :default: ``[]``
 
@@ -125,8 +125,9 @@ and the files within them.
             find and replace values in this list.
 
         :type: :py:class:`list` of ``(name, sequencePlayer)``, where ``name``
-            is of type :py:class:`str` and ``sequencePlayer`` is of type
-            :py:class:`ndspy.soundSequencePlayer.SequencePlayer` or ``None``
+            is of type :py:class:`str` or ``None``, and ``sequencePlayer`` is
+            of type :py:class:`ndspy.soundSequencePlayer.SequencePlayer` or
+            ``None``
 
         :default: ``[]``
 
@@ -149,7 +150,7 @@ and the files within them.
             find and replace values in this list.
 
         :type: :py:class:`list` of ``(name, sequence)``, where ``name`` is of
-            type :py:class:`str` and ``sequence`` is of type
+            type :py:class:`str` or ``None``, and ``sequence`` is of type
             :py:class:`ndspy.soundSequence.SSEQ` or ``None``
 
         :default: ``[]``
@@ -173,8 +174,8 @@ and the files within them.
             find and replace values in this list.
 
         :type: :py:class:`list` of ``(name, streamPlayer)``, where ``name`` is
-            of type :py:class:`str` and ``streamPlayer`` is of type
-            :py:class:`ndspy.soundStreamPlayer.StreamPlayer` or ``None``
+            of type :py:class:`str` or ``None``, and ``streamPlayer`` is of
+            type :py:class:`ndspy.soundStreamPlayer.StreamPlayer` or ``None``
 
         :default: ``[]``
 
@@ -197,7 +198,7 @@ and the files within them.
             find and replace values in this list.
 
         :type: :py:class:`list` of ``(name, stream)``, where ``name`` is of
-            type :py:class:`str` and ``stream`` is of type
+            type :py:class:`str` or ``None``, and ``stream`` is of type
             :py:class:`ndspy.soundStream.STRM` or ``None``
 
         :default: ``[]``
@@ -221,7 +222,7 @@ and the files within them.
             find and replace values in this list.
 
         :type: :py:class:`list` of ``(name, waveArchive)``, where ``name`` is
-            of type :py:class:`str` and ``waveArchive`` is of type
+            of type :py:class:`str` or ``None``, and ``waveArchive`` is of type
             :py:class:`ndspy.soundWaveArchive.SWAR` or ``None``
 
         :default: ``[]``
