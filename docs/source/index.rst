@@ -203,7 +203,8 @@ This section will try to answer some questions you may have.
 Installation
 ------------
 
-ndspy requires Python 3.6 or newer to run [#pypy-3.5]_. Python 2 is not
+ndspy requires Python 3.6 or newer to run. CPython (the reference
+implementation of Python) and PyPy are both supported. Python 2, though, is not
 supported at all.
 
 The easiest way to get the latest stable release of ndspy is through PyPI using
@@ -227,14 +228,6 @@ not yet in any official release, you can also download the code from the
 `GitHub repository <https://github.com/RoadrunnerWMC/ndspy>`_ and install it
 manually. Note that `crcmod <https://pypi.org/project/crcmod/>`_ is a required
 dependency.
-
-.. [#pypy-3.5]
-    PyPy3.5 v6.0 or newer should also work, due to its
-    anachronistic-yet-appreciated support for f-strings (introduced in Python
-    3.6). However, setuptools (pip) will refuse to install ndspy in PyPy3.5
-    because it doesn't know that f-strings is the only feature ndspy needs from
-    3.6. As a workaround, you can download the ndspy source code folder and put
-    it in your PyPy's site-packages folder manually.
 
 
 Support
