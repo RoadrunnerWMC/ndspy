@@ -75,7 +75,7 @@ class BMG:
         self.endianness = se = '<' if dataLenLE < dataLenBE else '>'
         # Still, though... ugh.
 
-        magic, dataLen, sectionCount, enc, unk14, unk18, unk1C = \
+        magic, dataLen, sectionCount, enc, self.unk14, self.unk18, self.unk1C = \
             struct.unpack_from(se + '8sIIB3I', data, 0)
         if enc != 0 and enc < len(_ENCODINGS):
             self.encoding = _ENCODINGS[enc]
@@ -218,6 +218,9 @@ class BMG:
         if se not in '<>':
             raise ValueError(f"BMG.endianness is '{se}', which is"
                              f" neither '<' nor '>'")
+        if not isinstance(self.encoding, str) or \
+                self.encoding.lower() not in _ENCODINGS:
+            raise ValueError(f'Unknown BMG encoding: {self.encoding}')
 
         data = bytearray(0x20)
 
@@ -226,10 +229,6 @@ class BMG:
 
         labelsCount = len(self.labels)
         while labelsCount % 8: labelsCount += 1
-
-        numSections = 2
-        if self.instructions: numSections += 1
-        if self.scripts: numSections += 1
 
         INF1 = bytearray(16)
         DAT1 = bytearray(8)
@@ -289,23 +288,28 @@ class BMG:
         struct.pack_into(se + '4sIHHI', INF1, 0,
             b'INF1', len(INF1), len(self.messages), inf1EntryLen, self.id)
         struct.pack_into(se + '4sI', DAT1, 0, b'DAT1', len(DAT1))
-        if self.instructions:
-            struct.pack_into(se + '4sIHH', FLW1, 0,
-                b'FLW1', len(FLW1), instructionsCount, labelsCount)
-        if self.scripts:
-            struct.pack_into(se + '4sIHH', FLI1, 0,
-                b'FLI1', FLI1len, len(self.scripts), 8)
+        struct.pack_into(se + '4sIHH', FLW1, 0,
+            b'FLW1', len(FLW1), instructionsCount, labelsCount)
+        struct.pack_into(se + '4sIHH', FLI1, 0,
+            b'FLI1', FLI1len, len(self.scripts), 8)
 
         # Insert the sections
+        numSections = 2
         data.extend(INF1)
         data.extend(DAT1)
-        if self.instructions: data.extend(FLW1)
-        if self.scripts: data.extend(FLI1)
+        if self.instructions or self.labels:
+            numSections += 1
+            data.extend(FLW1)
+        if self.scripts:
+            numSections += 1
+            data.extend(FLI1)
 
         # Pack the BMG header
         totalLen = len(data)
         while totalLen % 32: totalLen += 1
-        struct.pack_into(se + '8sIIB', data, 0, b'MESGbmg1', totalLen, numSections, _ENCODINGS.index(self.encoding.lower()))
+        struct.pack_into(se + '8sIIB3I', data, 0,
+            b'MESGbmg1', totalLen, numSections,
+            _ENCODINGS.index(self.encoding.lower()), self.unk14, self.unk18, self.unk1C)
 
         return bytes(data)
 
@@ -391,6 +395,10 @@ class Message:
     isNull = False
 
     def __init__(self, info=b'', stringParts=None, isNull=False):
+        # If a single string is passed in, put it in a list for convenience
+        if isinstance(stringParts, str):
+            stringParts = [stringParts]
+
         self.info = info
         self.stringParts = [] if stringParts is None else stringParts
         self.isNull = isNull
@@ -399,9 +407,15 @@ class Message:
         """
         Generate binary data representing this message.
         """
+        if self.isNull: return b''
+
         data = bytearray()
         for part in self.stringParts:
             if isinstance(part, str):
+                if '\0' in part:
+                    raise ValueError('Null character found in message during BMG saving')
+                if '\x1A' in part:
+                    raise ValueError('\\x1A character found in message during BMG saving')
                 data.extend(part.encode(encoding))
             else:
                 data.extend(part.save(encoding))

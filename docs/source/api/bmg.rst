@@ -112,7 +112,9 @@ API
         the *BMG* object will initially be empty.
     :type data: bytes
 
-    :param id: The initial value for the :py:attr:`id` attribute.
+    :param id: The initial value for the :py:attr:`id` attribute. The *BMG*
+        data itself might optionally specify its own ID; if it does, that value
+        takes precedence and this parameter is ignored.
 
     .. py:attribute:: encoding
 
@@ -169,13 +171,6 @@ API
     .. py:attribute:: labels
 
         The script instruction labels in this *BMG*, if it has a *FLW1* block.
-
-        .. seealso::
-
-            :py:func:`ndspy.indexInNamedList`,
-            :py:func:`ndspy.findInNamedList`,
-            :py:func:`ndspy.setInNamedList` -- helper functions you can use to
-            find and replace values in this list.
 
         :type: :py:class:`list` of ``(bmgID, instructionIndex)`` (both
             :py:class:`int`\s)
@@ -296,7 +291,8 @@ API
     :param info: The initial value for the :py:attr:`info` attribute.
 
     :param stringParts: The initial value of the :py:attr:`stringParts`
-        attribute.
+        attribute. If you pass a bare string for this parameter, it will be
+        automatically wrapped in a list for you.
 
     :param isNull: The initial value for the :py:attr:`isNull` attribute.
 

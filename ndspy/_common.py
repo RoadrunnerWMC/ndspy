@@ -99,8 +99,10 @@ def shortBytesRepr(data, maxLen=None):
 
     dataTrunc = data[:maxLen]
     r = ["b'"]
-    for b in dataTrunc:
-        if b < 8:
+    for i, b in enumerate(data):
+        # We have to be careful to avoid shortening e.g. b'\x01\x31' into b'\11',
+        # so we don't shorten if the following byte is an ASCII digit
+        if b < 8 and (i == len(data) - 1 or data[i + 1] not in range(0x30, 0x3A)):
             r.append(f'\\{b}')
         else:
             r.append(repr(b.to_bytes(1, 'big'))[2:-1])
