@@ -103,7 +103,7 @@ def shortBytesRepr(data, maxLen=None):
         if b < 8:
             r.append(f'\\{b}')
         else:
-            r.append(repr(bytes([b]))[2:-1])
+            r.append(repr(b.to_bytes(1, 'big'))[2:-1])
     r.append("'")
 
     final = ''.join(r)

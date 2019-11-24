@@ -217,7 +217,7 @@ class SequenceEvent:
         containing .type. Subclasses should reimplement this function to
         append their own data to this byte.
         """
-        return bytes([self.type])
+        return self.type.to_bytes(1, 'little')
 
 
     @classmethod
@@ -344,7 +344,7 @@ class NoteSequenceEvent(SequenceEvent):
                              f' {self.velocity})')
         velocityValue = self.velocity | (0x80 if self.unknownFlag else 0)
         return (super().save()
-                + bytes([velocityValue])
+                + velocityValue.to_bytes(1, 'little')
                 + _writeVariableLengthInt(self.duration))
 
     @classmethod
@@ -441,8 +441,8 @@ class BeginTrackSequenceEvent(SequenceEvent):
 
     def save(self, eventsToOffsets=None):
         return (super().save()
-                + bytes([self.trackNumber])
-                + struct.pack('<I', eventsToOffsets[self.firstEvent])[:3])
+                + self.trackNumber.to_bytes(1, 'little')
+                + eventsToOffsets[self.firstEvent].to_bytes(3, 'little'))
 
     def __str__(self):
         return f'<begin track {self.trackNumber} id={id(self.firstEvent)}>'
@@ -464,7 +464,7 @@ class JumpSequenceEvent(SequenceEvent):
 
     def save(self, eventsToOffsets=None):
         return (super().save()
-                + struct.pack('<I', eventsToOffsets[self.destination])[:3])
+                + eventsToOffsets[self.destination].to_bytes(3, 'little'))
 
     def __str__(self):
         return f'<jump id={id(self.destination)}>'
@@ -487,7 +487,7 @@ class CallSequenceEvent(SequenceEvent):
 
     def save(self, eventsToOffsets=None):
         return (super().save()
-                + struct.pack('<I', eventsToOffsets[self.destination])[:3])
+                + eventsToOffsets[self.destination].to_bytes(3, 'little'))
 
     def __str__(self):
         return f'<call id={id(self.destination)}>'
@@ -741,7 +741,7 @@ def _make_simple_sequence_event_class(typeNum, shortName, name, description):
         self.value = value
 
     def save(self, eventsToOffsets=None):
-        return SequenceEvent.save(self) + bytes([self.value])
+        return SequenceEvent.save(self) + self.value.to_bytes(1, 'little')
 
     @classmethod
     def fromData(cls, type, data, startOffset=0):
@@ -807,7 +807,7 @@ class MonoPolySequenceEvent(SequenceEvent):
         self.value = self.Value(value)
 
     def save(self, eventsToOffsets=None):
-        return super().save() + bytes([self.value])
+        return super().save() + self.value.to_bytes(1, 'little')
 
     @classmethod
     def fromData(cls, type, data, startOffset=0):
@@ -839,7 +839,7 @@ class TieSequenceEvent(SequenceEvent):
         self.value = value
 
     def save(self, eventsToOffsets=None):
-        return super().save() + bytes([self.value])
+        return super().save() + self.value.to_bytes(1, 'little')
 
     @classmethod
     def fromData(cls, type, data, startOffset=0):
@@ -868,7 +868,7 @@ class PortamentoFromSequenceEvent(SequenceEvent):
         self.value = value
 
     def save(self, eventsToOffsets=None):
-        return super().save() + bytes([self.value])
+        return super().save() + self.value.to_bytes(1, 'little')
 
     @classmethod
     def fromData(cls, type, data, startOffset=0):
@@ -907,7 +907,7 @@ class VibratoTypeSequenceEvent(SequenceEvent):
         self.value = self.Value(value)
 
     def save(self, eventsToOffsets=None):
-        return super().save() + bytes([self.value])
+        return super().save() + self.value.to_bytes(1, 'little')
 
     @classmethod
     def fromData(cls, type, data, startOffset=0):
@@ -950,7 +950,7 @@ class PortamentoOnOffSequenceEvent(SequenceEvent):
         self.value = value
 
     def save(self, eventsToOffsets=None):
-        return super().save() + bytes([self.value])
+        return super().save() + self.value.to_bytes(1, 'little')
 
     @classmethod
     def fromData(cls, type, data, startOffset=0):
@@ -1002,7 +1002,7 @@ class BeginLoopSequenceEvent(SequenceEvent):
         self.loopCount = loopCount
 
     def save(self, eventsToOffsets=None):
-        return super().save() + bytes([self.loopCount])
+        return super().save() + self.loopCount.to_bytes(1, 'little')
 
     @classmethod
     def fromData(cls, type, data, startOffset=0):
@@ -1284,8 +1284,7 @@ def readSequenceEvents(data, notableOffsets=None):
 
                 if type == 0x93: # BeginTrack
                     trackNumber = data[off + 1]
-                    firstEventOff, = struct.unpack_from('<I', data, off + 1)
-                    firstEventOff >>= 8
+                    firstEventOff = int.from_bytes(data[off + 2 : off + 5], 'little') # 3-byte int
 
                     event = BeginTrackSequenceEvent(trackNumber, None)
                     events[off] = event
@@ -1294,8 +1293,7 @@ def readSequenceEvents(data, notableOffsets=None):
                     event.firstEvent = events[firstEventOff]
 
                 elif type == 0x94: # Jump
-                    destination, = struct.unpack_from('<I', data, off)
-                    destination >>= 8
+                    destination = int.from_bytes(data[off + 1 : off + 4], 'little') # 3-byte int
 
                     event = JumpSequenceEvent(None)
                     events[off] = event
@@ -1321,8 +1319,7 @@ def readSequenceEvents(data, notableOffsets=None):
                         return fate
 
                 elif type == 0x95: # Call
-                    destination, = struct.unpack_from('<I', data, off)
-                    destination >>= 8
+                    destination = int.from_bytes(data[off + 1 : off + 4], 'little') # 3-byte int
 
                     event = CallSequenceEvent(None)
                     events[off] = event

@@ -335,7 +335,7 @@ def save(root):
             if len(file) > 127:
                 raise ValueError(f'Filename "{file}" is {len(file)}'
                     ' characters long (maximum is 127)!')
-            entriesTable.extend(bytes([len(file)]))
+            entriesTable.append(len(file))
             entriesTable.extend(file.encode('latin-1'))
 
         for folderName, folder in d.folders:
@@ -349,7 +349,7 @@ def save(root):
                 raise ValueError(f'Folder name "{folderName}" is'
                     f' {len(folderName)} characters long (maximum is'
                      ' 127)!')
-            entriesTable.extend(bytes([len(folderName) | 0x80]))
+            entriesTable.append(len(folderName) | 0x80)
             entriesTable.extend(folderName.encode('latin-1'))
 
             # And the ID of the subfolder goes after its name, as a
