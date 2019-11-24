@@ -139,9 +139,9 @@ def loadInfoBlock(data, off, expectedEntryLengths=None):
     unkHeaderLen, unkLen, unkUnk04 = \
         struct.unpack_from('<HHI', data, off)
     off += 8
-    assert unkHeaderLen == 8
-    assert unkLen == 12 + 4 * count
-    assert unkUnk04 == 0x17F
+    assert unkHeaderLen == 8, f'(Info block load) Wrong unknown block header length ({unkHeaderLen})'
+    assert unkLen == 12 + 4 * count, f'(Info block load) Wrong unknown block length ({unkLen}; count is {count})'
+    assert unkUnk04 == 0x17F, f'(Info block load) Wrong unknown block unknown value 04 ({unkUnk04})'
     unkBlockOff = off
     off += 4 * count
 
@@ -149,8 +149,12 @@ def loadInfoBlock(data, off, expectedEntryLengths=None):
     eachEntryLen, entriesLen = \
         struct.unpack_from('<HH', data, off)
     if expectedEntryLengths is not None:
-        assert eachEntryLen == expectedEntryLengths
-    assert entriesLen == 4 + count * eachEntryLen
+        assert eachEntryLen == expectedEntryLengths, \
+            (f'(Info block load) Expected entry length ({expectedEntryLengths})'
+             f' does not match actual entry length ({eachEntryLen})')
+    assert entriesLen == 4 + count * eachEntryLen, \
+        (f'(Info block load) Discrepancy between total entries length ({entriesLen}),'
+         f' count ({count}), and entry length ({eachEntryLen})')
     off += 4
     entryOff = off
     off += eachEntryLen * count

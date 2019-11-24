@@ -99,10 +99,10 @@ class STRM:
             _common.NDS_STD_FILE_HEADER.unpack_from(file, 0)
         if version != 0x100:
             raise ValueError(f'Unsupported STRM version: {version}')
-        assert magic == b'STRM'
+        assert magic == b'STRM', f'Incorrect STRM magic ({magic})'
 
         headMagic, headSize = struct.unpack_from('<4sI', file, 0x10)
-        assert headMagic == b'HEAD'
+        assert headMagic == b'HEAD', f'Incorrect STRM HEAD magic ({headMagic})'
 
         (waveType, self.isLooped, numChannels, self.unk03,
             self.sampleRate, self.time,
@@ -123,12 +123,12 @@ class STRM:
             self.unk40,
             self.unk44,
             ) = struct.unpack_from('<B?BB2H16I', file, 0x18)
-        assert dataOffset == 0x68
+        assert dataOffset == 0x68, f'Unexpected STRM data offset ({hex(dataOffset)})'
         self.waveType = WaveType(waveType)
 
         dataOffs = 0x10 + headSize
         dataMagic, dataSize = struct.unpack_from('<4sI', file, dataOffs)
-        assert dataMagic == b'DATA'
+        assert dataMagic == b'DATA', f'Incorrect STRM DATA magic ({dataMagic})'
         data = file[dataOffs + 8 : dataOffs + dataSize]
 
         isOneBigLongBlock = (numBlocks == 1 and waveType == WaveType.ADPCM)

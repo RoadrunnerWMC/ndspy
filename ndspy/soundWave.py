@@ -56,10 +56,10 @@ class SWAV:
             _common.NDS_STD_FILE_HEADER.unpack_from(file, 0)
         if version != 0x100:
             raise ValueError(f'Unsupported SWAV version: {version}')
-        assert magic == b'SWAV'
+        assert magic == b'SWAV', f'Incorrect SWAV magic ({magic})'
 
         dataMagic, dataSize = struct.unpack_from('<4sI', file, 0x10)
-        assert dataMagic == b'DATA'
+        assert dataMagic == b'DATA', f'Incorrect SWAV DATA magic ({dataMagic})'
 
         (waveType, self.isLooped, self.sampleRate, self.time, self.loopOffset,
             loopLength) = struct.unpack_from('<B?3HI', file, 0x18)

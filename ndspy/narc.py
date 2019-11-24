@@ -62,17 +62,17 @@ class NARC:
 
         # Read the file allocation block
         fatbMagic, fatbSize, fileCount = struct.unpack_from('<4sII', data, 0x10)
-        assert fatbMagic == b'FATB'[::-1]
+        assert fatbMagic == b'FATB'[::-1], f'Incorrect NARC FATB magic ({fatbMagic})'
 
         # Read the file name block
         fntbOffset = 0x10 + fatbSize
         fntbMagic, fntbSize = struct.unpack_from('<4sI', data, fntbOffset)
-        assert fntbMagic == b'FNTB'[::-1]
+        assert fntbMagic == b'FNTB'[::-1], f'Incorrect NARC FNTB magic ({fntbMagic})'
 
         # Get the data from the file data block before continuing
         fimgOffset = fntbOffset + fntbSize
         fimgMagic, gmifSize = struct.unpack_from('<4sI', data, fimgOffset)
-        assert fimgMagic == b'FIMG'[::-1]
+        assert fimgMagic == b'FIMG'[::-1], f'Incorrect NARC FIMG magic ({fimgMagic})'
         rawDataOffset = fimgOffset + 8
 
         # Read the file datas

@@ -122,7 +122,7 @@ class BMG:
         self.scripts = []
         def parseFLI1(offset, length):
             count, entryLength, unk0C = struct.unpack_from(se + 'HHI', data, offset + 8)
-            assert entryLength == 8
+            assert entryLength == 8, f'Unexpected FLI1 entry length ({entryLength})'
             # unk0C is always 0, as far as I can tell
 
             for i in range(count):

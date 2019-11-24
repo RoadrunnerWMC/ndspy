@@ -363,16 +363,17 @@ def save(root):
         folderEntries[folderID] = (d.firstID, parentID, entriesTable)
         return folderID
 
-    # The root folder ID is the total number of folders.
+    # The root folder's parent's ID is the total number of folders.
     def countFoldersIn(folder):
         folderCount = 0
         for _, f in folder.folders:
             folderCount += countFoldersIn(f)
         return folderCount + 1
-    rootId = countFoldersIn(root)
+    rootParentId = countFoldersIn(root)
 
     # Ensure that the root folder has the proper folder ID.
-    assert parseFolder(root, rootId) == 0xF000
+    rootId = parseFolder(root, rootParentId)
+    assert rootId == 0xF000, f'Root FNT folder has incorrect root folder ID: {hex(rootId)}'
 
     # Allocate space for the folders table at the beginning of the file
     fnt = bytearray(len(folderEntries) * 8)

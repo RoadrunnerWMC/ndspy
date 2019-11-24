@@ -53,12 +53,12 @@ class SSAR:
                 _common.NDS_STD_FILE_HEADER.unpack_from(file, 0)
             if version != 0x100:
                 raise ValueError(f'Unsupported SSAR version: {version}')
-            assert magic == b'SSAR'
+            assert magic == b'SSAR', f'Incorrect SSAR magic ({magic})'
 
             # Read DATA block header
             dataMagic, dataSize, dataOffset, dataCount = \
                 struct.unpack_from('<4s3I', file, 0x10)
-            assert dataMagic == b'DATA'
+            assert dataMagic == b'DATA', f'Incorrect SSAR DATA magic ({dataMagic})'
 
             # Pad the length of the names list to the number of
             # sequences

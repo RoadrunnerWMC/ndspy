@@ -54,11 +54,11 @@ class SWAR:
             _common.NDS_STD_FILE_HEADER.unpack_from(data, 0)
         if version != 0x100:
             raise ValueError(f'Unsupported SWAR version: {version}')
-        assert magic == b'SWAR'
+        assert magic == b'SWAR', f'Incorrect SWAR magic ({magic})'
 
         dataMagic, dataSize, swavCount = \
             struct.unpack_from('<4sI32xI', data, 0x10)
-        assert dataMagic == b'DATA'
+        assert dataMagic == b'DATA', f'Incorrect SWAR DATA magic ({dataMagic})'
 
         dataArrayPos = 0x3C
         for i in range(swavCount):

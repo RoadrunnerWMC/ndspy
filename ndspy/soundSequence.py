@@ -1381,7 +1381,7 @@ def readSequenceEvents(data, notableOffsets=None):
     if not starts: starts = [0]
     for start in starts:
         ultimateFate = parse_at(start)
-        assert ultimateFate in (FATE_EOT, FATE_LOOP)
+        assert ultimateFate in (FATE_EOT, FATE_LOOP), f'Starting point {hex(start)} results in fate {ultimateFate}'
 
     eventsList = []
     i = 0

@@ -304,10 +304,10 @@ class NSBTX:
         if version != 1:
             raise ValueError(f'Unsupported NSBTX version: {version}')
         
-        assert numblocks == 1
+        assert numblocks == 1, f'NSBTX has {numblocks} blocks'
 
         TEX0 = data[0x14:]
-        assert TEX0.startswith(b'TEX0')
+        assert TEX0.startswith(b'TEX0'), f'Incorrect NSBTX TEX0 magic ({TEX0[:4]})'
 
         parsed = _readTEX0(TEX0)
         self.unk08 = parsed['unk08']
@@ -368,7 +368,7 @@ def _readTEX0(data):
     Read a TEX0 block.
     Return a bunch of data as a dict.
     """
-    assert data.startswith(b'TEX0')
+    assert data.startswith(b'TEX0'), f'Incorrect TEX0 magic ({data[:4]})'
 
     returnVal = {}
 

@@ -570,13 +570,13 @@ class SBNK:
 
         magic, bom, version, filesize, headersize, numblocks = \
             _common.NDS_STD_FILE_HEADER.unpack_from(data, 0)
-        assert magic == b'SBNK'
+        assert magic == b'SBNK', f'Incorrect SBNK magic ({magic})'
         if version != 0x100:
             raise ValueError(f'Unsupported SBNK version: {version}')
 
         dataMagic, dataSize, instrumentCount = \
             struct.unpack_from('<4sI32xI', data, 0x10)
-        assert dataMagic == b'DATA'
+        assert dataMagic == b'DATA', f'Incorrect SBNK DATA magic ({dataMagic})'
 
         unconsumedBytes = set(range(0x3C + instrumentCount * 4, filesize))
 

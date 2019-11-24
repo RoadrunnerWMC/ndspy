@@ -112,7 +112,7 @@ class NintendoDSRom:
         data = bytearray(data)
         if len(data) < 0x200:
             data.extend(b'\0' * (0x200 - len(data)))
-            assert len(data) == 0x200
+            assert len(data) == 0x200, f'ROM data extension to length 0x200 failed (actual new length {hex(len(data))})'
 
         headerOffset = 0
         def readRaw(length):
@@ -136,14 +136,14 @@ class NintendoDSRom:
             headerOffset += 4
             return retVal
 
-        assert headerOffset == 0
+        assert headerOffset == 0, f'(Load) Header offset check at 0x00: {hex(headerOffset)}'
         self.name = readRaw(12).rstrip(b'\0')
         self.idCode = readRaw(4)
         self.developerCode = readRaw(2)
         self.unitCode = read8()
         self.encryptionSeedSelect = read8()
         self.deviceCapacity = read8()
-        assert headerOffset == 0x15
+        assert headerOffset == 0x15, f'(Load) Header offset check at 0x15: {hex(headerOffset)}'
         self.pad015 = read8()
         self.pad016 = read8()
         self.pad017 = read8()
@@ -155,7 +155,7 @@ class NintendoDSRom:
         self.region = read8()
         self.version = read8()
         self.autostart = read8()
-        assert headerOffset == 0x20
+        assert headerOffset == 0x20, f'(Load) Header offset check at 0x20: {hex(headerOffset)}'
         arm9Offset = read32()
         self.arm9EntryAddress = read32()
         self.arm9RamAddress = read32()
@@ -164,7 +164,7 @@ class NintendoDSRom:
         self.arm7EntryAddress = read32()
         self.arm7RamAddress = read32()
         arm7Len = read32()
-        assert headerOffset == 0x40
+        assert headerOffset == 0x40, f'(Load) Header offset check at 0x40: {hex(headerOffset)}'
         fntOffset = read32()
         fntLen = read32()
         fatOffset = read32()
@@ -173,30 +173,30 @@ class NintendoDSRom:
         arm9OvTLen = read32()
         arm7OvTOffset = read32()
         arm7OvTLen = read32()
-        assert headerOffset == 0x60
+        assert headerOffset == 0x60, f'(Load) Header offset check at 0x60: {hex(headerOffset)}'
         self.normalCardControlRegisterSettings = read32()
         self.secureCardControlRegisterSettings = read32()
         iconBannerOffset = read32()
         self.secureAreaChecksum = read16() # TODO: Actually recalculate
                                            # this upon saving.
         self.secureTransferDelay = read16()
-        assert headerOffset == 0x70
+        assert headerOffset == 0x70, f'(Load) Header offset check at 0x70: {hex(headerOffset)}'
         self.arm9CodeSettingsPointerAddress = read32()
         self.arm7CodeSettingsPointerAddress = read32()
         self.secureAreaDisable = readRaw(8)
-        assert headerOffset == 0x80
+        assert headerOffset == 0x80, f'(Load) Header offset check at 0x80: {hex(headerOffset)}'
         romSizeOrRsaSigOffset = read32()
         headerSize = read32()
         self.pad088 = readRaw(0x38)
         self.nintendoLogo = readRaw(0x9C)
         nintendoLogoChecksum = read16()
         headerChecksum = read16()
-        assert headerOffset == 0x160
+        assert headerOffset == 0x160, f'(Load) Header offset check at 0x160: {hex(headerOffset)}'
         debugRomOffset = read32()
         debugRomSize = read32()
         self.debugRomAddress = read32()
         self.pad16C = readRaw(0x94)
-        assert headerOffset == 0x200
+        assert headerOffset == 0x200, f'(Load) Header offset check at 0x200: {hex(headerOffset)}'
         self.pad200 = data[0x200 : min(arm9Offset, len(data))]
 
         # Read the RSA signature file
@@ -343,7 +343,7 @@ class NintendoDSRom:
 
         # Pack the icon/banner
         if self.iconBanner:
-            assert len(self.iconBanner) == ICON_BANNER_LEN
+            assert len(self.iconBanner) == ICON_BANNER_LEN, f'(Save) Icon banner length is wrong ({hex(len(self.iconBanner))})'
             iconBannerOffset = len(data)
             data.extend(self.iconBanner)
             align(0x200, b'\xFF')
@@ -378,7 +378,7 @@ class NintendoDSRom:
 
         # Pack the FAT
         for i, file in enumerate(self.files):
-            assert i in fileOffsets
+            assert i in fileOffsets, f'(Save) File {i} has no offset'
             startOffset = fileOffsets[i]
             endOffset = startOffset + len(file)
             struct.pack_into('<II', data, fatOffset + 8 * i, startOffset, endOffset)
@@ -416,16 +416,16 @@ class NintendoDSRom:
             struct.pack_into('<I', data, headerOffset, value)
             headerOffset += 4
 
-        assert headerOffset == 0
+        assert headerOffset == 0, f'(Save) Header offset check at 0x00: {hex(headerOffset)}'
         writeRaw(self.name.ljust(12, b'\0')[:12])
-        assert len(self.idCode) == 4
+        assert len(self.idCode) == 4, f'(Save) Wrong ID code length: {len(self.idCode)}'
         writeRaw(self.idCode)
-        assert len(self.developerCode) == 2
+        assert len(self.developerCode) == 2, f'(Save) Wrong developer code length: {len(self.developerCode)}'
         writeRaw(self.developerCode)
         write8(self.unitCode)
         write8(self.encryptionSeedSelect)
         write8(self.deviceCapacity)
-        assert headerOffset == 0x15
+        assert headerOffset == 0x15, f'(Save) Header offset check at 0x15: {hex(headerOffset)}'
         write8(self.pad015)
         write8(self.pad016)
         write8(self.pad017)
@@ -437,7 +437,7 @@ class NintendoDSRom:
         write8(self.region)
         write8(self.version)
         write8(self.autostart)
-        assert headerOffset == 0x20
+        assert headerOffset == 0x20, f'(Save) Header offset check at 0x20: {hex(headerOffset)}'
         write32(arm9Offset)
         write32(self.arm9EntryAddress)
         write32(self.arm9RamAddress)
@@ -446,7 +446,7 @@ class NintendoDSRom:
         write32(self.arm7EntryAddress)
         write32(self.arm7RamAddress)
         write32(len(self.arm7))
-        assert headerOffset == 0x40
+        assert headerOffset == 0x40, f'(Save) Header offset check at 0x40: {hex(headerOffset)}'
         write32(fntOffset)
         write32(len(fnt))
         write32(fatOffset)
@@ -455,32 +455,32 @@ class NintendoDSRom:
         write32(len(self.arm9OverlayTable))
         write32(arm7OvTOffset)
         write32(len(self.arm7OverlayTable))
-        assert headerOffset == 0x60
+        assert headerOffset == 0x60, f'(Save) Header offset check at 0x60: {hex(headerOffset)}'
         write32(self.normalCardControlRegisterSettings)
         write32(self.secureCardControlRegisterSettings)
         write32(iconBannerOffset)
         write16(self.secureAreaChecksum)
         write16(self.secureTransferDelay)
-        assert headerOffset == 0x70
+        assert headerOffset == 0x70, f'(Save) Header offset check at 0x70: {hex(headerOffset)}'
         write32(self.arm9CodeSettingsPointerAddress)
         write32(self.arm7CodeSettingsPointerAddress)
         writeRaw(self.secureAreaDisable.ljust(8, b'\0')[:8])
-        assert headerOffset == 0x80
+        assert headerOffset == 0x80, f'(Save) Header offset check at 0x80: {hex(headerOffset)}'
         write32(rsaSignatureOffset)
         write32(0x4000)
-        assert len(self.pad088) == 0x38
+        assert len(self.pad088) == 0x38, f'(Save) Wrong pad088 length: {hex(len(self.pad088))}'
         writeRaw(self.pad088)
-        assert len(self.nintendoLogo) == 0x9C
+        assert len(self.nintendoLogo) == 0x9C, f'(Save) Wrong Nintendo logo length: {hex(len(self.nintendoLogo))}'
         writeRaw(self.nintendoLogo)
         write16(_common.crc16(self.nintendoLogo))
         write16(_common.crc16(data[0:0x15e]))
-        assert headerOffset == 0x160
+        assert headerOffset == 0x160, f'(Save) Header offset check at 0x160: {hex(headerOffset)}'
         write32(debugRomOffset)
         write32(len(self.debugRom))
         write32(self.debugRomAddress)
-        assert len(self.pad16C) == 0x94
+        assert len(self.pad16C) == 0x94, f'(Save) Wrong pad16C length: {hex(len(self.pad16C))}'
         writeRaw(self.pad16C)
-        assert headerOffset == 0x200
+        assert headerOffset == 0x200, f'(Save) Header offset check at 0x200: {hex(headerOffset)}'
 
         return bytes(data)
 

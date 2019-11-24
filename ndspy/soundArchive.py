@@ -87,7 +87,7 @@ class SDAT:
         if symbolsBlockOffset != 0:
             symbolsOffsets = struct.unpack_from('<8I', data,
                                                 symbolsBlockOffset + 8)
-            assert symbolsMagic == b'SYMB'
+            assert symbolsMagic == b'SYMB', f'Incorrect SDAT SYMB magic ({symbolsMagic})'
         else:
             symbolsOffsets = [None] * 8
 
@@ -139,7 +139,7 @@ class SDAT:
         # Read the FAT block
         (fatMagic, fatSize, fatCount) = \
             struct.unpack_from('<4sII', data, fatBlockOffset)
-        assert fatMagic == b'FAT ' # note trailing space
+        assert fatMagic == b'FAT ', f'Incorrect SDAT "FAT " magic ({fatMagic})' # note trailing space
 
         # Read the files from the FILES block
         files = []
@@ -205,7 +205,7 @@ class SDAT:
             struct.unpack_from('<4sI', data, infoBlockOffset)
         infoOffsets = struct.unpack_from('<8I', data,
                                          infoBlockOffset + 8)
-        assert infoMagic == b'INFO'
+        assert infoMagic == b'INFO', f'Incorrect SDAT INFO magic ({infoMagic})'
 
         def getInfoEntryOffsets(partNum):
             off = infoOffsets[partNum]
