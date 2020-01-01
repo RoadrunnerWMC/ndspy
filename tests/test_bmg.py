@@ -21,7 +21,6 @@ Unit tests for ndspy.bmg.
 
 import pathlib
 import struct
-import tempfile
 
 import ndspy.bmg
 import pytest
@@ -478,32 +477,32 @@ def test_fromFile():
 # test function already...
 
 
-def test_saveToFile():
+def test_saveToFile(tmp_path):
     """
     Test BMG.saveToFile()
     """
     # Load BMG
     bmg = ndspy.bmg.BMG.fromFile(FILES_PATH / 'messages.bmg')
 
-    with tempfile.NamedTemporaryFile() as f:
+    fpPath = tmp_path / 'test.bmg'
 
-        # Test with both str's and pathlib.Path's
-        for fp in [f.name, pathlib.Path(f.name)]:
+    # Test with both str's and pathlib.Path's
+    for fp in [str(fpPath), fpPath]:
 
-            # Save it there
-            bmg.saveToFile(fp)
+        # Save it there
+        bmg.saveToFile(fp)
 
-            # Load it back
-            bmg_reloaded = ndspy.bmg.BMG.fromFile(fp)
+        # Load it back
+        bmg_reloaded = ndspy.bmg.BMG.fromFile(fp)
 
-            # Ensure equality
-            assert bmg.messages
-            assert (   [m.stringParts[0] for m in bmg.messages]
-                    == [m.stringParts[0] for m in bmg_reloaded.messages])
+        # Ensure equality
+        assert bmg.messages
+        assert (   [m.stringParts[0] for m in bmg.messages]
+                == [m.stringParts[0] for m in bmg_reloaded.messages])
 
-            # Clear the file contents so as to not taint the next loop
-            # iteration
-            with open(f.name, 'wb') as f: pass
+        # Clear the file contents so as to not taint the next loop
+        # iteration
+        fpPath.write_bytes(b'')
 
 
 def test_Message():
