@@ -94,7 +94,7 @@ def test_encoding():
     """
     # Available encodings and their IDs
     ENCODINGS = {
-        'latin-1': 1,
+        'cp1252': 1,
         'utf-16': 2,
         'shift-jis': 3,
         'utf-8': 4,
@@ -154,10 +154,10 @@ def test_encoding():
 
     # Basic test that exercises all codepoints between 01 and 7F,
     # excluding 1A. Should be compatible with every encoding.
-    messages = [bytes([*range(1, 0x1A), *range(0x1B, 0x80)]).decode('latin-1')]
-    data = (FILES_PATH / '01-19_1B-7F_latin-1.bmg').read_bytes()
-    testLoad('latin-1', messages, data)
-    testSave('latin-1', messages, data)
+    messages = [bytes([*range(1, 0x1A), *range(0x1B, 0x80)]).decode('cp1252')]
+    data = (FILES_PATH / '01-19_1B-7F_cp1252.bmg').read_bytes()
+    testLoad('cp1252', messages, data)
+    testSave('cp1252', messages, data)
     data = (FILES_PATH / '01-19_1B-7F_utf-16le.bmg').read_bytes()
     testLoad('utf-16', messages, data)
     testSave('utf-16', messages, data)
@@ -171,12 +171,10 @@ def test_encoding():
     testLoad('utf-8', messages, data)
     testSave('utf-8', messages, data)
 
-    # Test codepoints 80-FF. Should again be compatible with all except
-    # Shift-JIS.
+    # Test codepoints 80-FF. Should be compatible with all except CP1252
+    # and Shift-JIS.
     messages = [bytes(range(0x80, 0x100)).decode('latin-1')]
-    data = (FILES_PATH / '80-FF_latin-1.bmg').read_bytes()
-    testLoad('latin-1', messages, data)
-    testSave('latin-1', messages, data)
+    testUnsaveable('cp1252', messages)
     data = (FILES_PATH / '80-FF_utf-16le.bmg').read_bytes()
     testLoad('utf-16', messages, data)
     testSave('utf-16', messages, data)
@@ -188,11 +186,35 @@ def test_encoding():
     testLoad('utf-8', messages, data)
     testSave('utf-8', messages, data)
 
-    # Bytes A1-DF, though, *should* be compatible with Shift-JIS.
+    # Bytes A1-DF, though, *should* be compatible with CP1252 and
+    # Shift-JIS.
+    messages = [bytes(range(0xA1, 0xDF)).decode('cp1252')]
+    data = (FILES_PATH / 'A1-DF_cp1252.bmg').read_bytes()
+    testLoad('cp1252', messages, data)
+    testSave('cp1252', messages, data)
     messages = [bytes(range(0xA1, 0xDF)).decode('shift-jis')]
     data = (FILES_PATH / 'A1-DF_shift-jis.bmg').read_bytes()
     testLoad('shift-jis', messages, data)
     testSave('shift-jis', messages, data)
+
+
+def test_fullEncoding():
+    """
+    Test the BMG.fullEncoding attribute.
+    """
+    bmg = ndspy.bmg.BMG()
+
+    bmg.endianness = '<'
+    bmg.encoding = 'cp1252'; assert bmg.fullEncoding == 'cp1252'
+    bmg.encoding = 'utf-16'; assert bmg.fullEncoding == 'utf-16le'
+    bmg.encoding = 'shift-jis'; assert bmg.fullEncoding == 'shift-jis'
+    bmg.encoding = 'utf-8'; assert bmg.fullEncoding == 'utf-8'
+
+    bmg.endianness = '>'
+    bmg.encoding = 'cp1252'; assert bmg.fullEncoding == 'cp1252'
+    bmg.encoding = 'utf-16'; assert bmg.fullEncoding == 'utf-16be'
+    bmg.encoding = 'shift-jis'; assert bmg.fullEncoding == 'shift-jis'
+    bmg.encoding = 'utf-8'; assert bmg.fullEncoding == 'utf-8'
 
 
 def test_badCharDetection():
@@ -204,7 +226,7 @@ def test_badCharDetection():
     for bad in '\x00\x1A':
         bmg.messages = [ndspy.bmg.Message(b'', f'hello {bad} world')]
 
-        for encoding in ['latin-1', 'utf-16', 'shift-jis', 'utf-8']:
+        for encoding in ['cp1252', 'utf-16', 'shift-jis', 'utf-8']:
             bmg.encoding = encoding
 
             with pytest.raises(ValueError):
@@ -564,7 +586,7 @@ def test_Message_isNull():
     assert new_bmg.save() == data
 
     # Also, check that it saves as nothing if it's null
-    assert ndspy.bmg.Message(b'', ['aaaa', 'bcde'], True).save('latin-1') == b''
+    assert ndspy.bmg.Message(b'', ['aaaa', 'bcde'], True).save('cp1252') == b''
 
 
 def test_Message_stringParts():
@@ -631,13 +653,13 @@ def test_Escape_save():
     # Empty escape
     esc = ndspy.bmg.Message.Escape(0, b'')
     #                              (U+001A      len   type  data)
-    assert esc.save('latin-1')  == (b'\x1A'     b'\3' b'\0' b'')
+    assert esc.save('cp1252')   == (b'\x1A'     b'\3' b'\0' b'')
     assert esc.save('utf-16le') == (b'\x1A\x00' b'\4' b'\0' b'')
     assert esc.save('utf-16be') == (b'\x00\x1A' b'\4' b'\0' b'')
 
     # An escape with some actual things
     esc = ndspy.bmg.Message.Escape(0xFF, b'abcdefg')
     #                              (U+001A      len     type    data)
-    assert esc.save('latin-1')  == (b'\x1A'     b'\x0A' b'\xFF' b'abcdefg')
+    assert esc.save('cp1252')   == (b'\x1A'     b'\x0A' b'\xFF' b'abcdefg')
     assert esc.save('utf-16le') == (b'\x1A\x00' b'\x0B' b'\xFF' b'abcdefg')
     assert esc.save('utf-16be') == (b'\x00\x1A' b'\x0B' b'\xFF' b'abcdefg')

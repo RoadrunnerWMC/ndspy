@@ -24,8 +24,8 @@ import struct
 from . import _common
 
 
-_ENCODINGS = [None, 'latin-1', 'utf-16', 'shift-jis', 'utf-8']
-# Latin-1 is found in Animal Crossing Wild World and Super Princess Peach
+_ENCODINGS = [None, 'cp1252', 'utf-16', 'shift-jis', 'utf-8']
+# CP1252 is found in Animal Crossing Wild World and Super Princess Peach
 # UTF-16 is found in the Zeldas and NSMB
 # SJIS is found in Super Princess Peach
 # UTF-8 is found in WarioWare DIY
@@ -55,7 +55,8 @@ class BMG:
             self._initFromData(data)
 
 
-    def _getFullEncoding(self):
+    @property
+    def fullEncoding(self):
         if self.encoding.lower() == 'utf-16':
             return 'utf-16' + ('le' if self.endianness == '<' else 'be')
         return self.encoding
@@ -146,8 +147,8 @@ class BMG:
 
         # Now we just need to read the messages.
 
-        nullChar = '\0'.encode(self._getFullEncoding())
-        escapeSequenceStart = '\x1A'.encode(self._getFullEncoding())
+        nullChar = '\0'.encode(self.fullEncoding)
+        escapeSequenceStart = '\x1A'.encode(self.fullEncoding)
 
         self.messages = []
         for offset, attribs in INF1:
@@ -164,7 +165,7 @@ class BMG:
             while nextBytes != nullChar:
                 if nextBytes == escapeSequenceStart: # escape sequence
                     if currentStringStart and currentStringStart != offset:
-                        stringParts.append(DAT1[currentStringStart:offset].decode(self._getFullEncoding()))
+                        stringParts.append(DAT1[currentStringStart:offset].decode(self.fullEncoding))
                     escapeLen, escapeType = DAT1[offset + len(escapeSequenceStart) : offset + len(escapeSequenceStart) + 2]
                     escapeData = DAT1[offset + len(escapeSequenceStart) + 2 : offset + escapeLen]
                     stringParts.append(Message.Escape(escapeType, escapeData))
@@ -176,7 +177,7 @@ class BMG:
                 nextBytes = DAT1[offset : offset + len(nullChar)]
 
             if currentStringStart and currentStringStart != offset:
-                stringParts.append(DAT1[currentStringStart:offset].decode(self._getFullEncoding()))
+                stringParts.append(DAT1[currentStringStart:offset].decode(self.fullEncoding))
 
             self.messages.append(Message(attribs, stringParts, offset == 0))
 
@@ -235,7 +236,7 @@ class BMG:
         FLW1 = bytearray(16)
         FLI1 = bytearray(16)
 
-        DAT1.extend('\0'.encode(self._getFullEncoding()))
+        DAT1.extend('\0'.encode(self.fullEncoding))
 
         if self.messages:
             inf1EntryLen = 4 + len(self.messages[0].info)
@@ -254,7 +255,7 @@ class BMG:
             INF1.extend(struct.pack(se + 'I', offset))
             INF1.extend(message.info)
             if not message.isNull:
-                DAT1.extend(message.save(self._getFullEncoding()))
+                DAT1.extend(message.save(self.fullEncoding))
 
         for inst in self.instructions:
             if hasattr(inst, 'save'):

@@ -88,7 +88,7 @@ Load a *BMG* from a file, edit a message, and save it back into a ROM:
     >>> rom.saveToFile('nsmb_edited.nds')
     >>>
 
-Create a new *BMG* using the ``latin-1`` encoding, and save it to a file:
+Create a new *BMG* using the ``cp1252`` encoding, and save it to a file:
 
 .. code-block:: python
 
@@ -96,7 +96,7 @@ Create a new *BMG* using the ``latin-1`` encoding, and save it to a file:
     >>> message1 = ndspy.bmg.Message(b'', ['Want to save your game?'])
     >>> message2 = ndspy.bmg.Message(b'', ["Sure!\nNo thanks."])
     >>> bmg = ndspy.bmg.BMG.fromMessages([message1, message2])
-    >>> bmg.encoding = 'latin-1'
+    >>> bmg.encoding = 'cp1252'
     >>> bmg.saveToFile('savegame-en-us.bmg')
     >>>
 
@@ -123,12 +123,41 @@ API
         efficiency, and the amount and choice of characters that can be
         encoded.
 
-        Valid encodings are ``latin-1``, ``utf-16``, ``shift-jis``, and
+        Valid encodings are ``cp1252``, ``utf-16``, ``shift-jis``, and
         ``utf-8``.
+
+        .. seealso::
+
+            :attr:`fullEncoding` -- a read-only mirror of this property that
+            includes endianness information, intended for use with
+            ``str.encode()`` and ``bytes.decode()``.
 
         :type: :py:class:`str`
 
         :default: ``'utf-16'``
+
+    .. py:attribute:: fullEncoding
+
+        A mirror property for :attr:`encoding` that takes :attr:`endianness`
+        into account. This can be used with ``str.encode()`` or
+        ``bytes.decode()``, if for some reason you need to encode or decode raw
+        string data matching this *BMG*'s encoding.
+
+        The value of this attribute will always be the same as that of
+        :attr:`encoding`, unless that attribute has the value ``utf-16``. In
+        that case, this property will be either ``utf-16le`` or ``utf-16be``,
+        depending on :attr:`endianness`.
+
+        This attribute is read-only.
+
+        .. seealso::
+
+            :attr:`encoding` -- a writable property you can use to modify the
+            *BMG*'s encoding.
+
+        :type: :py:class:`str`
+
+        :default: ``'utf-16le'``
 
     .. py:attribute:: endianness
 
