@@ -31,12 +31,14 @@ sys.path.insert(0, os.path.abspath('../../..'))
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
+sys.path.append(os.path.abspath(os.path.expanduser('~/sphinx-class-summary')))
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.doctest',
     'sphinx.ext.todo',
     'sphinx.ext.coverage',
-    'sphinx.ext.viewcode']
+    'sphinx.ext.viewcode',
+    'sphinx_class_summary']
 
 with open('doctest_global_setup.py', 'r', encoding='utf-8') as f:
     doctest_global_setup = f.read()
@@ -85,11 +87,11 @@ pygments_style = 'sphinx'
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = True
 
-autodoc_default_flags = [
-    'members',
-    'inherited-members',
-    'show-inheritance',
-    ]
+autodoc_default_options = {
+    'members': True,
+    'inherited-members': True,
+    'show-inheritance': True,
+}
 
 
 # -- Options for HTML output ----------------------------------------------
