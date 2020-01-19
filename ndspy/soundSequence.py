@@ -294,9 +294,10 @@ def _writeVariableLengthInt(x):
     ret = []
 
     while x:
-        value = x & 0x7F
-        x >>= 7
-        ret.insert(0, value)
+        value, x = x & 0x7F, x >> 7
+        ret.append(value)
+
+    ret.reverse()
 
     for i, v in enumerate(ret[:-1]):
         ret[i] = v | 0x80
