@@ -14,6 +14,11 @@ setuptools.setup(
     url='https://github.com/RoadrunnerWMC/ndspy',
     packages=setuptools.find_packages(),
     python_requires='>=3.6',
+    entry_points={
+        'console_scripts': [
+            'ndspy_lz10 = ndspy.lz10:main',
+        ],
+    },
     install_requires=[
         'crcmod',
     ],
