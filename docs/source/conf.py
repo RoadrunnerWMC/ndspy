@@ -31,14 +31,12 @@ sys.path.insert(0, os.path.abspath('../../..'))
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-sys.path.append(os.path.abspath(os.path.expanduser('~/sphinx-class-summary')))
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.doctest',
     'sphinx.ext.todo',
     'sphinx.ext.coverage',
-    'sphinx.ext.viewcode',
-    'sphinx_class_summary']
+    'sphinx.ext.viewcode']
 
 with open('doctest_global_setup.py', 'r', encoding='utf-8') as f:
     doctest_global_setup = f.read()
