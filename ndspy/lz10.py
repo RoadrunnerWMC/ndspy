@@ -113,7 +113,7 @@ def compress(data):
 
 def compressFromFile(filePath):
     """
-    Load a ilesystem file, and compress its data in LZ10 format.
+    Load a filesystem file, and compress its data in LZ10 format.
     """
     with open(filePath, 'rb') as f:
         return compress(f.read())

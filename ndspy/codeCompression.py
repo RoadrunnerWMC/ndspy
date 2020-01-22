@@ -208,6 +208,23 @@ def decompress(data):
     return passthroughData + decompData + appendedData
 
 
+def decompressFromFile(filePath):
+    """
+    Load a code-compressed filesystem file, and decompress it.
+    """
+    with open(filePath, 'rb') as f:
+        return decompress(f.read())
+
+
+def decompressToFile(data, filePath):
+    """
+    Decompress code-compressed data, and save it to a filesystem file.
+    """
+    d = decompress(data)
+    with open(filePath, 'wb') as f:
+        f.write(d)
+
+
 def compress(data, isArm9=False):
     """
     Compress code data. This is the inverse of decompress().
@@ -254,7 +271,7 @@ def _compress(data):
 
         actualCompLen = len(compressed) - ignorableC
         headerLen = 8
-        compressed = data[:ignorableD] + compressed[ignorableC:]
+        compressed = bytearray(data[:ignorableD]) + compressed[ignorableC:]
         extraLen = len(data) - len(compressed)
 
         while len(compressed) % 4:
@@ -272,6 +289,23 @@ def _compress(data):
     return compressed
 
 
+def compressFromFile(filePath):
+    """
+    Load a filesystem file, and compress its data in LZ10 format.
+    """
+    with open(filePath, 'rb') as f:
+        return compress(f.read())
+
+
+def compressToFile(data, filePath):
+    """
+    Compress data in LZ10 format, and save it to a filesystem file.
+    """
+    d = compress(data)
+    with open(filePath, 'wb') as f:
+        f.write(d)
+
+
 def main(args=None):
     """
     Main function for the CLI
@@ -286,13 +320,12 @@ def main(args=None):
         Handle the "compress" command.
         """
         with open(str(pArgs.input_file), 'rb') as f:
-            data = compress(f.read())
+            data = f.read()
 
         outfp = pArgs.output_file
         if outfp is None: outfp = pArgs.input_file.with_suffix('.cmp')
 
-        with open(str(outfp), 'wb') as f:
-            f.write(data)
+        compressToFile(data, outfp)
 
     parser_compress = subparsers.add_parser('compress', aliases=['c'],
                                             help='compress a file')
@@ -306,8 +339,7 @@ def main(args=None):
         """
         Handle the "decompress" command.
         """
-        with open(str(pArgs.input_file), 'rb') as f:
-            data = decompress(f.read())
+        data = decompressFromFile(pArgs.input_file)
 
         outfp = pArgs.output_file
         if outfp is None: outfp = pArgs.input_file.with_suffix('.dec')

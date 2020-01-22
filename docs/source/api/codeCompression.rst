@@ -53,6 +53,30 @@ file. This allows for in-place decompression, which is more efficient.)
     :rtype: :py:class:`bytes`
 
 
+.. py:function:: compressFromFile(filePath)
+
+    Load a filesystem file, and compress its contents. This is the inverse of
+    :py:func:`decompressToFile`, and is a convenience function.
+
+    :param filePath: The path to the file to open.
+    :type filePath: :py:class:`str` or other path-like object
+
+    :returns: The compressed data.
+    :rtype: :py:class:`bytes`
+
+
+.. py:function:: compressToFile(data, filePath)
+
+    Compress data in the code compression format, and save it to a filesystem
+    file. This is the inverse of :py:func:`decompressFromFile`, and is a
+    convenience function.
+
+    :param bytes data: The data to compress.
+
+    :param filePath: The path to the compressed file to save to.
+    :type filePath: :py:class:`str` or other path-like object
+
+
 .. py:function:: decompress(data)
 
     Decompress data that was compressed using code compression. This is the
@@ -64,6 +88,31 @@ file. This allows for in-place decompression, which is more efficient.)
 
     :returns: The decompressed data.
     :rtype: :py:class:`bytes`
+
+
+.. py:function:: decompressFromFile(filePath)
+
+    Load a filesystem file that is compressed using code compression, and
+    decompress it. This is the inverse of :py:func:`compressToFile`, and is a
+    convenience function.
+
+    :param filePath: The path to the compressed file to open.
+    :type filePath: :py:class:`str` or other path-like object
+
+    :returns: The decompressed data.
+    :rtype: :py:class:`bytes`
+
+
+.. py:function:: decompressToFile(data, filePath)
+
+    Decompress data that was compressed using code compression, and save it to
+    a filesystem file. This is the inverse of :py:func:`compressFromFile`, and
+    is a convenience function.
+
+    :param bytes data: The data to decompress.
+
+    :param filePath: The path to the file to save to.
+    :type filePath: :py:class:`str` or other path-like object
 
 
 .. py:function:: main([args])
