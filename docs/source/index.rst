@@ -267,7 +267,7 @@ subject to drastic changes at any time. This is also mentioned in the
     Home <self>
     tutorials/index
     api/index
-    tools/index
+    cli/index
     changelog
     appendices/sdat-structure
 

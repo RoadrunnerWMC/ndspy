@@ -1,5 +1,5 @@
 ..
-    Copyright 2019 RoadrunnerWMC
+    Copyright 2020 RoadrunnerWMC
 
     This file is part of ndspy.
 
@@ -16,16 +16,14 @@
     You should have received a copy of the GNU General Public License
     along with ndspy.  If not, see <https://www.gnu.org/licenses/>.
 
-Tools
-=====
+CLI Reference
+=============
 
-This section explains how to use the command-line tools that come with ndspy.
-
-.. todo::
-
-    Coming soon!
+This section contains the documentation for ndspy's command-line interfaces.
 
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 1
     :caption: Subpages
+
+    lz10
