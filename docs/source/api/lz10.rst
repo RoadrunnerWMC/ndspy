@@ -24,6 +24,10 @@
 ``ndspy.lz10`` provides functions for compression and decompression in the
 *LZ10* compression format used in some games.
 
+.. seealso::
+
+    This module also includes a :doc:`command-line interface <../cli/lz10>`.
+
 
 .. py:function:: compress(data)
 
@@ -69,3 +73,14 @@
 
     :returns: The decompressed data.
     :rtype: :py:class:`bytes`
+
+
+.. py:function:: main([args])
+
+    This is the main function for :doc:`this module's command-line interface
+    <../cli/lz10>`. This allows you to invoke the CLI programmatically, if you
+    would like.
+
+    :param args: The command-line arguments. Defaults to ``sys.argv`` if not
+        provided.
+    :type args: :py:class:`list` of :py:class:`str`

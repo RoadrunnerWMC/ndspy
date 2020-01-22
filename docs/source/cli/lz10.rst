@@ -19,9 +19,10 @@
 ``ndspy.lz10``: LZ10 Compression
 ================================
 
-``ndspy.lz10``'s command-line interface allows you to easily compress and
-decompress files in the *LZ10* format. You can access it through either
-``python3 -m ndspy.lz10`` or ``ndspy_lz10``.
+:py:mod:`ndspy.lz10`'s command-line interface allows you to easily compress and
+decompress files in the *LZ10* format. You can access it through
+``python3 -m ndspy.lz10`` or ``ndspy_lz10``, or programmatically with
+:py:func:`ndspy.lz10.main`.
 
 Usage summary:
 
@@ -42,7 +43,7 @@ Usage summary:
         compress (c)        compress a file
         decompress (d)      decompress a file
 
-The module provides two commands, for compression and decompression:
+The module provides commands for compression and decompression:
 
 
 Compress (``compress`` / ``c``)
