@@ -88,6 +88,15 @@ def decompressFromFile(filePath):
         return decompress(f.read())
 
 
+def decompressToFile(data, filePath):
+    """
+    Decompress LZ10-compressed data, and save it to a filesystem file.
+    """
+    d = decompress(data)
+    with open(filePath, 'wb') as f:
+        f.write(d)
+
+
 def compress(data):
     """
     Compress data in LZ10 format.
@@ -100,6 +109,14 @@ def compress(data):
     compressed = bytearray(compressed)
     compressed[:0] = struct.pack('<I', (len(data) << 8) | 0x10)
     return bytes(compressed)
+
+
+def compressFromFile(filePath):
+    """
+    Load a ilesystem file, and compress its data in LZ10 format.
+    """
+    with open(filePath, 'rb') as f:
+        return compress(f.read())
 
 
 def compressToFile(data, filePath):
