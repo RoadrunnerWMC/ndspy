@@ -62,7 +62,7 @@ If the script prints ``Hello world!`` and exits, everything's good.
     .. code-block:: text
 
         Traceback (most recent call last):
-          File "temp.py", line 1, in <module>
+          File "test.py", line 1, in <module>
             import ndspy
         ModuleNotFoundError: No module named 'ndspy'
 
