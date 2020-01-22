@@ -16,6 +16,7 @@ setuptools.setup(
     python_requires='>=3.6',
     entry_points={
         'console_scripts': [
+            'ndspy_codeCompression = ndspy.codeCompression:main',
             'ndspy_lz10 = ndspy.lz10:main',
         ],
     },

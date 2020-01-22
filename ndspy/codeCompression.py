@@ -19,6 +19,8 @@ Support for executable code files compression.
 """
 
 
+import argparse
+import pathlib
 import struct
 
 from . import _lzCommon
@@ -268,3 +270,66 @@ def _compress(data):
         struct.pack_into('<I', compressed, ptr, extraLen - headerLen)
 
     return compressed
+
+
+def main(args=None):
+    """
+    Main function for the CLI
+    """
+    parser = argparse.ArgumentParser(
+        description='ndspy.codeCompression CLI: Compress or decompress files using the code compression format.')
+    subparsers = parser.add_subparsers(title='commands',
+        description='(run a command with -h for additional help)')
+
+    def handleCompress(pArgs):
+        """
+        Handle the "compress" command.
+        """
+        with open(str(pArgs.input_file), 'rb') as f:
+            data = compress(f.read())
+
+        outfp = pArgs.output_file
+        if outfp is None: outfp = pArgs.input_file.with_suffix('.cmp')
+
+        with open(str(outfp), 'wb') as f:
+            f.write(data)
+
+    parser_compress = subparsers.add_parser('compress', aliases=['c'],
+                                            help='compress a file')
+    parser_compress.add_argument('input_file', type=pathlib.Path,
+        help='input file to compress')
+    parser_compress.add_argument('output_file', nargs='?', type=pathlib.Path,
+        help='what to save the compressed file as')
+    parser_compress.set_defaults(func=handleCompress)
+
+    def handleDecompress(pArgs):
+        """
+        Handle the "decompress" command.
+        """
+        with open(str(pArgs.input_file), 'rb') as f:
+            data = decompress(f.read())
+
+        outfp = pArgs.output_file
+        if outfp is None: outfp = pArgs.input_file.with_suffix('.dec')
+
+        with open(str(outfp), 'wb') as f:
+            f.write(data)
+
+    parser_decompress = subparsers.add_parser('decompress', aliases=['d'],
+                                              help='decompress a file')
+    parser_decompress.add_argument('input_file', type=pathlib.Path,
+        help='input file to decompress')
+    parser_decompress.add_argument('output_file', nargs='?', type=pathlib.Path,
+        help='what to save the decompressed file as')
+    parser_decompress.set_defaults(func=handleDecompress)
+
+    # Parse args and run appropriate function
+    pArgs = parser.parse_args(args)
+    if hasattr(pArgs, 'func'):
+        pArgs.func(pArgs)
+    else:  # this happens if no arguments were specified at all
+        parser.print_usage()
+
+
+if __name__ == '__main__':
+    main()

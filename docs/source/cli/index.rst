@@ -26,4 +26,5 @@ This section contains the documentation for ndspy's command-line interfaces.
     :maxdepth: 1
     :caption: Subpages
 
+    codeCompression
     lz10

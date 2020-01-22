@@ -31,6 +31,11 @@ file. This allows for in-place decompression, which is more efficient.)
     automatically for you, and you shouldn't need to use this module
     explicitly.
 
+.. seealso::
+
+    This module also includes a :doc:`command-line interface
+    <../cli/codeCompression>`.
+
 
 .. py:function:: compress(data[, isArm9=False])
 
@@ -59,3 +64,14 @@ file. This allows for in-place decompression, which is more efficient.)
 
     :returns: The decompressed data.
     :rtype: :py:class:`bytes`
+
+
+.. py:function:: main([args])
+
+    This is the main function for :doc:`this module's command-line interface
+    <../cli/codeCompression>`. This allows you to invoke the CLI
+    programmatically, if you would like.
+
+    :param args: The command-line arguments. Defaults to ``sys.argv`` if not
+        provided.
+    :type args: :py:class:`list` of :py:class:`str`
