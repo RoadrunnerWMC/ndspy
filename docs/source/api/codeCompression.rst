@@ -53,7 +53,7 @@ file. This allows for in-place decompression, which is more efficient.)
     :rtype: :py:class:`bytes`
 
 
-.. py:function:: compressFromFile(filePath)
+.. py:function:: compressFromFile(filePath[, isArm9=False])
 
     Load a filesystem file, and compress its contents. This is the inverse of
     :py:func:`decompressToFile`, and is a convenience function.
@@ -61,11 +61,14 @@ file. This allows for in-place decompression, which is more efficient.)
     :param filePath: The path to the file to open.
     :type filePath: :py:class:`str` or other path-like object
 
+    :param bool isArm9: Equivalent to the same parameter in the
+        :py:func:`compress` function.
+
     :returns: The compressed data.
     :rtype: :py:class:`bytes`
 
 
-.. py:function:: compressToFile(data, filePath)
+.. py:function:: compressToFile(data, filePath[, isArm9=False])
 
     Compress data in the code compression format, and save it to a filesystem
     file. This is the inverse of :py:func:`decompressFromFile`, and is a
@@ -75,6 +78,9 @@ file. This allows for in-place decompression, which is more efficient.)
 
     :param filePath: The path to the compressed file to save to.
     :type filePath: :py:class:`str` or other path-like object
+
+    :param bool isArm9: Equivalent to the same parameter in the
+        :py:func:`compress` function.
 
 
 .. py:function:: decompress(data)

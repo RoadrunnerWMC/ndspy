@@ -56,7 +56,7 @@ Usage summary:
 .. code-block:: text
 
     $ python3 -m ndspy.codeCompression compress -h
-    usage: codeCompression.py compress [-h] input_file [output_file]
+    usage: codeCompression.py compress [-h] [--is_arm9] input_file [output_file]
 
     positional arguments:
       input_file   input file to compress
@@ -64,10 +64,14 @@ Usage summary:
 
     optional arguments:
       -h, --help   show this help message and exit
+      --is_arm9    treat the data as a main ARM9 code file (do not use for
+                   overlays)
 
 This command compresses a file in the code compression format. If no output
 filename is given, it defaults to the input filename, with a ``.cmp``
 extension.
+
+The ``--is_arm9`` argument corresponds to the ``isArm9`` argument of the :py:func:`compress() <ndspy.codeCompression.compress>` function.
 
 
 Decompress (``decompress`` / ``d``)

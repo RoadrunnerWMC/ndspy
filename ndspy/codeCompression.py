@@ -289,19 +289,19 @@ def _compress(data):
     return compressed
 
 
-def compressFromFile(filePath):
+def compressFromFile(filePath, isArm9=False):
     """
     Load a filesystem file, and compress its data in LZ10 format.
     """
     with open(filePath, 'rb') as f:
-        return compress(f.read())
+        return compress(f.read(), isArm9=isArm9)
 
 
-def compressToFile(data, filePath):
+def compressToFile(data, filePath, isArm9=False):
     """
     Compress data in LZ10 format, and save it to a filesystem file.
     """
-    d = compress(data)
+    d = compress(data, isArm9=isArm9)
     with open(filePath, 'wb') as f:
         f.write(d)
 
@@ -325,7 +325,7 @@ def main(args=None):
         outfp = pArgs.output_file
         if outfp is None: outfp = pArgs.input_file.with_suffix('.cmp')
 
-        compressToFile(data, outfp)
+        compressToFile(data, outfp, isArm9=pArgs.is_arm9)
 
     parser_compress = subparsers.add_parser('compress', aliases=['c'],
                                             help='compress a file')
@@ -333,6 +333,8 @@ def main(args=None):
         help='input file to compress')
     parser_compress.add_argument('output_file', nargs='?', type=pathlib.Path,
         help='what to save the compressed file as')
+    parser_compress.add_argument('--is_arm9', action='store_true',
+        help='treat the data as a main ARM9 code file (do not use for overlays)')
     parser_compress.set_defaults(func=handleCompress)
 
     def handleDecompress(pArgs):
