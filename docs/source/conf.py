@@ -37,7 +37,14 @@ extensions = [
     'sphinx.ext.todo',
     'sphinx.ext.coverage',
     'sphinx.ext.intersphinx',
-    'sphinx.ext.viewcode']
+    'sphinx.ext.viewcode',  # NOTE: Be sure to enable "Install Project"
+                            # in ReadTheDocs's advanced project settings
+                            # (Admin -> Advanced Settings), or else
+                            # viewcode will only work locally, because
+                            # it will be unable to import most ndspy
+                            # modules, because ndspy's dependencies
+                            # won't be installed!
+]
 
 with open('doctest_global_setup.py', 'r', encoding='utf-8') as f:
     doctest_global_setup = f.read()
