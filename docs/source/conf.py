@@ -94,10 +94,6 @@ autodoc_default_options = {
 
 intersphinx_mapping = {'python': ('https://docs.python.org/3', None)}
 
-# Fixes sphinx.ext.viewcode on readthedocs
-# (https://github.com/readthedocs/readthedocs.org/issues/2139)
-sys.path.insert(0, os.path.abspath('../..'))
-
 
 # -- Options for HTML output ----------------------------------------------
 
