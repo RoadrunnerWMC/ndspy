@@ -92,6 +92,10 @@ autodoc_default_options = {
 }
 
 
+# https://github.com/readthedocs/readthedocs.org/issues/2139
+sys.path.insert(0, os.path.abspath('..'))
+
+
 # -- Options for HTML output ----------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
