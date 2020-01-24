@@ -92,8 +92,9 @@ autodoc_default_options = {
 }
 
 
-# https://github.com/readthedocs/readthedocs.org/issues/2139
-sys.path.insert(0, os.path.abspath('..'))
+# Fixes sphinx.ext.viewcode on readthedocs
+# (https://github.com/readthedocs/readthedocs.org/issues/2139)
+sys.path.insert(0, os.path.abspath('../..'))
 
 
 # -- Options for HTML output ----------------------------------------------
