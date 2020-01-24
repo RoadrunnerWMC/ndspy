@@ -36,8 +36,8 @@ extensions = [
     'sphinx.ext.doctest',
     'sphinx.ext.todo',
     'sphinx.ext.coverage',
-    'sphinx.ext.viewcode',
-    'sphinx.ext.intersphinx']
+    'sphinx.ext.intersphinx',
+    'sphinx.ext.viewcode']
 
 with open('doctest_global_setup.py', 'r', encoding='utf-8') as f:
     doctest_global_setup = f.read()
