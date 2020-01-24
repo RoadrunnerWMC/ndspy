@@ -59,7 +59,7 @@ This page describes the sequence event classes within
         beginning at some offset.
 
         This base class implementation simply raises
-        :py:class:`NotImplementedError`. All subclasses that can override it,
+        :py:exc:`NotImplementedError`. All subclasses that can override it,
         should. Some, such as :py:class:`JumpSequenceEvent`, would need more
         information about context than this function's parameters provide, and
         thus must be created using different means.

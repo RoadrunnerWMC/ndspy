@@ -27,10 +27,10 @@ their own modules.
 
 .. py:data:: VERSION
 
-    A ``collections.namedtuple`` that provides the current ndspy version. You
-    can use this like a 3-tuple (so, for example, this would behave like
-    ``(2, 0, 0)`` for ndspy 2.0.0) or like an object with ``major``, ``minor``
-    and ``patch`` integer attributes.
+    A :py:func:`collections.namedtuple` that provides the current ndspy
+    version. You can use this like a 3-tuple (so, for example, this would
+    behave like ``(2, 0, 0)`` for ndspy 2.0.0) or like an object with
+    ``major``, ``minor`` and ``patch`` integer attributes.
 
     .. note::
 

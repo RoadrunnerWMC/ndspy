@@ -36,7 +36,8 @@ extensions = [
     'sphinx.ext.doctest',
     'sphinx.ext.todo',
     'sphinx.ext.coverage',
-    'sphinx.ext.viewcode']
+    'sphinx.ext.viewcode',
+    'sphinx.ext.intersphinx']
 
 with open('doctest_global_setup.py', 'r', encoding='utf-8') as f:
     doctest_global_setup = f.read()
@@ -91,6 +92,7 @@ autodoc_default_options = {
     'show-inheritance': True,
 }
 
+intersphinx_mapping = {'python': ('https://docs.python.org/3', None)}
 
 # Fixes sphinx.ext.viewcode on readthedocs
 # (https://github.com/readthedocs/readthedocs.org/issues/2139)

@@ -541,7 +541,7 @@ The ``ndspy.soundBank`` module contains classes and functions related to the
         Create an instrument from raw file data.
 
         This method must be implemented in subclasses; this abstract-base-class
-        implementation simply raises :py:class:`NotImplementedError`.
+        implementation simply raises :py:exc:`NotImplementedError`.
 
         :param type: The initial value for the :py:attr:`type` attribute.
 
