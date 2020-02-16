@@ -175,7 +175,7 @@ API
 
         :type: :py:class:`bytes` (exactly 2 bytes long)
 
-        :default: ``b'\\0\\0'``
+        :default: ``b'\0\0'``
 
     .. py:attribute:: unitCode
 
@@ -489,7 +489,7 @@ API
 
         :type: :py:class:`bytes` (exactly 8 bytes long)
 
-        :default: ``b'\\0\\0\\0\\0\\0\\0\\0\\0'``
+        :default: ``b'\0\0\0\0\0\0\0\0'``
 
     .. py:attribute:: pad088
 
@@ -497,7 +497,7 @@ API
 
         :type: :py:class:`bytes` (exactly 0x38 bytes long)
 
-        :default: ``b'\\0' * 0x38``
+        :default: ``b'\0' * 0x38``
 
     .. py:attribute:: nintendoLogo
 
@@ -531,7 +531,7 @@ API
 
         :type: :py:class:`bytes` (exactly 0x94 bytes long)
 
-        :default: ``b'\\0' * 0x94``
+        :default: ``b'\0' * 0x94``
 
     .. py:attribute:: pad200
 
@@ -539,7 +539,7 @@ API
 
         :type: :py:class:`bytes`
 
-        :default: ``b'\\0' * 0x3E00``
+        :default: ``b'\0' * 0x3E00``
 
     .. py:attribute:: arm9
 
