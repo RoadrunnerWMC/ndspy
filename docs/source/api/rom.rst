@@ -541,6 +541,18 @@ API
 
         :default: ``b'\0' * 0x3E00``
 
+    .. py:attribute:: rsaSignature
+
+        The ROM's RSA signature data. Not every ROM has is cryptographically
+        signed, but for those that are, this is stored at the very end of the
+        ROM. Since most methods of playing games from ROM files these days
+        bypass the RSA verification step, this attribute probably isn't very
+        useful for most purposes.
+
+        :type: :py:class:`bytes` (either 0 or 0x88 bytes long)
+
+        :default: ``b''``
+
     .. py:attribute:: arm9
 
         The main ARM9 executable binary to be loaded to

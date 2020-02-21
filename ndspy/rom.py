@@ -89,6 +89,8 @@ class NintendoDSRom:
         self.pad16C = b'\0' * 0x94
         self.pad200 = b'\0' * 0x3E00
 
+        self.rsaSignature = b''
+
         self.arm9 = b''
         self.arm9PostData = b''
         self.arm7 = b''
