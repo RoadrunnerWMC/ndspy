@@ -763,6 +763,11 @@ API
         Create a :py:class:`ndspy.code.MainCodeFile` object representing the
         main ARM7 code file in this ROM.
 
+        .. seealso::
+            :py:attr:`arm7` -- depending on what you're trying to do, it may be
+            more appropriate to just use this raw data attribute directly
+            instead.
+
         :returns: The ARM7 code file.
         :rtype: :py:class:`ndspy.code.MainCodeFile`
 
@@ -770,6 +775,12 @@ API
 
         Create a dictionary of this ROM's ARM7
         :py:class:`ndspy.code.Overlay`\s.
+
+        .. seealso::
+            :py:attr:`arm7OverlayTable` -- if you just want the raw overlay
+            table data, you can access it from this attribute instead. This
+            avoids the side effect of decompressing all of the overlay data
+            (which can be slow).
 
         :param idsToLoad: A specific set of overlay IDs to load. You can use
             this to avoid loading overlays you don't actually care about, in
@@ -786,6 +797,11 @@ API
         Create a :py:class:`ndspy.code.MainCodeFile` object representing the
         main ARM9 code file in this ROM.
 
+        .. seealso::
+            :py:attr:`arm9` -- depending on what you're trying to do, it may be
+            more appropriate to just use this raw data attribute directly
+            instead.
+
         :returns: The ARM9 code file.
         :rtype: :py:class:`ndspy.code.MainCodeFile`
 
@@ -793,6 +809,12 @@ API
 
         Create a dictionary of this ROM's ARM9
         :py:class:`ndspy.code.Overlay`\s.
+
+        .. seealso::
+            :py:attr:`arm9OverlayTable` -- if you just want the raw overlay
+            table data, you can access it from this attribute instead. This
+            avoids the side effect of decompressing all of the overlay data
+            (which can be slow).
 
         :param idsToLoad: A specific set of overlay IDs to load. You can use
             this to avoid loading overlays you don't actually care about, in
