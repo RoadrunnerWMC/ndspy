@@ -32,10 +32,16 @@ The ``ndspy.code`` module can be used to load and save executable code files:
 .. py:class:: MainCodeFile(data, ramAddress[, codeSettingsPointerAddress])
 
     Either the main ARM7 code file or the main ARM9 code file. On the console,
-    the entire file is first loaded into RAM as one big chunk, and then it is
-    immediately executed. Usually, the code begins by moving different sections
-    of itself to different addresses. You can access all of these sections via
-    the :py:attr:`sections` attribute.
+    the entire file is loaded into RAM as one big chunk, decompressed (if
+    needed), and then immediately executed. Usually, the code begins by moving
+    different sections of itself to different addresses. You can access all of
+    these sections via the :py:attr:`sections` attribute.
+
+    .. note::
+
+        Since this class tries to parse the code data to some degree to give
+        you access to its sections, it automatically decompresses the data (if
+        compressed) upon loading it.
 
     :param bytes data: The data to be read as a code file. If this is ``None``,
         the :py:class:`MainCodeFile` object will initially be empty.
@@ -197,6 +203,15 @@ The ``ndspy.code`` module can be used to load and save executable code files:
     An ARM7 or ARM9
     `code overlay <https://en.wikipedia.org/wiki/Overlay_(programming)>`_.
 
+    .. note::
+
+        If the ``flags`` parameter indicates the data is compressed (see
+        :py:attr:`compressed`), the class constructor will automatically
+        decompress it. If you need the original compressed data instead, access
+        it directly from your ROM's
+        :py:attr:`files <ndspy.rom.NintendoDSRom.files>` list using the
+        :py:attr:`fileID` attribute.
+
     :param data: The initial value for the :py:attr:`data` attribute.
 
     :param ramAddress: The initial value for the :py:attr:`ramAddress`
@@ -228,12 +243,15 @@ The ``ndspy.code`` module can be used to load and save executable code files:
 
     .. py:attribute:: data
 
-        The :py:class:`bytes` object containing the code for this overlay.
+        The :py:class:`bytes` object containing the decompressed code for this
+        overlay.
 
     .. py:attribute:: compressed
 
         Alias property for ":py:attr:`flags` & 1". This is ``True`` if the
-        overlay is compressed, ``False`` otherwise.
+        overlay was most recently saved (:py:func:`save`) with compression
+        enabled (or -- if it hasn't been saved yet -- if the overlay was
+        compressed when it was first loaded), and ``False`` otherwise.
 
         :type: :py:class:`bool`
 
