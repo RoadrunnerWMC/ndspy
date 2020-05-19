@@ -34,9 +34,9 @@ can be downloaded from the `Releases page on GitHub
     backwards-incompatible change, and any code using the module definitely
     needs to be updated.
 *   Medium-sized changes to :py:mod:`ndspy.bmg`'s API in order to add
-    compatibility with... pretty much game except *The Legend of Zelda: Phantom
-    Hourglass* and *The Legend of Zelda: Spirit Tracks.* This is a pretty
-    important change, of course, but it's also backwards-incompatible.
+    compatibility with... pretty much every game except *The Legend of Zelda:
+    Phantom Hourglass* and *The Legend of Zelda: Spirit Tracks.* This is a
+    pretty important change, of course, but it's also backwards-incompatible.
     Depending on what parts of the module your code uses, though, your code
     might still run correctly without any changes.
 *   Converted the names of
