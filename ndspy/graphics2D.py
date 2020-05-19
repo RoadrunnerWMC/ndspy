@@ -77,7 +77,7 @@ class ImageTile:
             self.pixels = [0] * 64
 
         else:
-            if self.format == ImageFormat.I4:
+            if format == ImageFormat.I4:
                 if len(data) != 32:
                     raise ValueError(f'I4 ImageTile data should be 32'
                                      f' bytes long, but is actually'
