@@ -125,15 +125,6 @@ Load a ROM's ARM9 code file and overlays:
 API
 ---
 
-.. data:: ICON_BANNER_LEN
-
-    The length (in bytes) of the icon banner data: 0x840.
-
-    .. seealso::
-
-        The class attribute that this measures the length of:
-        :py:attr:`NintendoDSRom.iconBanner`.
-
 
 .. py:class:: NintendoDSRom([data])
 
@@ -634,12 +625,23 @@ API
         languages. For more information, see `the section about this value on
         GBATEK <http://problemkaputt.de/gbatek.htm#dscartridgeicontitle>`__.
 
-        .. seealso::
+        The required length of this :py:class:`bytes` object depends on its
+        version number (which is its first two bytes), according to the
+        following table:
 
-            :py:const:`ICON_BANNER_LEN` -- a constant containing the length of
-            this data (0x840).
+        ==============  ============================
+        Version number  :py:attr:`iconBanner` length
+        ==============  ============================
+            0x0001                 0x0840
+            0x0002                 0x0940
+            0x0003                 0x1240
+            0x0103                 0x23C0
+        ==============  ============================
 
-        :type: :py:class:`bytes` (exactly 0x840 bytes long).
+        An empty bytes object (``b''``) is also allowed, which corresponds to a
+        null icon/banner data offset in the ROM's header.
+
+        :type: :py:class:`bytes` (required length depends on the version number).
 
         :default: ``b''``
 

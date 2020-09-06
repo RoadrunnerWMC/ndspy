@@ -26,7 +26,14 @@ from . import _common
 from . import code
 from . import fnt as fntLib
 
-ICON_BANNER_LEN = 0x840
+
+_ICON_BANNER_LENGTHS = {
+    # version: length,
+    0x0001: 0x840,
+    0x0002: 0x940,
+    0x0003: 0x1240,
+    0x0103: 0x23C0,
+}
 
 
 class NintendoDSRom:
@@ -221,8 +228,10 @@ class NintendoDSRom:
         self.arm7OverlayTable = data[
             arm7OvTOffset : arm7OvTOffset + arm7OvTLen]
         if iconBannerOffset:
+            version = struct.unpack_from('<H', data, iconBannerOffset)
+            iconBannerLen = _ICON_BANNER_LENGTHS.get(version, _ICON_BANNER_LENGTHS[1])
             self.iconBanner = \
-                data[iconBannerOffset : iconBannerOffset + ICON_BANNER_LEN]
+                data[iconBannerOffset : iconBannerOffset + iconBannerLen]
         else:
             self.iconBanner = b''
         if debugRomOffset:
@@ -345,7 +354,9 @@ class NintendoDSRom:
 
         # Pack the icon/banner
         if self.iconBanner:
-            assert len(self.iconBanner) == ICON_BANNER_LEN, f'(Save) Icon banner length is wrong ({hex(len(self.iconBanner))})'
+            version = struct.unpack_from('<H', self.iconBanner, 0)
+            iconBannerLen = _ICON_BANNER_LENGTHS.get(version, _ICON_BANNER_LENGTHS[1])
+            assert len(self.iconBanner) == iconBannerLen, f'(Save) Icon banner length is wrong (version {hex(version)}, length {hex(len(self.iconBanner))})'
             iconBannerOffset = len(data)
             data.extend(self.iconBanner)
             align(0x200, b'\xFF')
