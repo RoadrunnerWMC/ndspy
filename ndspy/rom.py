@@ -228,7 +228,7 @@ class NintendoDSRom:
         self.arm7OverlayTable = data[
             arm7OvTOffset : arm7OvTOffset + arm7OvTLen]
         if iconBannerOffset:
-            version = struct.unpack_from('<H', data, iconBannerOffset)
+            version, = struct.unpack_from('<H', data, iconBannerOffset)
             iconBannerLen = _ICON_BANNER_LENGTHS.get(version, _ICON_BANNER_LENGTHS[1])
             self.iconBanner = \
                 data[iconBannerOffset : iconBannerOffset + iconBannerLen]
@@ -354,7 +354,7 @@ class NintendoDSRom:
 
         # Pack the icon/banner
         if self.iconBanner:
-            version = struct.unpack_from('<H', self.iconBanner, 0)
+            version, = struct.unpack_from('<H', self.iconBanner, 0)
             iconBannerLen = _ICON_BANNER_LENGTHS.get(version, _ICON_BANNER_LENGTHS[1])
             assert len(self.iconBanner) == iconBannerLen, f'(Save) Icon banner length is wrong (version {hex(version)}, length {hex(len(self.iconBanner))})'
             iconBannerOffset = len(data)
