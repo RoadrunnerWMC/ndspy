@@ -293,9 +293,11 @@ def _writeVariableLengthInt(x):
 
     ret = []
 
-    while x:
+    while True:
         value, x = x & 0x7F, x >> 7
         ret.append(value)
+        if x == 0:
+            break
 
     ret.reverse()
 
