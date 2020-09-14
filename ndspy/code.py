@@ -91,14 +91,23 @@ class MainCodeFile:
 
         data = codeCompression.decompress(data)
 
+        self.codeSettingsOffs = None
         if codeSettingsPointerAddress:
-            codeSettingsAddr, = struct.unpack_from(
-                '<I', data, codeSettingsPointerAddress - ramAddress - 4)
-            self.codeSettingsOffs = codeSettingsAddr - ramAddress
-        else:
-            # codeSettingsPointerAddress might be None if it's not
-            # available, or 0 if the ROM has it set to 0. We need to
-            # search for code settings in both of those cases.
+            # (codeSettingsPointerAddress might be None if it's not
+            # available, or 0 if the ROM has it set to 0)
+            try:
+                codeSettingsAddr, = struct.unpack_from(
+                    '<I', data, codeSettingsPointerAddress - ramAddress - 4)
+                self.codeSettingsOffs = codeSettingsAddr - ramAddress
+                assert 0 <= self.codeSettingsOffs < len(data) - 4
+
+            except Exception:
+                # Something was probably out of range. Fall back to the
+                # manual search
+                self.codeSettingsOffs = None
+
+        if self.codeSettingsOffs is None:
+            # Manual search algorithm used as a fallback
             self.codeSettingsOffs = self._searchForCodeSettingsOffs(data)
 
         if self.codeSettingsOffs is not None:
@@ -108,7 +117,7 @@ class MainCodeFile:
             copyTableEnd -= ramAddress
             dataBegin -= ramAddress
         else:
-            # The entire file is one implied section
+            # No code settings, so the entire file is one implied section
             copyTableBegin = copyTableEnd = 0
             dataBegin = len(data)
 
