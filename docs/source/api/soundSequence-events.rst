@@ -629,8 +629,9 @@ This page describes the sequence event classes within
 
     :base class: :py:class:`SequenceEvent`
 
-    A sequence event that performs a "shift" operation on a variable. It's
-    unclear what exactly that means. This is sequence event type 0xB5.
+    A sequence event that left-shifts a variable by a given value. If the value
+    is negative, it is right-shifted (arithmetic, not logical) instead. This is
+    sequence event type 0xB4.
 
     :param variableID: The initial value for the :py:attr:`variableID`
         attribute.
@@ -642,19 +643,16 @@ This page describes the sequence event classes within
         :ref:`sseq-variables` -- for more information about how to use this
         event.
 
-    .. todo::
-
-        What does this actually do?
-
     .. py:attribute:: value
 
-        A value of unknown purpose related to the "shift" operation.
+        The shift amount. Positive values result in left-shift, negative values
+        result in arithmetic right-shift.
 
         :type: :py:class:`int`
 
     .. py:attribute:: variableID
 
-        The ID of the variable that will be "shift"-ed.
+        The ID of the variable that will be shifted.
 
         :type: :py:class:`int`
 
@@ -663,8 +661,8 @@ This page describes the sequence event classes within
 
     :base class: :py:class:`SequenceEvent`
 
-    A sequence event that performs a "rand" operation on a variable. It's
-    unclear what exactly that means. This is sequence event type 0xB6.
+    A sequence event that sets a variable to a random value between 0 and a
+    specified outer limit (inclusive). This is sequence event type 0xB6.
 
     :param variableID: The initial value for the :py:attr:`variableID`
         attribute.
@@ -676,19 +674,35 @@ This page describes the sequence event classes within
         :ref:`sseq-variables` -- for more information about how to use this
         event.
 
-    .. todo::
+    .. warning::
 
-        What does this actually do?
+        If called soon after the game boots, the ARM7 CPU may have low enough
+        entropy that this event will behave deterministically. This is the root
+        cause of a bug in *Mario Kart DS* -- the sound effect that plays upon
+        game boot is intended to be randomized, but in practice, it always
+        selects the same sound on a given DS hardware model.
+
+    .. warning::
+
+        Due to an overflow bug, this event does not work as expected if
+        :py:attr:`value` is set to -32768 -- instead of selecting from the
+        range [-32768, 0], it uses [0, 32767]. This bug has been verified to
+        exist in a selection of games from 2005 to 2012, so it probably affects
+        all games.
 
     .. py:attribute:: value
 
-        A value of unknown purpose related to the "rand" operation.
+        The random value chosen at runtime will be between 0 and this value
+        (inclusive). This therefore behaves as an upper limit if positive, and
+        a lower limit if negative.
+
+        Setting this to -32768 is not recommended; see the warning above.
 
         :type: :py:class:`int`
 
     .. py:attribute:: variableID
 
-        The ID of the variable that will be "rand"-ed.
+        The ID of the variable that will be set to a random value.
 
         :type: :py:class:`int`
 
@@ -697,32 +711,29 @@ This page describes the sequence event classes within
 
     :base class: :py:class:`SequenceEvent`
 
-    A sequence event that performs some currently unknown operation on a
-    variable. This is sequence event type 0xB7.
+    .. deprecated:: 3.0.0
+
+        As code analysis has shown that this sequence event probably never
+        existed, this class will be removed in the future.
+
+    A sequence event that has no code associated with it at all (verified in a
+    selection of games from 2005 to 2012), and does nothing. This is sequence
+    event type 0xB7.
 
     :param variableID: The initial value for the :py:attr:`variableID`
         attribute.
 
     :param value: The initial value for the :py:attr:`value` attribute.
 
-    .. seealso::
-
-        :ref:`sseq-variables` -- for more information about how to use this
-        event.
-
-    .. todo::
-
-        What does this actually do?
-
     .. py:attribute:: value
 
-        A value of unknown purpose.
+        A value that does nothing.
 
         :type: :py:class:`int`
 
     .. py:attribute:: variableID
 
-        The ID of the variable this sequence event will act upon.
+        The ID of the variable this sequence event will (not) act upon.
 
         :type: :py:class:`int`
 

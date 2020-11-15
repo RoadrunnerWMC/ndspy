@@ -690,16 +690,16 @@ VariableDivisionSequenceEvent = _make_arithmetic_sequence_event_class(0xB4,
     '/=', 'VariableDivisionSequenceEvent', 'divides a variable by a given value')
 
 VariableShiftSequenceEvent = _make_arithmetic_sequence_event_class(0xB5,
-    '[shift]', 'VariableShiftSequenceEvent',
-    'performs a "shift" operation on a variable. It\'s unclear what exactly that means')
+    '<<=', 'VariableShiftSequenceEvent',
+    'left-shifts a variable by a given value')
 
 VariableRandSequenceEvent = _make_arithmetic_sequence_event_class(0xB6,
     '[rand]', 'VariableRandSequenceEvent',
-    'performs a "rand" operation on a variable. It\'s unclear what exactly that means')
+    'sets a variable to a random value')
 
+# Deprecated
 VariableUnknownB7SequenceEvent = _make_arithmetic_sequence_event_class(0xB7,
-    '[unknown op 0xB7]', 'VariableUnknownB7SequenceEvent',
-    'performs some currently unknown operation on a variable')
+    '[nop]', 'VariableUnknownB7SequenceEvent', 'does nothing')
 
 VariableEqualSequenceEvent = _make_arithmetic_sequence_event_class(0xB8,
     '==', 'VariableEqualSequenceEvent',

@@ -320,6 +320,8 @@ using information from many, many sources. In alphabetical order:
 *   `Source code for NSMB Editor (NSMBe)
     <https://github.com/Dirbaio/NSMB-Editor>`_ -- for information and code for
     many formats
+*   Personal correspondence with Prof. 9 on Discord -- for information about
+    *SSEQ* files and sequence events
 *   `Source code for sseq2mid
     <https://github.com/loveemu/loveemu-lab/tree/master/sseq2mid/src2>`_ --
     supports more types of sequence events than are documented in other

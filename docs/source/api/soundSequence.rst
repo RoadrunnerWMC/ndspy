@@ -145,9 +145,8 @@ variables:
 *   ``(variable) -= value``: :py:class:`VariableSubtractionSequenceEvent`
 *   ``(variable) *= value``: :py:class:`VariableMultiplicationSequenceEvent`
 *   ``(variable) /= value``: :py:class:`VariableDivisionSequenceEvent`
-*   :py:class:`VariableShiftSequenceEvent`
-*   :py:class:`VariableRandSequenceEvent`
-*   :py:class:`VariableUnknownB7SequenceEvent`
+*   ``(variable) <<= value``: :py:class:`VariableShiftSequenceEvent`
+*   ``(variable) = random_int_between(0, value)``: :py:class:`VariableRandSequenceEvent`
 
 Once you have values in variables, there are two [4]_ primary ways you can use
 them:
