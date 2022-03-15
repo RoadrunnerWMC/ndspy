@@ -35,6 +35,21 @@
 # them. There are no LUTs provided for *en*coding because they would
 # take up several GB of your RAM.
 
+########
+# Further API improvement ideas:
+# - Add separate classes (namedtuples? dataclasses that support [0-3] indexing?)
+#   for the different tuples, allowing convert() to autodetect the input format.
+#   Make a convert(x, to_) overload style that requires that x be an autodetectable type.
+# - Change the enum members from auto()s to strings, and allow strings to be
+#   used in their place (like with PIL image formats)
+# - Add a generic exception handler to convert() that does post-mortem
+#   input verification, so that error messages will be less cryptic. Make
+#   it clear in the documentation that this feature is only to aid in
+#   debugging, and is not to be relied upon in general (since it will,
+#   by design, not capture every invalid input)
+########
+
+
 import collections
 import enum
 import struct
