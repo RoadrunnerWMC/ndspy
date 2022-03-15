@@ -26,6 +26,37 @@ can be downloaded from the `Releases page on GitHub
 .. contents:: :local:
 
 
+4.0.0 (Mar. 15, 2022)
+---------------------
+
+*   Many bugfixes. Thank you to everyone who reported bugs!
+*   The :py:mod:`ndspy.codeCompression` and :py:mod:`ndspy.lz10` now have CLIs.
+    They also gained convenience functions for compressing and decompressing
+    to/from files rather than :py:class:`bytes` objects.
+*   :py:class:`ndspy.bmg.BMG` now calls encoding value 1 ``'cp1252'`` rather
+    than ``'latin-1'``; the latter was just a guess on my part. It also gained
+    a new read-only attribute :py:class:`ndspy.bmg.BMG.fullEncoding` that is
+    useful for manually decoding BMG strings, in case you need to do that for
+    some reason.
+*   :py:attr:`ndspy.rom.NintendoDSRom.iconBanner` now supports all versions
+    of icon/banner data, not just the first version. The ``ICON_BANNER_LEN``
+    constant has been removed, since it is not actually meaningful (different
+    versions have different lengths).
+*   :py:class:`ndspy.Processor` is now an :py:class:`enum.IntEnum`, rather than
+    just an :py:class:`enum.Enum`.
+*   Assertions now have messages indicating what went wrong.
+*   The :py:mod:`ndspy` and :py:mod:`ndspy.bmg` modules now have unit tests.
+*   Changes pertaining to undocumented modules:
+
+    *    :py:mod:`ndspy.color`'s API has been redesigned. However, this may be
+         reverted or redesigned again before the module is stabilized.
+    *    Almost all :py:class:`ndspy.texture.TextureFormat` enum members were
+         renamed.
+    *    :py:mod:`ndspy.graphics2D` got further API improvements.
+    *    :py:mod:`ndspy.extras.music` now automatically parses unparsed
+         *SSEQ*\s.
+
+
 3.0.0 (Feb. 10, 2019)
 ---------------------
 

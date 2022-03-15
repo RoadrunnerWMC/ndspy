@@ -5,7 +5,7 @@ with open('README.md', 'r', encoding='utf-8') as fh:
 
 setuptools.setup(
     name='ndspy',
-    version='3.0.0',
+    version='4.0.0',
     author='RoadrunnerWMC',
     author_email='roadrunnerwmc@gmail.com',
     description='Python library that can help you read, modify and create many types of files used in Nintendo DS games.',
@@ -27,6 +27,8 @@ setuptools.setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
         'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
         'Operating System :: OS Independent',
     ],
