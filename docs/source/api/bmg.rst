@@ -130,7 +130,7 @@ API
 
             :attr:`fullEncoding` -- a read-only mirror of this property that
             includes endianness information, intended for use with
-            ``str.encode()`` and ``bytes.decode()``.
+            :py:meth:`str.encode` and :py:meth:`bytes.decode`.
 
         :type: :py:class:`str`
 
@@ -139,9 +139,9 @@ API
     .. py:attribute:: fullEncoding
 
         A mirror property for :attr:`encoding` that takes :attr:`endianness`
-        into account. This can be used with ``str.encode()`` or
-        ``bytes.decode()``, if for some reason you need to encode or decode raw
-        string data matching this *BMG*'s encoding.
+        into account. This can be used with :py:meth:`str.encode` or
+        :py:meth:`bytes.decode`, if for some reason you need to encode or
+        decode raw string data matching this *BMG*'s encoding.
 
         The value of this attribute will always be the same as that of
         :attr:`encoding`, unless that attribute has the value ``utf-16``. In

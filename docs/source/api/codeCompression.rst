@@ -22,9 +22,12 @@
 .. py:module:: ndspy.codeCompression
 
 ``ndspy.codeCompression`` provides functions for the compression format used
-for executable code files. (This is essentially the same as LZ10 compression,
-except that the file is decompressed in reverse, beginning at the end of the
-file. This allows for in-place decompression, which is more efficient.)
+for executable code files.
+
+This compression format is sometimes unofficially known as "BLZ" ("backwards
+LZ"). It's essentially the same as LZ10 compression, except that the file is
+decompressed in reverse, beginning at the end of the file. This allows for
+in-place decompression on the console.
 
 .. note::
     If you're using the :py:mod:`ndspy.code` module, compression is handled
