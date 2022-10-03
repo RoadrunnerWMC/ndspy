@@ -474,10 +474,10 @@ def tileAt(tiles, x, y, *, width=32):
     TODO: maybe rename it somehow to indicate that? Maybe even move it
     into ndspy.__init__ (like the named-list things)?
     """
-    if x >= w or y >= w: return None
+    if x >= width or y >= width: return None
     if x < 0 or y < 0: return None
     try:
-        return tiles[y * w + x]
+        return tiles[y * width + x]
     except IndexError:
         return None
 
@@ -492,10 +492,10 @@ def putTile(tiles, x, y, t, *, width=32):
     into ndspy.__init__ (like the named-list things)?
     Returns True if the tile was placed, False otherwise (i.e. OOB)
     """
-    if x >= w or y >= w: return False
+    if x >= width or y >= width: return False
     if x < 0 or y < 0: return False
     try:
-        tiles[y * w + x] = t
+        tiles[y * width + x] = t
         return True
     except IndexError:
         return False
