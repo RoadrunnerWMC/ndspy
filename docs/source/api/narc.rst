@@ -27,6 +27,16 @@ The ``ndspy.narc`` module allows you to open and save *NARC* archive files.
 referenced by either ID or by a filename from a filename table. Filename tables
 work the same as those of ROMs.
 
+.. warning::
+
+    The default value of :py:attr:`NARC.endiannessOfBeginning` for new
+    :py:class:`NARC` objects is ``'<'``, but some tools, such as `Tinke
+    <https://github.com/pleonex/tinke>`_ and `narchive
+    <https://github.com/nickworonekin/narchive>`_, don't support that type of
+    *NARC* file. If you're experiencing problems with them -- or if your *NARC*
+    files aren't loaded correctly by the game you're working with -- try
+    setting it to ``'>'`` instead.
+
 
 Examples
 --------
@@ -133,6 +143,14 @@ API
 
         The endianness of the first 8 bytes of the *NARC* file header. The rest
         of the file is always little-endian.
+
+        This option exists because different games use different header
+        endiannesses. For example, *The Legend of Zelda: Spirit Tracks* uses
+        little-endian *NARC*\s, whereas *New Super Mario Bros.* uses big-endian.
+        ndspy supports both, and auto-detects it when loading a *NARC* file,
+        but if you're creating new :py:class:`NARC` objects from scratch, it's
+        a good idea to set this attribute explicitly to match the game you're
+        working with.
 
         ``'<'`` and ``'>'`` (representing little-endian and big-endian,
         respectively) are the only values this attribute is allowed to take.
