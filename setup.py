@@ -20,9 +20,6 @@ setuptools.setup(
             'ndspy_lz10 = ndspy.lz10:main',
         ],
     },
-    install_requires=[
-        'crcmod',
-    ],
     classifiers=[
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
