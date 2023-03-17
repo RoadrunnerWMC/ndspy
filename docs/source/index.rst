@@ -226,8 +226,7 @@ the following possibilities will probably work for you, though:
 If you want the very latest version of ndspy including features and bugfixes
 not yet in any official release, you can also download the code from the
 `GitHub repository <https://github.com/RoadrunnerWMC/ndspy>`_ and install it
-manually. Note that `crcmod <https://pypi.org/project/crcmod/>`_ is a required
-dependency.
+manually.
 
 
 Support
