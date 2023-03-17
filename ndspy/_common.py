@@ -39,8 +39,8 @@ NDS_STD_FILE_HEADER = struct.Struct('<4sHHIHH')
 
 def crc16(data):
     crc = 0xFFFF
-    for i in range(len(data)):
-        crc = crc ^ data[i]
+    for b in data:
+        crc ^= b
         for _ in range(8):
             carry = crc & 1
             crc >>= 1
