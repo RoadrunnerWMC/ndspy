@@ -18,8 +18,6 @@
 
 import struct
 
-import crcmod
-
 HavePIL = True
 try:
     import PIL.Image
@@ -40,7 +38,15 @@ NDS_STD_FILE_HEADER = struct.Struct('<4sHHIHH')
 
 
 def crc16(data):
-    return crcmod.predefined.mkCrcFun('modbus')(data)
+    crc = 0xFFFF
+    for b in data:
+        crc ^= b
+        for _ in range(8):
+            carry = crc & 1
+            crc >>= 1
+            if carry:
+                crc ^= 0xA001
+    return crc & 0xFFFF
 
 
 def loadNullTerminatedStringFrom(
