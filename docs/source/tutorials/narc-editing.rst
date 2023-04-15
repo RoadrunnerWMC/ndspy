@@ -85,6 +85,16 @@ it in a single line instead:
 
 You can substitute the ROM-loading code if you prefer, though, of course.
 
+.. warning::
+
+    I'm using ``narc`` here as the variable name for the
+    :py:class:`NARC` object, since it represents a *NARC*. Be sure not to
+    confuse that with :py:mod:`ndspy.narc`, which is the module containing the
+    :py:class:`NARC` class!
+
+    And the same goes for the variable name ``rom`` versus the module
+    :py:mod:`ndspy.rom`, in a few places.
+
 Either way, now we have a :py:class:`NARC` object. We can print it out to see
 all of its file IDs, folders and filenames, and the first few bytes of each
 file:

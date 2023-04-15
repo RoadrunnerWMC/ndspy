@@ -110,6 +110,13 @@ Cool, we now have a :py:class:`NintendoDSRom` for NSMB. (``NEW MARIO`` is the
 game's internal name. Internal names can be helpful, but they don't always
 necessarily match up with a game's actual name.)
 
+.. warning::
+
+    I'm using ``rom`` here as the variable name for the
+    :py:class:`NintendoDSRom` object, since it represents a ROM. Be sure not to
+    confuse that with :py:mod:`ndspy.rom`, which is the module containing the
+    :py:class:`NintendoDSRom` class!
+
 Since opening a file, reading its contents as a :py:class:`bytes` object, and
 making a :py:class:`NintendoDSRom` from it is a very common thing to do, ndspy
 provides a shortcut for this:
