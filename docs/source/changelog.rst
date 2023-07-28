@@ -26,6 +26,14 @@ can be downloaded from the `Releases page on GitHub
 .. contents:: :local:
 
 
+4.1.0 (July 28, 2023)
+---------------------
+*   Replaced the `crcmod` dependency with a pure-Python CRC16 implementation in
+    ndspy itself.
+*   Fixed a bug in the undocumented :py:mod:`ndspy.graphics2D` module.
+*   A few documentation improvements.
+
+
 4.0.0 (Mar. 15, 2022)
 ---------------------
 

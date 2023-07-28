@@ -23,7 +23,7 @@ import collections
 import enum
 
 
-VERSION = collections.namedtuple('version', 'major minor patch')(4, 0, 0)
+VERSION = collections.namedtuple('version', 'major minor patch')(4, 1, 0)
 try: VERSION.__class__.__name__ = 'ndspy.version'
 except: pass
 
