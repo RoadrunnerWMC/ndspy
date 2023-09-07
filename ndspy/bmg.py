@@ -17,7 +17,7 @@
 """
 Support for BMG files.
 """
-
+from __future__ import annotations
 
 import struct
 
@@ -36,12 +36,12 @@ class BMG:
     A class representing a BMG file.
     """
 
-    def __init__(self, data=None, *, id=0):
+    def __init__(self, data: bytes | None = None, *, id=0):
 
-        self.messages = []
-        self.instructions = []
-        self.labels = []
-        self.scripts = []
+        self.messages: list[Message] = []
+        self.instructions: list[bytes] = []
+        self.labels: list[tuple[int, int]] = []
+        self.scripts: list[tuple[int, int]] = []
 
         self.id = id
 
@@ -62,7 +62,7 @@ class BMG:
         return self.encoding
 
 
-    def _initFromData(self, data):
+    def _initFromData(self, data: bytes):
         if data[:8] != b'MESGbmg1':
             raise ValueError('Not a BMG file.')
 
