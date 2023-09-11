@@ -30,4 +30,7 @@ setuptools.setup(
         'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
         'Operating System :: OS Independent',
     ],
+    extras_require={
+        'test': ['pytest'],
+    },
 )
