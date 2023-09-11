@@ -19,6 +19,7 @@ Support for BMG files.
 """
 from __future__ import annotations
 
+import os
 import struct
 
 from . import _common
@@ -36,7 +37,7 @@ class BMG:
     A class representing a BMG file.
     """
 
-    def __init__(self, data: bytes | None = None, *, id=0):
+    def __init__(self, data: bytes | None = None, *, id: int = 0) -> None:
 
         self.messages: list[Message] = []
         self.instructions: list[bytes] = []
@@ -56,13 +57,13 @@ class BMG:
 
 
     @property
-    def fullEncoding(self):
+    def fullEncoding(self) -> str:
         if self.encoding.lower() == 'utf-16':
             return 'utf-16' + ('le' if self.endianness == '<' else 'be')
         return self.encoding
 
 
-    def _initFromData(self, data: bytes):
+    def _initFromData(self, data: bytes) -> None:
         if data[:8] != b'MESGbmg1':
             raise ValueError('Not a BMG file.')
 
@@ -84,7 +85,7 @@ class BMG:
             raise ValueError(f'Unknown encoding value: {enc}')
 
         INF1 = []
-        def parseINF1(offset, length):
+        def parseINF1(offset: int, length: int) -> None:
             count, entryLength, self.id = struct.unpack_from(se + 'HHI', data, offset + 8)
 
             for i in range(count):
@@ -94,13 +95,13 @@ class BMG:
                 INF1.append((entryOff, entryAttribs))
 
         DAT1 = b''
-        def parseDAT1(offset, length):
+        def parseDAT1(offset: int, length: int) -> None:
             nonlocal DAT1
             DAT1 = data[offset + 8 : offset + length]
 
         self.instructions = []
         self.labels = []
-        def parseFLW1(offset, length):
+        def parseFLW1(offset: int, length: int) -> None:
             instructionsCount, labelsCount, unk0C = \
                 struct.unpack_from(se + 'HHI', data, offset + 8)
             # unk0C is always 0, as far as I can tell
@@ -121,7 +122,7 @@ class BMG:
                     self.labels.append((bmgID, index))
 
         self.scripts = []
-        def parseFLI1(offset, length):
+        def parseFLI1(offset: int, length: int) -> None:
             count, entryLength, unk0C = struct.unpack_from(se + 'HHI', data, offset + 8)
             assert entryLength == 8, f'Unexpected FLI1 entry length ({entryLength})'
             # unk0C is always 0, as far as I can tell
@@ -183,9 +184,15 @@ class BMG:
 
 
     @classmethod
-    def fromMessages(cls, messages,
-                     instructions=None, labels=None, scripts=None,
-                     *, id=0):
+    def fromMessages(
+        cls,
+        messages: list[Message],
+        instructions: list[bytes] | None = None,
+        labels: list[tuple[int, int]] | None = None,
+        scripts: list[tuple[int, int]] | None = None,
+        *,
+        id: int = 0,
+    ):
         """
         Create a BMG from a list of messages.
         """
@@ -203,7 +210,7 @@ class BMG:
 
 
     @classmethod
-    def fromFile(cls, filePath, *args, **kwargs):
+    def fromFile(cls, filePath: str | os.PathLike, *args, **kwargs) -> BMG:
         """
         Load a BMG from a filesystem file.
         """
@@ -211,7 +218,7 @@ class BMG:
             return cls(f.read(), *args, **kwargs)
 
 
-    def save(self):
+    def save(self) -> bytes:
         """
         Generate file data representing this BMG.
         """
@@ -315,7 +322,7 @@ class BMG:
         return bytes(data)
 
 
-    def saveToFile(self, filePath):
+    def saveToFile(self, filePath: str | os.PathLike) -> None:
         """
         Generate file data representing this BMG, and save it to a
         filesystem file.
@@ -325,13 +332,13 @@ class BMG:
             f.write(d)
 
 
-    def __str__(self):
+    def __str__(self) -> str:
         return (f'<bmg id={self.id} '
                 f'({len(self.messages)} messages, '
                 f'{len(self.scripts)} scripts)>')
 
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         args = [repr(self.messages)]
 
         if self.instructions:
@@ -366,7 +373,7 @@ class Message:
         type and optional parameter data.
         """
 
-        def __init__(self, type=0, data=b''):
+        def __init__(self, type: int = 0, data: bytes = b'') -> None:
             self.type = type
             self.data = data
 
@@ -374,7 +381,7 @@ class Message:
             # (and there are a couple parameters -- need to look into
             # that)
 
-        def save(self, encoding):
+        def save(self, encoding: str) -> bytes:
             """
             Generate binary data representing this escape sequence.
             """
@@ -385,17 +392,22 @@ class Message:
             data.extend(self.data)
             return data
 
-        def __repr__(self):
+        def __repr__(self) -> str:
             return f'{type(self).__name__}({self.type!r}, {self.data!r})'
 
-        def __str__(self):
+        def __str__(self) -> str:
             return f'[{self.type}:{self.data.hex()}]'
 
-    info = 0
-    stringParts = None
-    isNull = False
+    info: int = 0
+    stringParts: list[str] | None = None
+    isNull: bool = False
 
-    def __init__(self, info=b'', stringParts=None, isNull=False):
+    def __init__(
+        self,
+        info: bytes = b"",
+        stringParts: str | list[str] | None = None,
+        isNull: bool = False,
+    ) -> None:
         # If a single string is passed in, put it in a list for convenience
         if isinstance(stringParts, str):
             stringParts = [stringParts]
@@ -404,7 +416,7 @@ class Message:
         self.stringParts = [] if stringParts is None else stringParts
         self.isNull = isNull
 
-    def save(self, encoding):
+    def save(self, encoding: str) -> bytes:
         """
         Generate binary data representing this message.
         """
@@ -423,8 +435,8 @@ class Message:
         data.extend('\0'.encode(encoding))
         return data
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'{type(self).__name__}({self.info!r}, {self.stringParts!r})'
 
-    def __str__(self):
+    def __str__(self) -> str:
         return ''.join(str(s) for s in self.stringParts)
