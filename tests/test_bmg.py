@@ -26,7 +26,7 @@ import ndspy.bmg
 import pytest
 
 
-FILES_PATH = pathlib.Path('../test_files/bmg')
+FILES_PATH = pathlib.Path(__file__).parents[1] / 'test_files' / 'bmg'
 
 
 # Some example values to use in various contexts
