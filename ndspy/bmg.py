@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import os
 import struct
+from typing import Literal
 
 from . import _common
 
@@ -36,13 +37,24 @@ class BMG:
     """
     A class representing a BMG file.
     """
+    messages: list[Message]
+    instructions: list[bytes]
+    labels: list[tuple[int, int]]
+    scripts: list[tuple[int, int]]
+
+    id: int
+    encoding: str
+    endianness: Literal['<', '>']
+    unk14: int
+    unk18: int
+    unk1C: int
 
     def __init__(self, data: bytes | None = None, *, id: int = 0):
 
-        self.messages: list[Message] = []
-        self.instructions: list[bytes] = []
-        self.labels: list[tuple[int, int]] = []
-        self.scripts: list[tuple[int, int]] = []
+        self.messages = []
+        self.instructions = []
+        self.labels = []
+        self.scripts = []
 
         self.id = id
 
@@ -373,6 +385,9 @@ class Message:
         type and optional parameter data.
         """
 
+        type: int
+        data: bytes
+
         def __init__(self, type: int = 0, data: bytes = b''):
             self.type = type
             self.data = data
@@ -398,9 +413,9 @@ class Message:
         def __str__(self) -> str:
             return f'[{self.type}:{self.data.hex()}]'
 
-    info: int = 0
-    stringParts: list[str] | None = None
-    isNull: bool = False
+    info: bytes
+    stringParts: list[str]
+    isNull: bool
 
     def __init__(
         self,
