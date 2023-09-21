@@ -37,7 +37,7 @@ class BMG:
     A class representing a BMG file.
     """
 
-    def __init__(self, data: bytes | None = None, *, id: int = 0) -> None:
+    def __init__(self, data: bytes | None = None, *, id: int = 0):
 
         self.messages: list[Message] = []
         self.instructions: list[bytes] = []
@@ -373,7 +373,7 @@ class Message:
         type and optional parameter data.
         """
 
-        def __init__(self, type: int = 0, data: bytes = b'') -> None:
+        def __init__(self, type: int = 0, data: bytes = b''):
             self.type = type
             self.data = data
 
@@ -407,7 +407,7 @@ class Message:
         info: bytes = b"",
         stringParts: str | list[str] | None = None,
         isNull: bool = False,
-    ) -> None:
+    ):
         # If a single string is passed in, put it in a list for convenience
         if isinstance(stringParts, str):
             stringParts = [stringParts]
