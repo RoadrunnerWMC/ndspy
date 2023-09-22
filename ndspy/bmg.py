@@ -17,6 +17,7 @@
 """
 Support for BMG files.
 """
+
 from __future__ import annotations
 
 import os
@@ -29,6 +30,8 @@ if TYPE_CHECKING:
 from . import _common
 
 
+# (Please keep this in sync with the type annotation for the
+# `BMG.encoding` attribute:)
 _ENCODINGS = [None, 'cp1252', 'utf-16', 'shift-jis', 'utf-8']
 # CP1252 is found in Animal Crossing Wild World and Super Princess Peach
 # UTF-16 is found in the Zeldas and NSMB
@@ -46,6 +49,7 @@ class BMG:
     scripts: list[tuple[int, int]]
 
     id: int
+    # (Please keep this in sync with the `_ENCODINGS` global:)
     encoding: Literal['cp1252', 'utf-16', 'shift-jis', 'utf-8']
     endianness: Literal['<', '>']
     unk14: int
@@ -207,7 +211,7 @@ class BMG:
         scripts: list[tuple[int, int]] | None = None,
         *,
         id: int = 0,
-    ):
+    ) -> BMG:
         """
         Create a BMG from a list of messages.
         """
@@ -422,7 +426,7 @@ class Message:
 
     def __init__(
         self,
-        info: bytes = b"",
+        info: bytes = b'',
         stringParts: str | list[str] | None = None,
         isNull: bool = False,
     ):
