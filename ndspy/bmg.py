@@ -417,7 +417,7 @@ class Message:
             return f'[{self.type}:{self.data.hex()}]'
 
     info: bytes
-    stringParts: list[str]
+    stringParts: list[str | Escape]
     isNull: bool
 
     def __init__(
