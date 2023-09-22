@@ -46,7 +46,7 @@ class BMG:
     scripts: list[tuple[int, int]]
 
     id: int
-    encoding: str
+    encoding: Literal['cp1252', 'utf-16', 'shift-jis', 'utf-8']
     endianness: Literal['<', '>']
     unk14: int
     unk18: int
