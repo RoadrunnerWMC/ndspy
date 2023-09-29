@@ -18,15 +18,18 @@
 Support for LZ10 compression.
 """
 
+from __future__ import annotations
 
 import argparse
+import os
 import pathlib
 import struct
+from typing import Sequence
 
 from . import _lzCommon
 
 
-def decompress(data):
+def decompress(data: bytes) -> bytes:
     """
     Decompress LZ10-compressed data.
     """
@@ -80,7 +83,7 @@ def decompress(data):
     return bytes(out)
 
 
-def decompressFromFile(filePath):
+def decompressFromFile(filePath: str | os.PathLike) -> bytes:
     """
     Load a LZ10-compressed filesystem file, and decompress it.
     """
@@ -88,7 +91,7 @@ def decompressFromFile(filePath):
         return decompress(f.read())
 
 
-def decompressToFile(data, filePath):
+def decompressToFile(data: bytes, filePath: str | os.PathLike) -> None:
     """
     Decompress LZ10-compressed data, and save it to a filesystem file.
     """
@@ -97,7 +100,7 @@ def decompressToFile(data, filePath):
         f.write(d)
 
 
-def compress(data):
+def compress(data: bytes) -> bytes:
     """
     Compress data in LZ10 format.
     """
@@ -111,7 +114,7 @@ def compress(data):
     return bytes(compressed)
 
 
-def compressFromFile(filePath):
+def compressFromFile(filePath: str | os.PathLike) -> bytes:
     """
     Load a filesystem file, and compress its data in LZ10 format.
     """
@@ -119,7 +122,7 @@ def compressFromFile(filePath):
         return compress(f.read())
 
 
-def compressToFile(data, filePath):
+def compressToFile(data: bytes, filePath: str | os.PathLike) -> None:
     """
     Compress data in LZ10 format, and save it to a filesystem file.
     """
@@ -128,7 +131,7 @@ def compressToFile(data, filePath):
         f.write(d)
 
 
-def main(args=None):
+def main(args: Sequence[str] | None = None) -> None:
     """
     Main function for the CLI
     """
