@@ -18,9 +18,14 @@
 Support for NARC archives.
 """
 
+from __future__ import annotations
 
-import collections
+import os
 import struct
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import Literal
 
 from . import _common
 from . import fnt
@@ -30,8 +35,11 @@ class NARC:
     """
     A class representing a NARC archive file.
     """
+    filenames: fnt.Folder
+    files: list[bytes]
+    endiannessOfBeginning: Literal['<', '>']
 
-    def __init__(self, data=None):
+    def __init__(self, data: bytes | None = None):
         self.filenames = fnt.Folder()
         self.files = []
         self.endiannessOfBeginning = '<'
@@ -39,7 +47,7 @@ class NARC:
             self._initFromData(data)
 
 
-    def _initFromData(self, data):
+    def _initFromData(self, data: bytes) -> None:
         """
         Read NARC data, and create a filename table and a list of files.
         """
@@ -86,7 +94,7 @@ class NARC:
 
 
     @classmethod
-    def fromFilesAndNames(cls, files, filenames=None):
+    def fromFilesAndNames(cls, files: list[bytes], filenames: fnt.Folder | None = None) -> NARC:
         """
         Create a NARC archive from a list of files and (optionally) a
         filename table.
@@ -99,7 +107,7 @@ class NARC:
 
 
     @classmethod
-    def fromFile(cls, filePath, *args, **kwargs):
+    def fromFile(cls, filePath: str | os.PathLike, *args, **kwargs) -> NARC:
         """
         Load a NARC archive from a filesystem file.
         """
@@ -107,7 +115,7 @@ class NARC:
             return cls(f.read(), *args, **kwargs)
 
 
-    def save(self):
+    def save(self) -> bytes:
         """
         Generate file data representing this NARC.
         """
@@ -154,7 +162,7 @@ class NARC:
         return bytes(data)
 
 
-    def saveToFile(self, filePath):
+    def saveToFile(self, filePath: str | os.PathLike) -> None:
         """
         Generate file data representing this NARC, and save it to a
         filesystem file.
@@ -164,7 +172,7 @@ class NARC:
             f.write(d)
 
 
-    def getFileByName(self, filename):
+    def getFileByName(self, filename: str) -> bytes:
         """
         Return the data for the file with the given filename (path).
         This is a convenience function.
@@ -175,7 +183,7 @@ class NARC:
         return self.files[fid]
 
 
-    def setFileByName(self, filename, data):
+    def setFileByName(self, filename: str, data: bytes) -> None:
         """
         Replace the data for the file with the given filename (path)
         with the given data. This is a convenience function.
