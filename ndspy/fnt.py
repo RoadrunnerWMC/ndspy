@@ -82,7 +82,7 @@ class Folder:
         raise KeyError(f'Unknown key: {key}')
 
 
-    def __contains__(self, key):
+    def __contains__(self, key: int | str) -> bool:
         try:
             self.__getitem__(key)
             return True
@@ -192,7 +192,10 @@ class Folder:
             return None
 
 
-    def _strListUncombined(self, indent: int = 0, fileList=None):
+    def _strListUncombined(self,
+        indent: int = 0,
+        fileList: list[str] | None = None,
+    ) -> list[tuple[str, str | None]]:
         """
         Return a list of (line, preview) pairs, where line is a whole
         printout line except for the preview, and preview is the
