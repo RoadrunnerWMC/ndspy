@@ -18,8 +18,10 @@
 Support for filename tables in ROMs and NARCs.
 """
 
+from __future__ import annotations
 
 import struct
+from typing import NoReturn
 
 from . import _common
 
@@ -29,7 +31,16 @@ class Folder:
     A single folder within a filename table, or an entire filename
     table.
     """
-    def __init__(self, folders=None, files=None, firstID=0):
+    folders: list[tuple[str, Folder]]
+    files: list[str]
+    firstID: int
+
+    def __init__(
+        self,
+        folders: list[tuple[str, Folder]] | None = None,
+        files: list[str] | None = None,
+        firstID: int = 0,
+    ):
         if folders is not None:
             self.folders = folders
         else:
@@ -45,7 +56,7 @@ class Folder:
         raise ValueError('Sorry, a Folder is not iterable.')
 
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: int | str) -> Folder | str | int | NoReturn:
         """
         Convenience function:
         - for an integer key, calls filenameOf()
@@ -71,7 +82,7 @@ class Folder:
         raise KeyError(f'Unknown key: {key}')
 
 
-    def __contains__(self, key):
+    def __contains__(self, key: int | str) -> bool:
         try:
             self.__getitem__(key)
             return True
@@ -79,13 +90,13 @@ class Folder:
             return False
 
 
-    def idOf(self, path):
+    def idOf(self, path: str) -> int | None:
         """
         Find the file ID for the given filename, or for the given file
         path (using "/" as the separator) relative to this folder.
         """
 
-        def findInFolder(requestedPath, searchFolder):
+        def findInFolder(requestedPath: list[str], searchFolder: Folder) -> int | None:
             """
             Attempt to find filename in the given folder.
             pathSoFar is the path up through this point, as a list.
@@ -114,14 +125,14 @@ class Folder:
         return findInFolder(pathList, self)
 
 
-    def subfolder(self, path):
+    def subfolder(self, path: str) -> Folder | None:
         """
         Find the Folder instance for the given subfolder name, or for
         the given folder path (using "/" as the separator) relative to
         this folder.
         """
 
-        def findInFolder(requestedPath, searchFolder):
+        def findInFolder(requestedPath: list[str], searchFolder: Folder) -> Folder | None:
             """
             Attempt to find filename in the given folder.
             pathSoFar is the path up through this point, as a list.
@@ -144,14 +155,14 @@ class Folder:
         return findInFolder(pathList, self)
 
 
-    def filenameOf(self, id):
+    def filenameOf(self, id: int) -> str | None:
         """
         Find the filename of the file with the given ID. If it exists
         in a subfolder, the filename will be returned as a path
         separated by "/"s.
         """
 
-        def findInFolder(pathSoFar, searchFolder):
+        def findInFolder(pathSoFar: list[str], searchFolder: Folder) -> list[str] | None:
             """
             Attempt to find id in the given folder.
             pathSoFar is the path up through this point, as a list.
@@ -181,7 +192,10 @@ class Folder:
             return None
 
 
-    def _strListUncombined(self, indent=0, fileList=None):
+    def _strListUncombined(self,
+        indent: int = 0,
+        fileList: list[str] | None = None,
+    ) -> list[tuple[str, str | None]]:
         """
         Return a list of (line, preview) pairs, where line is a whole
         printout line except for the preview, and preview is the
@@ -212,7 +226,7 @@ class Folder:
         return L
 
 
-    def _strList(self, indent=0, fileList=None):
+    def _strList(self, indent: int = 0, fileList: list[str] | None = None) -> list[str]:
         """
         Return a list of lines that could be useful for a printout of
         the folder. fileList can be used to add previews of files.
@@ -250,12 +264,12 @@ class Folder:
                 f', {self.firstID!r})')
 
 
-def load(fnt):
+def load(fnt: bytes) -> Folder:
     """
     Create a Folder from filename table data. This is the inverse of
     save().
     """
-    def loadFolder(folderId):
+    def loadFolder(folderId: int) -> Folder:
         """
         Load the folder with ID `folderId` and return it as a Folder.
         """
@@ -295,7 +309,7 @@ def load(fnt):
     return loadFolder(0xF000)
 
 
-def save(root):
+def save(root: Folder) -> bytes:
     """
     Generate a bytes object representing this root folder as a filename
     table. This is the inverse of load().
@@ -315,7 +329,7 @@ def save(root):
     # The root folder always has ID 0xF000.
     nextFolderID = 0xF000
 
-    def parseFolder(d, parentID):
+    def parseFolder(d: Folder, parentID: int) -> int:
         """
         Parse a Folder and add its entries to folderEntries.
         `parentID` is the ID of the folder containing this one.
@@ -364,7 +378,7 @@ def save(root):
         return folderID
 
     # The root folder's parent's ID is the total number of folders.
-    def countFoldersIn(folder):
+    def countFoldersIn(folder: Folder) -> int:
         folderCount = 0
         for _, f in folder.folders:
             folderCount += countFoldersIn(f)
