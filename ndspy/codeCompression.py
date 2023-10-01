@@ -53,6 +53,8 @@ def _detectAppendedData(data: bytes) -> int | None:
 
         return possibleAmt
 
+    return None
+
 
 def decompress(data: bytes) -> bytes:
     """
