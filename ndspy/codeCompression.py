@@ -18,15 +18,18 @@
 Support for executable code files compression.
 """
 
+from __future__ import annotations
 
 import argparse
+import os
 import pathlib
 import struct
+from typing import Sequence
 
 from . import _lzCommon
 
 
-def _detectAppendedData(data):
+def _detectAppendedData(data: bytes) -> int | None:
     """
     Attempt to check if there's any appended data at the end of the
     given data. Returns an integer representing the amount of such data
@@ -51,7 +54,7 @@ def _detectAppendedData(data):
         return possibleAmt
 
 
-def decompress(data):
+def decompress(data: bytes) -> bytes:
     """
     Decompress data that was compressed using code compression. This is
     the inverse of compress().
@@ -208,7 +211,7 @@ def decompress(data):
     return passthroughData + decompData + appendedData
 
 
-def decompressFromFile(filePath):
+def decompressFromFile(filePath: str | os.PathLike) -> bytes:
     """
     Load a code-compressed filesystem file, and decompress it.
     """
@@ -216,7 +219,7 @@ def decompressFromFile(filePath):
         return decompress(f.read())
 
 
-def decompressToFile(data, filePath):
+def decompressToFile(data, filePath: str | os.PathLike) -> None:
     """
     Decompress code-compressed data, and save it to a filesystem file.
     """
@@ -225,7 +228,7 @@ def decompressToFile(data, filePath):
         f.write(d)
 
 
-def compress(data, isArm9=False):
+def compress(data: bytes, isArm9: bool = False) -> bytes:
     """
     Compress code data. This is the inverse of decompress().
     """
@@ -245,7 +248,7 @@ def compress(data, isArm9=False):
     return bytes(prefix + _compress(data))
 
 
-def _compress(data):
+def _compress(data: bytes) -> bytearray:
 
     compressed, ignorableD, ignorableC = \
         _lzCommon.compress(bytes(reversed(data)), 3, 0x1002, 18, False, True)
@@ -289,7 +292,7 @@ def _compress(data):
     return compressed
 
 
-def compressFromFile(filePath, isArm9=False):
+def compressFromFile(filePath: str | os.PathLike, isArm9: bool = False) -> bytes:
     """
     Load a filesystem file, and compress its data in LZ10 format.
     """
@@ -297,7 +300,7 @@ def compressFromFile(filePath, isArm9=False):
         return compress(f.read(), isArm9=isArm9)
 
 
-def compressToFile(data, filePath, isArm9=False):
+def compressToFile(data: bytes, filePath: str | os.PathLike, isArm9: bool = False) -> None:
     """
     Compress data in LZ10 format, and save it to a filesystem file.
     """
@@ -306,7 +309,7 @@ def compressToFile(data, filePath, isArm9=False):
         f.write(d)
 
 
-def main(args=None):
+def main(args: Sequence[str] | None = None) -> None:
     """
     Main function for the CLI
     """
