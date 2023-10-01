@@ -18,9 +18,12 @@
 Support for ROMs.
 """
 
+from __future__ import annotations
 
 import math
+import os
 import struct
+from typing import Container
 
 from . import _common
 from . import code
@@ -40,8 +43,52 @@ class NintendoDSRom:
     """
     A Nintendo DS ROM file (.nds).
     """
+    name: bytes
+    idCode: bytes
+    developerCode: bytes
+    unitCode: int
+    encryptionSeedSelect: int
+    deviceCapacity: int
+    pad015: int
+    pad016: int
+    pad017: int
+    pad108: int
+    pad019: int
+    pad01A: int
+    pad01B: int
+    pad01C: int
+    region: int
+    version: int
+    autostart: int
+    arm9EntryAddress: int
+    arm9RamAddress: int
+    arm7EntryAddress: int
+    arm7RamAddress: int
+    normalCardControlRegisterSettings: int
+    secureAreaChecksum: int
+    secureTransferDelay: int
+    arm9CodeSettingsPointerAddress: int
+    arm7CodeSettingsPointerAddress: int
+    secureAreaDisable: bytes
+    pad088: bytes
+    nintendoLogo: bytes
+    debugRomAddress: int
+    pad16C: bytes
+    pad200: bytes
+    rsaSignature: bytes
+    arm9: bytes
+    arm9PostData: bytes
+    arm7: bytes
+    arm9OverlayTable: bytes
+    arm7OverlayTable: bytes
+    iconBanner: bytes
+    debugRom: bytes
+    filenames: fntLib.Folder
+    files: list[bytes]
+    sortedFileIds: list[int]
 
-    def __init__(self, data=None):
+
+    def __init__(self, data: bytes | None = None):
         super().__init__()
 
         if data is None:
@@ -50,7 +97,7 @@ class NintendoDSRom:
             self._initFromData(data)
 
 
-    def _initAsNew(self):
+    def _initAsNew(self) -> None:
         """
         Initialize this ROM with default values.
         """
@@ -111,7 +158,7 @@ class NintendoDSRom:
         self.sortedFileIds = []
 
 
-    def _initFromData(self, data):
+    def _initFromData(self, data: bytes) -> None:
         """
         Initialize this ROM from existing data.
         """
@@ -124,22 +171,22 @@ class NintendoDSRom:
             assert len(data) == 0x200, f'ROM data extension to length 0x200 failed (actual new length {hex(len(data))})'
 
         headerOffset = 0
-        def readRaw(length):
+        def readRaw(length: int) -> bytearray:
             nonlocal headerOffset
             retVal = data[headerOffset : headerOffset+length]
             headerOffset += length
             return retVal
-        def read8():
+        def read8() -> int:
             nonlocal headerOffset
             retVal = data[headerOffset]
             headerOffset += 1
             return retVal
-        def read16():
+        def read16() -> int:
             nonlocal headerOffset
             retVal, = struct.unpack_from('<H', data, headerOffset)
             headerOffset += 2
             return retVal
-        def read32():
+        def read32() -> int:
             nonlocal headerOffset
             retVal, = struct.unpack_from('<I', data, headerOffset)
             headerOffset += 4
@@ -271,7 +318,7 @@ class NintendoDSRom:
 
 
     @classmethod
-    def fromFile(cls, filePath):
+    def fromFile(cls, filePath: str | os.PathLike) -> NintendoDSRom:
         """
         Load a ROM from a filesystem file.
         """
@@ -279,7 +326,7 @@ class NintendoDSRom:
             return cls(f.read())
 
 
-    def save(self, *, updateDeviceCapacity=False):
+    def save(self, *, updateDeviceCapacity: bool = False) -> bytes:
         """
         Generate file data representing this ROM.
         """
@@ -289,7 +336,7 @@ class NintendoDSRom:
         # The header will be filled in at the end.
         data = bytearray(0x200)
 
-        def align(alignment, fill=b'\0'):
+        def align(alignment: int, fill: bytes = b'\0') -> None:
             if len(data) % alignment:
                 extra = len(data) % alignment
                 needed = alignment - extra
@@ -412,19 +459,19 @@ class NintendoDSRom:
         # Now that all the offsets and stuff are determined, write the
         # header data
         headerOffset = 0
-        def writeRaw(value):
+        def writeRaw(value: bytes) -> None:
             nonlocal headerOffset
             data[headerOffset : headerOffset+len(value)] = value
             headerOffset += len(value)
-        def write8(value):
+        def write8(value: int) -> None:
             nonlocal headerOffset
             data[headerOffset] = value
             headerOffset += 1
-        def write16(value):
+        def write16(value: int) -> None:
             nonlocal headerOffset
             struct.pack_into('<H', data, headerOffset, value)
             headerOffset += 2
-        def write32(value):
+        def write32(value: int) -> None:
             nonlocal headerOffset
             struct.pack_into('<I', data, headerOffset, value)
             headerOffset += 4
@@ -498,7 +545,12 @@ class NintendoDSRom:
         return bytes(data)
 
 
-    def saveToFile(self, filePath, *, updateDeviceCapacity=False):
+    def saveToFile(
+        self,
+        filePath: str | os.PathLike,
+        *,
+        updateDeviceCapacity: bool = False,
+    ) -> None:
         """
         Generate file data representing this ROM, and save it to a
         filesystem file.
@@ -508,7 +560,7 @@ class NintendoDSRom:
             f.write(d)
 
 
-    def loadArm9(self):
+    def loadArm9(self) -> code.MainCodeFile:
         """
         Create a MainCodeFile object representing the main ARM9 code
         file in this ROM.
@@ -518,7 +570,7 @@ class NintendoDSRom:
                                  self.arm9CodeSettingsPointerAddress)
 
 
-    def loadArm7(self):
+    def loadArm7(self) -> code.MainCodeFile:
         """
         Create a MainCodeFile object representing the main ARM7 code
         file in this ROM.
@@ -528,25 +580,25 @@ class NintendoDSRom:
                                  self.arm7CodeSettingsPointerAddress)
 
 
-    def loadArm9Overlays(self, idsToLoad=None):
+    def loadArm9Overlays(self, idsToLoad: Container[int] | None = None) -> dict[int, code.Overlay]:
         """
         Create a dictionary of this ROM's ARM9 overlays.
         """
-        def callback(ovID, fileID):
+        def callback(ovID: int, fileID: int) -> bytes:
             return self.files[fileID]
         return code.loadOverlayTable(self.arm9OverlayTable, callback, idsToLoad)
 
 
-    def loadArm7Overlays(self, idsToLoad=None):
+    def loadArm7Overlays(self, idsToLoad: Container[int] | None = None) -> dict[int, code.Overlay]:
         """
         Create a dictionary of this ROM's ARM7 overlays.
         """
-        def callback(ovID, fileID):
+        def callback(ovID: int, fileID: int) -> bytes:
             return self.files[fileID]
         return code.loadOverlayTable(self.arm7OverlayTable, callback, idsToLoad)
 
 
-    def getFileByName(self, filename):
+    def getFileByName(self, filename: str) -> bytes:
         """
         Return the data for the file with the given filename (path).
         This is a convenience function.
@@ -557,7 +609,7 @@ class NintendoDSRom:
         return self.files[fid]
 
 
-    def setFileByName(self, filename, data):
+    def setFileByName(self, filename: str, data: bytes) -> None:
         """
         Replace the data for the file with the given filename (path)
         with the given data. This is a convenience function.
@@ -568,13 +620,13 @@ class NintendoDSRom:
         self.files[fid] = data
 
 
-    def __str__(self):
+    def __str__(self) -> str:
         title = repr(bytes(self.name))[2:-1].rstrip(' ')
         code = repr(bytes(self.idCode))[2:-1]
         return f'<rom "{title}" ({code})>'
 
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         try:
             data = _common.shortBytesRepr(self.save())
         except Exception:
