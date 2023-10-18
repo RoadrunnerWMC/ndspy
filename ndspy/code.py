@@ -446,7 +446,7 @@ def loadOverlayTable(
     return ovs
 
 
-def saveOverlayTable(table) -> bytes:
+def saveOverlayTable(table: dict[int, Overlay]) -> bytes:
     """
     Generate a bytes object representing this dictionary of Overlays, in
     proper ARM7 or ARM9 overlay table format. This is the inverse of
