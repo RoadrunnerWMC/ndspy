@@ -13,6 +13,9 @@ setuptools.setup(
     long_description_content_type='text/markdown',
     url='https://github.com/RoadrunnerWMC/ndspy',
     packages=setuptools.find_packages(),
+    package_data={
+        'ndspy': ['py.typed'],
+    },
     python_requires='>=3.7',
     entry_points={
         'console_scripts': [
