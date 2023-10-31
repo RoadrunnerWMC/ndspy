@@ -53,7 +53,7 @@ class Folder:
 
 
     def __iter__(self):
-        raise ValueError('Sorry, a Folder is not iterable.')
+        raise ValueError('Sorry, Folders are not iterable. Maybe you want to iterate over `.files` or `.folders`?')
 
 
     def __getitem__(self, key: int | str) -> Folder | str | int | NoReturn:
