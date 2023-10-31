@@ -221,7 +221,7 @@ def decompressFromFile(filePath: str | os.PathLike) -> bytes:
         return decompress(f.read())
 
 
-def decompressToFile(data, filePath: str | os.PathLike) -> None:
+def decompressToFile(data: bytes, filePath: str | os.PathLike) -> None:
     """
     Decompress code-compressed data, and save it to a filesystem file.
     """
