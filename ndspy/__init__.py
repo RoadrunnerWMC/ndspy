@@ -18,12 +18,16 @@
 Functions and classes that don't need their own modules.
 """
 
-
-import collections
 import enum
+from typing import NamedTuple
 
 
-VERSION = collections.namedtuple('version', 'major minor patch')(4, 1, 0)
+class Version(NamedTuple):
+    major: int
+    minor: int
+    patch: int
+
+VERSION = Version(4, 1, 0)
 try: VERSION.__class__.__name__ = 'ndspy.version'
 except: pass
 
