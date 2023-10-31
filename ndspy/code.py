@@ -18,8 +18,11 @@
 Support for executable code files.
 """
 
+from __future__ import annotations
 
+import os
 import struct
+from typing import Callable, Container
 
 from . import _common
 from . import codeCompression
@@ -52,26 +55,36 @@ class MainCodeFile:
         section.
         """
 
+        data: bytes
+        ramAddress: int
+        bssSize: int
         # There's an implicit first section in the file, which is not
         # defined in the sections table with the others. This attribute
         # will be True if this is that section.
-        implicit = False
+        implicit: bool
 
 
-        def __init__(self, data, ramAddress, bssSize, *, implicit=False):
+        def __init__(
+            self,
+            data: bytes,
+            ramAddress: int,
+            bssSize: int,
+            *,
+            implicit: bool = False,
+        ):
             self.data = bytearray(data)
             self.ramAddress = ramAddress
             self.bssSize = bssSize
             self.implicit = implicit
 
 
-        def __str__(self):
+        def __str__(self) -> str:
             data = _common.shortBytesRepr(self.data)
             imp = ' implicit' if self.implicit else ''
             return f'<code-section at 0x{self.ramAddress:08X}: {data}{imp}>'
 
 
-        def __repr__(self):
+        def __repr__(self) -> str:
             data = _common.shortBytesRepr(self.data)
 
             return (f'{type(self).__name__}({data}'
@@ -80,12 +93,12 @@ class MainCodeFile:
                     f'{", implicit=True" if self.implicit else ""})')
 
 
-    sections = None
-    ramAddress = 0x00000000
-    codeSettingsOffs = 0x00000000
+    sections: list[Section]
+    ramAddress: int
+    codeSettingsOffs: int | None
 
 
-    def __init__(self, data, ramAddress, codeSettingsPointerAddress=None):
+    def __init__(self, data: bytes, ramAddress: int, codeSettingsPointerAddress: int | None = None):
         self.sections = []
         self.ramAddress = ramAddress
 
@@ -121,7 +134,13 @@ class MainCodeFile:
             copyTableBegin = copyTableEnd = 0
             dataBegin = len(data)
 
-        def makeSection(ramAddr, ramLen, fileOffs, bssSize, implicit=False):
+        def makeSection(
+            ramAddr: int,
+            ramLen: int,
+            fileOffs: int,
+            bssSize: int,
+            implicit: bool = False,
+        ) -> None:
             sdata = data[fileOffs : fileOffs + ramLen]
             self.sections.append(self.Section(sdata,
                                               ramAddr,
@@ -143,7 +162,7 @@ class MainCodeFile:
 
 
     @classmethod
-    def fromCompressed(cls, data, *args):
+    def fromCompressed(cls, data: bytes, *args) -> MainCodeFile:
         """
         Create a main code file from compressed code data.
 
@@ -158,7 +177,7 @@ class MainCodeFile:
 
 
     @classmethod
-    def fromSections(cls, sections, ramAddress):
+    def fromSections(cls, sections: list[Section], ramAddress: int) -> MainCodeFile:
         """
         Create a main code file from a list of sections.
         """
@@ -168,7 +187,7 @@ class MainCodeFile:
 
 
     @classmethod
-    def fromFile(cls, filePath, ramAddress):
+    def fromFile(cls, filePath: str | os.PathLike, ramAddress: int) -> MainCodeFile:
         """
         Load a main code file from a filesystem file.
         """
@@ -176,7 +195,7 @@ class MainCodeFile:
             return cls(f.read(), ramAddress)
 
 
-    def save(self, *, compress=False):
+    def save(self, *, compress: bool = False) -> bytes:
         """
         Generate a bytes object representing this code file.
         """
@@ -210,7 +229,7 @@ class MainCodeFile:
         sectionTableOffset = len(data)
         data.extend(sectionTable)
 
-        def setInt(addr, val):
+        def setInt(addr: int, val: int) -> None:
             struct.pack_into('<I', data, addr, val)
 
         sectionTableAddr = self.ramAddress + sectionTableOffset
@@ -234,7 +253,7 @@ class MainCodeFile:
         return data
 
 
-    def saveToFile(self, filePath, *, compress=False):
+    def saveToFile(self, filePath: str | os.PathLike, *, compress: bool = False) -> None:
         """
         Generate file data representing this main code file, and save it
         to a filesystem file.
@@ -244,7 +263,7 @@ class MainCodeFile:
             f.write(d)
 
 
-    def _searchForCodeSettingsOffs(self, data):
+    def _searchForCodeSettingsOffs(self, data: bytes) -> int | None:
         """
         Find the offset of the code settings area in the data given.
         Return None if it can't be found.
@@ -280,7 +299,7 @@ class MainCodeFile:
                     match = None
 
 
-    def __str__(self):
+    def __str__(self) -> str:
         linesList = [f'<main-code at 0x{self.ramAddress:08X}']
 
         for s in self.sections:
@@ -291,7 +310,7 @@ class MainCodeFile:
         return '\n'.join(linesList)
 
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return (f'{type(self).__name__}.fromSections({self.sections!r}'
                 f', 0x{self.ramAddress:08X})')
 
@@ -301,20 +320,30 @@ class Overlay:
     An ARM7 or ARM9 code overlay.
     """
 
-    data = None
-    ramAddress = 0x00000000
-    ramSize = 0
-    bssSize = 0
-    staticInitStart = 0x00000000
-    staticInitEnd = 0x00000000
-    fileID = 0
-    compressedSize = 0
-    flags = 0
-    unkAddress = 0x00000000
+    data: bytes
+    ramAddress: int
+    ramSize: int
+    bssSize: int
+    staticInitStart: int
+    staticInitEnd: int
+    fileID: int
+    compressedSize: int
+    flags: int
+    unkAddress: int
 
 
-    def __init__(self, data, ramAddress, ramSize, bssSize, staticInitStart,
-            staticInitEnd, fileID, compressedSize, flags):
+    def __init__(
+        self,
+        data: bytes,
+        ramAddress: int,
+        ramSize: int,
+        bssSize: int,
+        staticInitStart: int,
+        staticInitEnd: int,
+        fileID: int,
+        compressedSize: int,
+        flags: int,
+    ):
         self.ramAddress = ramAddress
         self.ramSize = ramSize
         self.bssSize = bssSize
@@ -331,10 +360,10 @@ class Overlay:
 
 
     @property
-    def compressed(self):
+    def compressed(self) -> bool:
         return bool(self.flags & 1)
     @compressed.setter
-    def compressed(self, value):
+    def compressed(self, value: bool) -> None:
         if value:
             self.flags |= 1
         else:
@@ -342,17 +371,17 @@ class Overlay:
 
 
     @property
-    def verifyHash(self):
+    def verifyHash(self) -> bool:
         return bool(self.flags & 2)
     @verifyHash.setter
-    def verifyHash(self, value):
+    def verifyHash(self, value: bool) -> None:
         if value:
             self.flags |= 2
         else:
             self.flags &= ~2
 
 
-    def save(self, *, compress=False):
+    def save(self, *, compress: bool = False) -> bytes:
         """
         Generate a bytes object representing this overlay.
         """
@@ -366,7 +395,7 @@ class Overlay:
         return data
 
 
-    def __str__(self):
+    def __str__(self) -> str:
         fields = []
         fields.append('at 0x%08X' % self.ramAddress)
         fields.append(f'file={self.fileID}')
@@ -377,7 +406,7 @@ class Overlay:
 
         return f'<overlay {" ".join(fields)}>'
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         fields = []
         fields.append(_common.shortBytesRepr(self.data))
         fields.append('0x%08X' % self.ramAddress)
@@ -391,12 +420,16 @@ class Overlay:
         return f'{type(self).__name__}({", ".join(fields)})'
 
 
-def loadOverlayTable(tableData, fileCallback, idsToLoad=None):
+def loadOverlayTable(
+    tableData: bytes,
+    fileCallback: Callable[[int, int], bytes],
+    idsToLoad: Container[int] | None = None,
+) -> dict[int, Overlay]:
     """
     Parse ARM7 or ARM9 overlay table data to create a dictionary of
     Overlays. This is the inverse of saveOverlayTable().
     """
-    ovs = {}
+    ovs: dict[int, Overlay] = {}
     for i in range(0, len(tableData), 32):
         (ovID, ramAddr, ramSize, bssSize, staticInitStart, staticInitEnd,
             fileID, compressedSize_Flags) = struct.unpack_from('<8I', tableData, i)
@@ -413,7 +446,7 @@ def loadOverlayTable(tableData, fileCallback, idsToLoad=None):
     return ovs
 
 
-def saveOverlayTable(table):
+def saveOverlayTable(table: dict[int, Overlay]) -> bytes:
     """
     Generate a bytes object representing this dictionary of Overlays, in
     proper ARM7 or ARM9 overlay table format. This is the inverse of
