@@ -329,7 +329,6 @@ class Overlay:
     fileID: int
     compressedSize: int
     flags: int
-    unkAddress: int
 
 
     def __init__(
