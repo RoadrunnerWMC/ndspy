@@ -1677,12 +1677,7 @@ This page describes the sequence event classes within
 
     .. py:attribute:: value
 
-        The new tempo to use.
-
-        .. todo::
-
-            I think this is measured in BPM, but that needs to be
-            double-checked.
+        The new tempo to use, measured in beats per minute (BPM).
 
         :type: :py:class:`int`
 
