@@ -541,6 +541,7 @@ class NintendoDSRom:
         assert len(self.pad16C) == 0x94, f'(Save) Wrong pad16C length: {hex(len(self.pad16C))}'
         writeRaw(self.pad16C)
         assert headerOffset == 0x200, f'(Save) Header offset check at 0x200: {hex(headerOffset)}'
+        align(0x400)
 
         return bytes(data)
 
