@@ -26,8 +26,16 @@ can be downloaded from the `Releases page on GitHub
 .. contents:: :local:
 
 
+4.2.0 (Sept. 13, 2024)
+----------------------
+
+*   Added type annotations for the :py:mod:`ndspy.bmg`, :py:mod:`ndspy.code`, :py:mod:`ndspy.codeCompression`, :py:mod:`ndspy.fnt`, :py:mod:`ndspy.lz10`, :py:mod:`ndspy.narc`, and :py:mod:`ndspy.rom` modules. These can help type-checkers analyze your own code if desired, and improve code suggestions in certain IDEs. Thanks to mike8699 for this!
+*   A few small improvements to documentation, error messages, and testing infrastructure.
+
+
 4.1.0 (July 28, 2023)
 ---------------------
+
 *   Replaced the `crcmod` dependency with a pure-Python CRC16 implementation in
     ndspy itself.
 *   Fixed a bug in the undocumented :py:mod:`ndspy.graphics2D` module.

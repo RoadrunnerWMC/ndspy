@@ -5,7 +5,7 @@ with open('README.md', 'r', encoding='utf-8') as fh:
 
 setuptools.setup(
     name='ndspy',
-    version='4.1.0',
+    version='4.2.0',
     author='RoadrunnerWMC',
     author_email='roadrunnerwmc@gmail.com',
     description='Python library that can help you read, modify and create many types of files used in Nintendo DS games.',

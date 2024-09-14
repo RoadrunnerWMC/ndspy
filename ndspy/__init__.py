@@ -27,7 +27,7 @@ class Version(NamedTuple):
     minor: int
     patch: int
 
-VERSION = Version(4, 1, 0)
+VERSION = Version(4, 2, 0)
 try: VERSION.__class__.__name__ = 'ndspy.version'
 except: pass
 
