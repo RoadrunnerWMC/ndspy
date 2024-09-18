@@ -451,6 +451,10 @@ class NintendoDSRom:
         # We need to do this for compatibility with NSMBe
         struct.pack_into('<I', data, 0x1000, rsaSignatureOffset)
 
+        # The BizHawk MelonDS core, and maybe also other emulators,
+        # fails if the ROM size isn't a multiple of 0x400
+        align(0x400)
+
         # Now that we know how large the ROM data is, we can update the
         # device capacity value
         if updateDeviceCapacity:
