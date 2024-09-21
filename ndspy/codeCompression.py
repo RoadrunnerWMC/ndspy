@@ -56,7 +56,7 @@ def _detectAppendedData(data: bytes) -> int | None:
     return None
 
 
-def decompress(data: bytes) -> bytes:
+def decompress(data: bytes) -> bytearray:
     """
     Decompress data that was compressed using code compression. This is
     the inverse of compress().

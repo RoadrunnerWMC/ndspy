@@ -320,7 +320,7 @@ class Overlay:
     An ARM7 or ARM9 code overlay.
     """
 
-    data: bytes
+    data: bytearray
     ramAddress: int
     ramSize: int
     bssSize: int
