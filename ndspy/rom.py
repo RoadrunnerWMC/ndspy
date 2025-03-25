@@ -631,8 +631,4 @@ class NintendoDSRom:
 
 
     def __repr__(self) -> str:
-        try:
-            data = _common.shortBytesRepr(self.save())
-        except Exception:
-            data = '...'
-        return f'{type(self).__name__}({data})'
+        return f'{type(self).__name__}({self!s})'
