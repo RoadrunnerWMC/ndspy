@@ -74,6 +74,7 @@ def compress(data, posSubtract, maxMatchDiff, maxMatchLen, zerosAtEnd,
 
     ignorableDataAmount = 0
     ignorableCompressedAmount = 0
+    ignoreDict = {0: (current, len(result))}
 
     bestSavingsSoFar = 0
 
@@ -118,7 +119,23 @@ def compress(data, posSubtract, maxMatchDiff, maxMatchLen, zerosAtEnd,
                 ignorableDataAmount = 0
                 ignorableCompressedAmount = 0
                 bestSavingsSoFar = savingsNow
-
+                if savingsNow not in ignoreDict:
+                    ignoreDict[savingsNow] = (current, len(result))
+ 
         result[blockFlagsOffset] = blockFlags
 
-    return bytes(result), ignorableDataAmount, ignorableCompressedAmount
+    # Original BLZ return
+    # return bytes(result), ignorableDataAmount, ignorableCompressedAmount
+
+    finalSavings = current - len(result)
+    if finalSavings < bestSavingsSoFar:
+        finalSavings += 1
+        while finalSavings not in ignoreDict:
+            finalSavings += 1
+        ignD = current - ignoreDict[finalSavings][0]
+        ignC = len(result) - ignoreDict[finalSavings][1]
+        return bytes(result), ignD, ignC
+    else:
+        return bytes(result), 0, 0
+    
+   
