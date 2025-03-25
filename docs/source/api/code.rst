@@ -175,7 +175,7 @@ The ``ndspy.code`` module can be used to load and save executable code files:
 
         The code data for this section.
 
-        :type: :py:class:`bytes`
+        :type: :py:class:`bytearray`
 
     .. py:attribute:: implicit
 
@@ -243,7 +243,7 @@ The ``ndspy.code`` module can be used to load and save executable code files:
 
     .. py:attribute:: data
 
-        The :py:class:`bytes` object containing the decompressed code for this
+        The :py:class:`bytearray` object containing the decompressed code for this
         overlay.
 
     .. py:attribute:: compressed
