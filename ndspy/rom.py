@@ -631,4 +631,4 @@ class NintendoDSRom:
 
 
     def __repr__(self) -> str:
-        return f"NintendoDsRom({self.name!r})"
+        return f'{type(self).__name__}({self!s})'
