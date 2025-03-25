@@ -55,7 +55,7 @@ class MainCodeFile:
         section.
         """
 
-        data: bytes
+        data: bytearray
         ramAddress: int
         bssSize: int
         # There's an implicit first section in the file, which is not
@@ -320,7 +320,7 @@ class Overlay:
     An ARM7 or ARM9 code overlay.
     """
 
-    data: bytes
+    data: bytearray
     ramAddress: int
     ramSize: int
     bssSize: int
@@ -471,4 +471,4 @@ def saveOverlayTable(table: dict[int, Overlay]) -> bytes:
 
         ovt.extend(struct.pack('<8I', *values))
 
-    return ovt
+    return bytes(ovt)

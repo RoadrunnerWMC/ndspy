@@ -210,7 +210,7 @@ def decompress(data: bytes) -> bytes:
             decompData[-1 - currentOutSize] = next
             currentOutSize += 1
 
-    return passthroughData + decompData + appendedData
+    return bytes(passthroughData + decompData + appendedData)
 
 
 def decompressFromFile(filePath: str | os.PathLike) -> bytes:
