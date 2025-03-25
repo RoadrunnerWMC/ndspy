@@ -56,7 +56,7 @@ def _detectAppendedData(data: bytes) -> int | None:
     return None
 
 
-def decompress(data: bytes) -> bytearray:
+def decompress(data: bytes) -> bytes:
     """
     Decompress data that was compressed using code compression. This is
     the inverse of compress().
@@ -210,7 +210,7 @@ def decompress(data: bytes) -> bytearray:
             decompData[-1 - currentOutSize] = next
             currentOutSize += 1
 
-    return passthroughData + decompData + appendedData
+    return bytes(passthroughData + decompData + appendedData)
 
 
 def decompressFromFile(filePath: str | os.PathLike) -> bytes:
