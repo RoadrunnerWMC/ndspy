@@ -187,7 +187,7 @@ class MainCodeFile:
 
 
     @classmethod
-    def fromFile(cls, filePath: str | os.PathLike, ramAddress: int) -> MainCodeFile:
+    def fromFile(cls, filePath: str | os.PathLike[str], ramAddress: int) -> MainCodeFile:
         """
         Load a main code file from a filesystem file.
         """
@@ -253,7 +253,7 @@ class MainCodeFile:
         return data
 
 
-    def saveToFile(self, filePath: str | os.PathLike, *, compress: bool = False) -> None:
+    def saveToFile(self, filePath: str | os.PathLike[str], *, compress: bool = False) -> None:
         """
         Generate file data representing this main code file, and save it
         to a filesystem file.

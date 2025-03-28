@@ -107,7 +107,7 @@ class NARC:
 
 
     @classmethod
-    def fromFile(cls, filePath: str | os.PathLike, *args, **kwargs) -> NARC:
+    def fromFile(cls, filePath: str | os.PathLike[str], *args, **kwargs) -> NARC:
         """
         Load a NARC archive from a filesystem file.
         """
@@ -162,7 +162,7 @@ class NARC:
         return bytes(data)
 
 
-    def saveToFile(self, filePath: str | os.PathLike) -> None:
+    def saveToFile(self, filePath: str | os.PathLike[str]) -> None:
         """
         Generate file data representing this NARC, and save it to a
         filesystem file.

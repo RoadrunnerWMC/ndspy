@@ -83,7 +83,7 @@ def decompress(data: bytes) -> bytes:
     return bytes(out)
 
 
-def decompressFromFile(filePath: str | os.PathLike) -> bytes:
+def decompressFromFile(filePath: str | os.PathLike[str]) -> bytes:
     """
     Load a LZ10-compressed filesystem file, and decompress it.
     """
@@ -91,7 +91,7 @@ def decompressFromFile(filePath: str | os.PathLike) -> bytes:
         return decompress(f.read())
 
 
-def decompressToFile(data: bytes, filePath: str | os.PathLike) -> None:
+def decompressToFile(data: bytes, filePath: str | os.PathLike[str]) -> None:
     """
     Decompress LZ10-compressed data, and save it to a filesystem file.
     """
@@ -114,7 +114,7 @@ def compress(data: bytes) -> bytes:
     return bytes(compressed)
 
 
-def compressFromFile(filePath: str | os.PathLike) -> bytes:
+def compressFromFile(filePath: str | os.PathLike[str]) -> bytes:
     """
     Load a filesystem file, and compress its data in LZ10 format.
     """
@@ -122,7 +122,7 @@ def compressFromFile(filePath: str | os.PathLike) -> bytes:
         return compress(f.read())
 
 
-def compressToFile(data: bytes, filePath: str | os.PathLike) -> None:
+def compressToFile(data: bytes, filePath: str | os.PathLike[str]) -> None:
     """
     Compress data in LZ10 format, and save it to a filesystem file.
     """

@@ -318,7 +318,7 @@ class NintendoDSRom:
 
 
     @classmethod
-    def fromFile(cls, filePath: str | os.PathLike) -> NintendoDSRom:
+    def fromFile(cls, filePath: str | os.PathLike[str]) -> NintendoDSRom:
         """
         Load a ROM from a filesystem file.
         """
@@ -551,7 +551,7 @@ class NintendoDSRom:
 
     def saveToFile(
         self,
-        filePath: str | os.PathLike,
+        filePath: str | os.PathLike[str],
         *,
         updateDeviceCapacity: bool = False,
     ) -> None:

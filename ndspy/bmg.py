@@ -229,7 +229,7 @@ class BMG:
 
 
     @classmethod
-    def fromFile(cls, filePath: str | os.PathLike, *args, **kwargs) -> BMG:
+    def fromFile(cls, filePath: str | os.PathLike[str], *args, **kwargs) -> BMG:
         """
         Load a BMG from a filesystem file.
         """
@@ -341,7 +341,7 @@ class BMG:
         return bytes(data)
 
 
-    def saveToFile(self, filePath: str | os.PathLike) -> None:
+    def saveToFile(self, filePath: str | os.PathLike[str]) -> None:
         """
         Generate file data representing this BMG, and save it to a
         filesystem file.

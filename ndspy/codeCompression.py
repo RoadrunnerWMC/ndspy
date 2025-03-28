@@ -213,7 +213,7 @@ def decompress(data: bytes) -> bytes:
     return bytes(passthroughData + decompData + appendedData)
 
 
-def decompressFromFile(filePath: str | os.PathLike) -> bytes:
+def decompressFromFile(filePath: str | os.PathLike[str]) -> bytes:
     """
     Load a code-compressed filesystem file, and decompress it.
     """
@@ -221,7 +221,7 @@ def decompressFromFile(filePath: str | os.PathLike) -> bytes:
         return decompress(f.read())
 
 
-def decompressToFile(data: bytes, filePath: str | os.PathLike) -> None:
+def decompressToFile(data: bytes, filePath: str | os.PathLike[str]) -> None:
     """
     Decompress code-compressed data, and save it to a filesystem file.
     """
@@ -294,7 +294,7 @@ def _compress(data: bytes) -> bytearray:
     return compressed
 
 
-def compressFromFile(filePath: str | os.PathLike, isArm9: bool = False) -> bytes:
+def compressFromFile(filePath: str | os.PathLike[str], isArm9: bool = False) -> bytes:
     """
     Load a filesystem file, and compress its data in LZ10 format.
     """
@@ -302,7 +302,7 @@ def compressFromFile(filePath: str | os.PathLike, isArm9: bool = False) -> bytes
         return compress(f.read(), isArm9=isArm9)
 
 
-def compressToFile(data: bytes, filePath: str | os.PathLike, isArm9: bool = False) -> None:
+def compressToFile(data: bytes, filePath: str | os.PathLike[str], isArm9: bool = False) -> None:
     """
     Compress data in LZ10 format, and save it to a filesystem file.
     """
