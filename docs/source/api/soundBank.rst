@@ -148,15 +148,8 @@ The ``ndspy.soundBank`` module contains classes and functions related to the
 
             Section 4.2 (Articulation Data) in the `kiwi.ds Nitro Composer File
             (*.sdat) Specification
-            <https://sites.google.com/site/kiwids/sdat.html>`_ explains this in
-            more detail.
-
-            .. note::
-
-                The link in the sentence "See this file for more details on how
-                to interpret the articulation data" may be broken; `here is the
-                correct link
-                <https://sites.google.com/site/kiwids/articulation.htm>`__.
+            <https://roadrunnerwmc.github.io/kiwids/sdat.html>`_ explains this
+            in more detail.
 
         :type: :py:class:`int`
 
@@ -176,15 +169,8 @@ The ``ndspy.soundBank`` module contains classes and functions related to the
 
             Section 4.2 (Articulation Data) in the `kiwi.ds Nitro Composer File
             (*.sdat) Specification
-            <https://sites.google.com/site/kiwids/sdat.html>`_ explains this in
-            more detail.
-
-            .. note::
-
-                The link in the sentence "See this file for more details on how
-                to interpret the articulation data" may be broken; `here is the
-                correct link
-                <https://sites.google.com/site/kiwids/articulation.htm>`__.
+            <https://roadrunnerwmc.github.io/kiwids/sdat.html>`_ explains this
+            in more detail.
 
         :type: :py:class:`int`
 
@@ -271,15 +257,8 @@ The ``ndspy.soundBank`` module contains classes and functions related to the
 
             Section 4.2 (Articulation Data) in the `kiwi.ds Nitro Composer File
             (*.sdat) Specification
-            <https://sites.google.com/site/kiwids/sdat.html>`_ explains this in
-            more detail.
-
-            .. note::
-
-                The link in the sentence "See this file for more details on how
-                to interpret the articulation data" may be broken; `here is the
-                correct link
-                <https://sites.google.com/site/kiwids/articulation.htm>`__.
+            <https://roadrunnerwmc.github.io/kiwids/sdat.html>`_ explains this
+            in more detail.
 
         :type: :py:class:`int`
 
@@ -299,15 +278,8 @@ The ``ndspy.soundBank`` module contains classes and functions related to the
 
             Section 4.2 (Articulation Data) in the `kiwi.ds Nitro Composer File
             (*.sdat) Specification
-            <https://sites.google.com/site/kiwids/sdat.html>`_ explains this in
-            more detail.
-
-            .. note::
-
-                The link in the sentence "See this file for more details on how
-                to interpret the articulation data" may be broken; `here is the
-                correct link
-                <https://sites.google.com/site/kiwids/articulation.htm>`__.
+            <https://roadrunnerwmc.github.io/kiwids/sdat.html>`_ explains this
+            in more detail.
 
         :type: :py:class:`int`
 

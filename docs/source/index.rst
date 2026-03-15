@@ -300,7 +300,7 @@ using information from many, many sources. In alphabetical order:
     reference for the ROM header format; also provides a nice test case for the
     ROM library code
 *   `kiwi.ds Nitro Composer File (*.sdat) Specification
-    <https://sites.google.com/site/kiwids/sdat.html>`_ -- probably the best
+    <https://roadrunnerwmc.github.io/kiwids/sdat.html>`_ -- probably the best
     overall reference for *SDAT*
 *   `Source code for melonDS <https://github.com/Arisotura/melonDS>`_ (`website
     <http://melonds.kuribo64.net/>`_) -- for texture-rendering code,
