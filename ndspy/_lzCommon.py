@@ -53,9 +53,9 @@ def compress(data, posSubtract, maxMatchDiff, maxMatchLen, zerosAtEnd,
             matchLen = (lower + upper) // 2
             match = data[pos : pos + matchLen]
             if searchReverse:
-                matchPos = data.rfind(match, start, pos)
+                matchPos = data.rfind(match, start, pos + matchLen - 1)
             else:
-                matchPos = data.find(match, start, pos)
+                matchPos = data.find(match, start, pos + matchLen - 1)
 
             if matchPos == -1:
                 # No such match -- any matches will be smaller than this
