@@ -1024,9 +1024,29 @@ ExpressionSequenceEvent = _make_simple_sequence_event_class(0xD5,
 PrintVariableSequenceEvent = _make_simple_sequence_event_class(0xD6,
     'Print variable', 'PrintVariableSequenceEvent', 'that is unknown')
 
-VibratoDelaySequenceEvent = _make_simple_sequence_event_class(0xE0,
-    'Vibrato delay', 'VibratoDelaySequenceEvent',
-    'related to vibratos')
+
+class VibratoDelaySequenceEvent(SequenceEvent):
+    """
+    related to vibratos
+    """
+    dataLength = 3
+
+    def __init__(self, value):
+        super().__init__(0xE0)
+        self.value = value
+
+    def save(self, eventsToOffsets=None):
+        return super().save() + struct.pack('<H', self.value)
+
+    @classmethod
+    def fromData(cls, type, data, startOffset=0):
+        return cls(struct.unpack_from('<H', data, startOffset + 1)[0])
+
+    def __str__(self):
+        return f'<vibrato delay {self.value}>'
+
+    def __repr__(self):
+        return f'{type(self).__name__}({self.value!r})'
 
 
 class TempoSequenceEvent(SequenceEvent):
